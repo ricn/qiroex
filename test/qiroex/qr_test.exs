@@ -66,7 +66,8 @@ defmodule Qiroex.QRTest do
       {:ok, qr} = QR.encode("HI", level: :l)
       rows = QR.to_matrix(qr)
 
-      expected_size = 4 * qr.version + 17 + 8  # +8 for 4-module quiet zone on each side
+      # +8 for 4-module quiet zone on each side
+      expected_size = 4 * qr.version + 17 + 8
       assert length(rows) == expected_size
       assert length(hd(rows)) == expected_size
     end
@@ -85,7 +86,8 @@ defmodule Qiroex.QRTest do
       {:ok, qr} = QR.encode("HI", level: :l)
       rows = QR.to_matrix(qr, 2)
 
-      expected_size = 4 * qr.version + 17 + 4  # +4 for 2-module quiet zone on each side
+      # +4 for 2-module quiet zone on each side
+      expected_size = 4 * qr.version + 17 + 4
       assert length(rows) == expected_size
     end
   end

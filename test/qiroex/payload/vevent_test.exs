@@ -31,22 +31,25 @@ defmodule Qiroex.Payload.VEventTest do
     end
 
     test "with location and description" do
-      {:ok, payload} = VEvent.encode(
-        summary: "Meeting",
-        start: ~U[2026-03-01 10:00:00Z],
-        location: "Room A",
-        description: "Weekly sync"
-      )
+      {:ok, payload} =
+        VEvent.encode(
+          summary: "Meeting",
+          start: ~U[2026-03-01 10:00:00Z],
+          location: "Room A",
+          description: "Weekly sync"
+        )
 
       assert String.contains?(payload, "LOCATION:Room A")
       assert String.contains?(payload, "DESCRIPTION:Weekly sync")
     end
 
     test "with pre-formatted string datetime" do
-      {:ok, payload} = VEvent.encode(
-        summary: "Event",
-        start: "20260301T100000Z"
-      )
+      {:ok, payload} =
+        VEvent.encode(
+          summary: "Event",
+          start: "20260301T100000Z"
+        )
+
       assert String.contains?(payload, "DTSTART:20260301T100000Z")
     end
 

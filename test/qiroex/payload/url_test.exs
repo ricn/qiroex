@@ -17,7 +17,8 @@ defmodule Qiroex.Payload.URLTest do
     end
 
     test "preserves path and query" do
-      assert {:ok, "https://example.com/path?q=1"} = URL.encode(url: "https://example.com/path?q=1")
+      assert {:ok, "https://example.com/path?q=1"} =
+               URL.encode(url: "https://example.com/path?q=1")
     end
 
     test "error when URL is missing" do

@@ -437,8 +437,12 @@ defmodule Qiroex do
 
   defp build_payload(type, opts) do
     case Map.fetch(@payload_modules, type) do
-      {:ok, module} -> module.encode(opts)
-      :error -> {:error, "unknown payload type: #{inspect(type)}. Valid types: #{inspect(Map.keys(@payload_modules))}"}
+      {:ok, module} ->
+        module.encode(opts)
+
+      :error ->
+        {:error,
+         "unknown payload type: #{inspect(type)}. Valid types: #{inspect(Map.keys(@payload_modules))}"}
     end
   end
 

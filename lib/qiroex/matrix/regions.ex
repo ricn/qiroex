@@ -89,6 +89,7 @@ defmodule Qiroex.Matrix.Regions do
     Enum.any?(finder_origins(size), fn {or_, oc} ->
       lr = row - or_
       lc = col - oc
+
       lr >= 1 and lr <= 5 and lc >= 1 and lc <= 5 and
         not (lr >= 2 and lr <= 4 and lc >= 2 and lc <= 4)
     end)
@@ -99,6 +100,7 @@ defmodule Qiroex.Matrix.Regions do
     Enum.any?(finder_origins(size), fn {or_, oc} ->
       lr = row - or_
       lc = col - oc
+
       lr >= 0 and lr <= 6 and lc >= 0 and lc <= 6 and
         not (lr >= 1 and lr <= 5 and lc >= 1 and lc <= 5)
     end)
@@ -109,14 +111,14 @@ defmodule Qiroex.Matrix.Regions do
   defp separator?(row, col, size) do
     # Separator is the 1-module-wide border around each finder pattern
     # TL: row 7 cols 0-7, col 7 rows 0-7
-    (row == 7 and col <= 7) or
-    (col == 7 and row <= 7) or
     # TR: row 7 cols (size-8)..(size-1), col (size-8) rows 0-7
-    (row == 7 and col >= size - 8) or
-    (col == size - 8 and row <= 7) or
     # BL: row (size-8) cols 0-7, col 7 rows (size-8)..(size-1)
-    (row == size - 8 and col <= 7) or
-    (col == 7 and row >= size - 8)
+    (row == 7 and col <= 7) or
+      (col == 7 and row <= 7) or
+      (row == 7 and col >= size - 8) or
+      (col == size - 8 and row <= 7) or
+      (row == size - 8 and col <= 7) or
+      (col == 7 and row >= size - 8)
   end
 
   # === Alignment Pattern ===
@@ -135,16 +137,16 @@ defmodule Qiroex.Matrix.Regions do
 
   defp overlaps_finder?(cr, cc, size) do
     (cr <= 8 and cc <= 8) or
-    (cr <= 8 and cc >= size - 9) or
-    (cr >= size - 9 and cc <= 8)
+      (cr <= 8 and cc >= size - 9) or
+      (cr >= size - 9 and cc <= 8)
   end
 
   # === Timing Pattern ===
 
   defp timing?(row, col, size) do
     # Row 6, between finders (cols 8 to size-9)
-    (row == 6 and col >= 8 and col <= size - 9) or
     # Col 6, between finders (rows 8 to size-9)
-    (col == 6 and row >= 8 and row <= size - 9)
+    (row == 6 and col >= 8 and col <= size - 9) or
+      (col == 6 and row >= 8 and row <= size - 9)
   end
 end

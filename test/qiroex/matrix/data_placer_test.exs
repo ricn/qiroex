@@ -61,6 +61,7 @@ defmodule Qiroex.Matrix.DataPlacerTest do
       placed = DataPlacer.place(matrix, bits)
 
       positions = DataPlacer.data_module_positions(matrix)
+
       for pos <- positions do
         assert Matrix.get(placed, pos) == :dark,
                "All data bits should be dark (1) at #{inspect(pos)}"
@@ -74,6 +75,7 @@ defmodule Qiroex.Matrix.DataPlacerTest do
       placed = DataPlacer.place(matrix, bits)
 
       positions = DataPlacer.data_module_positions(matrix)
+
       for pos <- positions do
         assert Matrix.get(placed, pos) == :light,
                "All data bits should be light (0) at #{inspect(pos)}"

@@ -85,9 +85,12 @@ defmodule Qiroex.ErrorCorrection.GaloisFieldTest do
     end
 
     test "α⁵ × α³ = α⁸ = 29" do
-      a5 = GF.exp(5)  # 32
-      a3 = GF.exp(3)  # 8
-      assert GF.multiply(a5, a3) == GF.exp(8)  # 29
+      # 32
+      a5 = GF.exp(5)
+      # 8
+      a3 = GF.exp(3)
+      # 29
+      assert GF.multiply(a5, a3) == GF.exp(8)
     end
 
     test "commutativity" do

@@ -8,7 +8,8 @@ defmodule Qiroex.ErrorCorrection.ReedSolomonTest do
       # Known generator polynomial coefficients for 7 EC codewords
       # g(x) = (x-α⁰)(x-α¹)(x-α²)(x-α³)(x-α⁴)(x-α⁵)(x-α⁶)
       poly = ReedSolomon.generator_polynomial(7)
-      assert length(poly) == 8  # degree 7 has 8 coefficients
+      # degree 7 has 8 coefficients
+      assert length(poly) == 8
       # First coefficient is always 1
       assert hd(poly) == 1
     end

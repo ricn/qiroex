@@ -9,7 +9,6 @@ defmodule Qiroex.Matrix.Mask do
 
   alias Qiroex.Matrix
 
-
   @doc """
   Applies the given mask pattern to data modules in the matrix.
 
@@ -43,9 +42,9 @@ defmodule Qiroex.Matrix.Mask do
   @spec evaluate_penalty(Matrix.t()) :: non_neg_integer()
   def evaluate_penalty(matrix) do
     penalty_rule1(matrix) +
-    penalty_rule2(matrix) +
-    penalty_rule3(matrix) +
-    penalty_rule4(matrix)
+      penalty_rule2(matrix) +
+      penalty_rule3(matrix) +
+      penalty_rule4(matrix)
   end
 
   @doc """
@@ -109,6 +108,7 @@ defmodule Qiroex.Matrix.Mask do
       Enum.reduce(values, {0, nil, 0}, fn dark, {pen, last, count} ->
         if dark == last do
           new_count = count + 1
+
           if new_count == 5 do
             {pen + 3, dark, new_count}
           else
@@ -169,6 +169,7 @@ defmodule Qiroex.Matrix.Mask do
   end
 
   defp count_finder_patterns(line) when length(line) < 11, do: 0
+
   defp count_finder_patterns(line) do
     0..(length(line) - 11)
     |> Enum.count(fn i ->

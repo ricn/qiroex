@@ -21,7 +21,8 @@ defmodule Qiroex.Encoder.Segment do
   ## Returns
     List of data codeword integers (0-255).
   """
-  @spec encode(list({Spec.mode(), binary()}), Spec.version(), Spec.ec_level()) :: list(non_neg_integer())
+  @spec encode(list({Spec.mode(), binary()}), Spec.version(), Spec.ec_level()) ::
+          list(non_neg_integer())
   def encode(segments, version, ec_level) do
     total_data_codewords = Spec.total_data_codewords(version, ec_level)
     total_data_bits = total_data_codewords * 8

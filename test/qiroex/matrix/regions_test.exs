@@ -86,8 +86,16 @@ defmodule Qiroex.Matrix.RegionsTest do
       # Every position should have a valid region
       for row <- 0..(size - 1), col <- 0..(size - 1) do
         region = Map.fetch!(map, {row, col})
-        assert region in [:finder_eye, :finder_inner, :finder_outer,
-                          :separator, :alignment, :timing, :data]
+
+        assert region in [
+                 :finder_eye,
+                 :finder_inner,
+                 :finder_outer,
+                 :separator,
+                 :alignment,
+                 :timing,
+                 :data
+               ]
       end
     end
 

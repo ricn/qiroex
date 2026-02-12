@@ -10,9 +10,12 @@ defmodule Qiroex.ErrorCorrection.BCH do
 
   alias Qiroex.Spec
 
-  @format_generator Spec.format_generator()   # 0b10100110111 (degree 10)
-  @format_mask Spec.format_mask()              # 0b101010000010010
-  @version_generator Spec.version_generator()  # 0b1111100100101 (degree 12)
+  # 0b10100110111 (degree 10)
+  @format_generator Spec.format_generator()
+  # 0b101010000010010
+  @format_mask Spec.format_mask()
+  # 0b1111100100101 (degree 12)
+  @version_generator Spec.version_generator()
 
   @doc """
   Encodes format information (EC level + mask pattern) into a 15-bit BCH-encoded value.
@@ -103,6 +106,7 @@ defmodule Qiroex.ErrorCorrection.BCH do
   end
 
   defp bit_length(0), do: 0
+
   defp bit_length(n) when n > 0 do
     :math.log2(n) |> floor() |> Kernel.+(1)
   end

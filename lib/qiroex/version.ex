@@ -20,7 +20,8 @@ defmodule Qiroex.Version do
   ## Returns
     `{:ok, version}` or `{:error, reason}`
   """
-  @spec select(binary(), Spec.ec_level(), Spec.mode() | :auto) :: {:ok, Spec.version()} | {:error, String.t()}
+  @spec select(binary(), Spec.ec_level(), Spec.mode() | :auto) ::
+          {:ok, Spec.version()} | {:error, String.t()}
   def select(data, ec_level, mode \\ :auto) do
     actual_mode = if mode == :auto, do: Mode.detect(data), else: mode
     char_count = data_length(data, actual_mode)
@@ -28,7 +29,9 @@ defmodule Qiroex.Version do
     case Enum.find(1..40, fn v -> Spec.capacity(v, ec_level, actual_mode) >= char_count end) do
       nil ->
         max_cap = Spec.capacity(40, ec_level, actual_mode)
-        {:error, "Data too large: #{char_count} #{actual_mode} characters exceeds maximum capacity of #{max_cap} at EC level #{ec_level}"}
+
+        {:error,
+         "Data too large: #{char_count} #{actual_mode} characters exceeds maximum capacity of #{max_cap} at EC level #{ec_level}"}
 
       version ->
         {:ok, version}

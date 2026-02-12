@@ -10,7 +10,8 @@ defmodule Qiroex.Encoder.ByteTest do
     end
 
     test "encodes UTF-8 bytes" do
-      data = "é"  # 2 bytes in UTF-8
+      # 2 bytes in UTF-8
+      data = "é"
       assert Byte.encode(data) == data
       assert byte_size(Byte.encode(data)) == 2
     end

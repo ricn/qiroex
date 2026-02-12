@@ -172,8 +172,7 @@ defmodule Qiroex.Validate do
         :ok
 
       s ->
-        {:error,
-         "invalid module_size: #{inspect(s)}. Must be a positive integer"}
+        {:error, "invalid module_size: #{inspect(s)}. Must be a positive integer"}
     end
   end
 
@@ -188,8 +187,7 @@ defmodule Qiroex.Validate do
         :ok
 
       q ->
-        {:error,
-         "invalid quiet_zone: #{inspect(q)}. Must be a non-negative integer"}
+        {:error, "invalid quiet_zone: #{inspect(q)}. Must be a non-negative integer"}
     end
   end
 

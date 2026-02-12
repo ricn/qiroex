@@ -49,11 +49,15 @@ defmodule Qiroex.Render.SVG.StyledTest do
 
   describe "finder pattern styling" do
     test "custom finder colors appear in SVG", %{matrix: matrix} do
-      style = Style.new(finder: %{
-        outer: "#1a5276",
-        inner: "#d5e8f0",
-        eye: "#e74c3c"
-      })
+      style =
+        Style.new(
+          finder: %{
+            outer: "#1a5276",
+            inner: "#d5e8f0",
+            eye: "#e74c3c"
+          }
+        )
+
       svg = SVG.render(matrix, style: style)
 
       assert String.contains?(svg, "#1a5276")
@@ -81,11 +85,15 @@ defmodule Qiroex.Render.SVG.StyledTest do
 
   describe "gradient fills" do
     test "linear gradient adds <defs> and <linearGradient>", %{matrix: matrix} do
-      style = Style.new(gradient: %{
-        type: :linear,
-        start_color: "#000000",
-        end_color: "#3498db"
-      })
+      style =
+        Style.new(
+          gradient: %{
+            type: :linear,
+            start_color: "#000000",
+            end_color: "#3498db"
+          }
+        )
+
       svg = SVG.render(matrix, style: style)
 
       assert String.contains?(svg, "<defs>")
@@ -97,11 +105,15 @@ defmodule Qiroex.Render.SVG.StyledTest do
     end
 
     test "radial gradient adds <radialGradient>", %{matrix: matrix} do
-      style = Style.new(gradient: %{
-        type: :radial,
-        start_color: "#ff0000",
-        end_color: "#0000ff"
-      })
+      style =
+        Style.new(
+          gradient: %{
+            type: :radial,
+            start_color: "#ff0000",
+            end_color: "#0000ff"
+          }
+        )
+
       svg = SVG.render(matrix, style: style)
 
       assert String.contains?(svg, "<radialGradient")
@@ -110,12 +122,16 @@ defmodule Qiroex.Render.SVG.StyledTest do
     end
 
     test "gradient with custom angle sets direction", %{matrix: matrix} do
-      style = Style.new(gradient: %{
-        type: :linear,
-        start_color: "#000",
-        end_color: "#fff",
-        angle: 90
-      })
+      style =
+        Style.new(
+          gradient: %{
+            type: :linear,
+            start_color: "#000",
+            end_color: "#fff",
+            angle: 90
+          }
+        )
+
       svg = SVG.render(matrix, style: style)
 
       assert String.contains?(svg, "<linearGradient")
@@ -124,10 +140,12 @@ defmodule Qiroex.Render.SVG.StyledTest do
     end
 
     test "gradient + finder colors: finders use their own colors", %{matrix: matrix} do
-      style = Style.new(
-        gradient: %{type: :linear, start_color: "#000", end_color: "#3498db"},
-        finder: %{eye: "#e74c3c", outer: "#1a5276", inner: "#ffffff"}
-      )
+      style =
+        Style.new(
+          gradient: %{type: :linear, start_color: "#000", end_color: "#3498db"},
+          finder: %{eye: "#e74c3c", outer: "#1a5276", inner: "#ffffff"}
+        )
+
       svg = SVG.render(matrix, style: style)
 
       # Gradient for data modules
@@ -159,10 +177,12 @@ defmodule Qiroex.Render.SVG.StyledTest do
 
   describe "combined styling" do
     test "circle shape with finder colors", %{matrix: matrix} do
-      style = Style.new(
-        module_shape: :circle,
-        finder: %{outer: "#2c3e50", eye: "#e74c3c"}
-      )
+      style =
+        Style.new(
+          module_shape: :circle,
+          finder: %{outer: "#2c3e50", eye: "#e74c3c"}
+        )
+
       svg = SVG.render(matrix, style: style)
 
       # Data modules as circles
@@ -173,11 +193,13 @@ defmodule Qiroex.Render.SVG.StyledTest do
     end
 
     test "rounded shape with gradient", %{matrix: matrix} do
-      style = Style.new(
-        module_shape: :rounded,
-        module_radius: 0.4,
-        gradient: %{type: :linear, start_color: "#1a1a2e", end_color: "#16213e"}
-      )
+      style =
+        Style.new(
+          module_shape: :rounded,
+          module_radius: 0.4,
+          gradient: %{type: :linear, start_color: "#1a1a2e", end_color: "#16213e"}
+        )
+
       svg = SVG.render(matrix, style: style)
 
       assert String.contains?(svg, "rx=")

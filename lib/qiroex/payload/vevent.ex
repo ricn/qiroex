@@ -64,7 +64,8 @@ defmodule Qiroex.Payload.VEvent do
     :ok
   end
 
-  defp validate_datetime(_), do: {:error, "start must be a DateTime, NaiveDateTime, or formatted string"}
+  defp validate_datetime(_),
+    do: {:error, "start must be a DateTime, NaiveDateTime, or formatted string"}
 
   defp format_datetime(%DateTime{} = dt) do
     Calendar.strftime(dt, "%Y%m%dT%H%M%SZ")

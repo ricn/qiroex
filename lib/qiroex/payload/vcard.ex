@@ -84,7 +84,9 @@ defmodule Qiroex.Payload.VCard do
     country = Keyword.get(opts, :country)
 
     if Enum.any?([street, city, state, zip, country], & &1) do
-      addr = "ADR;TYPE=HOME:;;#{street || ""};#{city || ""};#{state || ""};#{zip || ""};#{country || ""}"
+      addr =
+        "ADR;TYPE=HOME:;;#{street || ""};#{city || ""};#{state || ""};#{zip || ""};#{country || ""}"
+
       lines ++ [addr]
     else
       lines

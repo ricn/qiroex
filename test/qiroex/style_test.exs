@@ -113,7 +113,9 @@ defmodule Qiroex.StyleTest do
     end
 
     test "gradient is not default" do
-      refute Style.default?(Style.new(gradient: %{type: :linear, start_color: "#000", end_color: "#fff"}))
+      refute Style.default?(
+               Style.new(gradient: %{type: :linear, start_color: "#000", end_color: "#fff"})
+             )
     end
   end
 

@@ -92,6 +92,7 @@ defmodule Qiroex.Encoder.Mode do
 
   # Merge small segments into adjacent segments when beneficial
   defp merge_small_segments(groups, _version) when length(groups) <= 1, do: groups
+
   defp merge_small_segments(groups, version) do
     # Mode switch overhead: 4 bits mode indicator + char count indicator bits
     # Try merging adjacent segments and see if it reduces total bit count
@@ -107,10 +108,12 @@ defmodule Qiroex.Encoder.Mode do
 
   defp do_merge([], _version), do: []
   defp do_merge([single], _version), do: [single]
+
   defp do_merge([{mode1, chars1}, {mode2, chars2} | rest], version) do
     # Calculate cost of keeping separate vs merging
-    separate_cost = segment_bits(mode1, length(chars1), version) +
-                    segment_bits(mode2, length(chars2), version)
+    separate_cost =
+      segment_bits(mode1, length(chars1), version) +
+        segment_bits(mode2, length(chars2), version)
 
     # Merged mode must accommodate both character sets
     merged_mode = broader_mode(mode1, mode2)
@@ -140,11 +143,14 @@ defmodule Qiroex.Encoder.Mode do
       case mode do
         :numeric ->
           full_groups = div(char_count, 3) * 10
-          remainder = case rem(char_count, 3) do
-            0 -> 0
-            1 -> 4
-            2 -> 7
-          end
+
+          remainder =
+            case rem(char_count, 3) do
+              0 -> 0
+              1 -> 4
+              2 -> 7
+            end
+
           full_groups + remainder
 
         :alphanumeric ->

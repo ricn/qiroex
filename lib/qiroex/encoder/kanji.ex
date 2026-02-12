@@ -23,6 +23,7 @@ defmodule Qiroex.Encoder.Kanji do
   end
 
   defp encode_bytes(<<>>, acc), do: acc
+
   defp encode_bytes(<<high, low, rest::binary>>, acc) do
     code = high * 256 + low
 
@@ -64,10 +65,13 @@ defmodule Qiroex.Encoder.Kanji do
   end
 
   defp valid_sjis?(<<>>), do: true
+
   defp valid_sjis?(<<high, low, rest::binary>>) do
     code = high * 256 + low
+
     ((code >= 0x8140 and code <= 0x9FFC) or (code >= 0xE040 and code <= 0xEBBF)) and
       valid_sjis?(rest)
   end
+
   defp valid_sjis?(_), do: false
 end

@@ -64,7 +64,8 @@ defmodule Qiroex.MatrixTest do
       matrix = Matrix.new(1)
       list = Matrix.to_list(matrix, 4)
 
-      expected_size = 21 + 2 * 4  # 29
+      # 29
+      expected_size = 21 + 2 * 4
       assert length(list) == expected_size
       assert length(hd(list)) == expected_size
     end

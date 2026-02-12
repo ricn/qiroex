@@ -20,11 +20,13 @@ defmodule Qiroex.Payload.BitcoinTest do
     end
 
     test "with label and message" do
-      {:ok, payload} = Bitcoin.encode(
-        address: "1abc",
-        label: "Donation",
-        message: "Thank you!"
-      )
+      {:ok, payload} =
+        Bitcoin.encode(
+          address: "1abc",
+          label: "Donation",
+          message: "Thank you!"
+        )
+
       assert String.contains?(payload, "label=Donation")
       assert String.contains?(payload, "message=Thank%20you!")
     end

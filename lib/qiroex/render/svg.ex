@@ -64,8 +64,14 @@ defmodule Qiroex.Render.SVG do
   end
 
   defp build_iolist(matrix, config) do
-    %{module_size: mod, quiet_zone: qz, dark_color: dark, light_color: light,
-      style: style, logo: logo} = config
+    %{
+      module_size: mod,
+      quiet_zone: qz,
+      dark_color: dark,
+      light_color: light,
+      style: style,
+      logo: logo
+    } = config
 
     total_modules = matrix.size + 2 * qz
     total_px = total_modules * mod
@@ -86,7 +92,18 @@ defmodule Qiroex.Render.SVG do
       end
 
     if styled?(style) do
-      build_styled_iolist(matrix, mod, qz, dark, light, style, width, height, cleared, logo_fragment)
+      build_styled_iolist(
+        matrix,
+        mod,
+        qz,
+        dark,
+        light,
+        style,
+        width,
+        height,
+        cleared,
+        logo_fragment
+      )
     else
       build_simple_iolist(matrix, mod, qz, dark, light, width, height, cleared, logo_fragment)
     end
@@ -103,7 +120,11 @@ defmodule Qiroex.Render.SVG do
     [
       svg_header(width, height),
       background_rect(light),
-      ~s(<path d="), path_data, ~s(" fill="), dark, ~s("/>\n),
+      ~s(<path d="),
+      path_data,
+      ~s(" fill="),
+      dark,
+      ~s("/>\n),
       logo_fragment,
       ~s(</svg>\n)
     ]
@@ -128,12 +149,24 @@ defmodule Qiroex.Render.SVG do
 
   # === Styled Rendering ===
 
-  defp build_styled_iolist(matrix, mod, qz, dark, light, style, width, height, cleared, logo_fragment) do
+  defp build_styled_iolist(
+         matrix,
+         mod,
+         qz,
+         dark,
+         light,
+         style,
+         width,
+         height,
+         cleared,
+         logo_fragment
+       ) do
     region_map = Regions.build_map(matrix)
     defs = build_defs(style, width, height)
 
     # Classify dark modules by region and render with appropriate style
-    module_elements = build_styled_modules(matrix, region_map, mod, qz, dark, light, style, cleared)
+    module_elements =
+      build_styled_modules(matrix, region_map, mod, qz, dark, light, style, cleared)
 
     [
       svg_header(width, height),
@@ -236,8 +269,21 @@ defmodule Qiroex.Render.SVG do
     ys = Integer.to_string(y)
     ms = Integer.to_string(mod)
 
-    [~s(<rect x="), xs, ~s(" y="), ys, ~s(" width="), ms, ~s(" height="), ms,
-     ~s(" fill="), ?", fill, ?", ~s(/>\n)]
+    [
+      ~s(<rect x="),
+      xs,
+      ~s(" y="),
+      ys,
+      ~s(" width="),
+      ms,
+      ~s(" height="),
+      ms,
+      ~s(" fill="),
+      ?",
+      fill,
+      ?",
+      ~s(/>\n)
+    ]
   end
 
   defp render_rounded(x, y, mod, fill, radius_fraction) do
@@ -246,9 +292,29 @@ defmodule Qiroex.Render.SVG do
     ms = Integer.to_string(mod)
     r = Float.to_string(mod * radius_fraction)
 
-    [~s(<rect x="), xs, ~s(" y="), ys, ~s(" width="), ms, ~s(" height="), ms,
-     ~s(" rx="), ?", r, ?", ~s(" ry="), ?", r, ?",
-     ~s(" fill="), ?", fill, ?", ~s(/>\n)]
+    [
+      ~s(<rect x="),
+      xs,
+      ~s(" y="),
+      ys,
+      ~s(" width="),
+      ms,
+      ~s(" height="),
+      ms,
+      ~s(" rx="),
+      ?",
+      r,
+      ?",
+      ~s(" ry="),
+      ?",
+      r,
+      ?",
+      ~s(" fill="),
+      ?",
+      fill,
+      ?",
+      ~s(/>\n)
+    ]
   end
 
   defp render_circle(x, y, mod, fill) do
@@ -257,8 +323,7 @@ defmodule Qiroex.Render.SVG do
     cy = Float.to_string(y + half)
     r = Float.to_string(half * 0.85)
 
-    [~s(<circle cx="), cx, ~s(" cy="), cy, ~s(" r="), r,
-     ~s(" fill="), ?", fill, ?", ~s(/>\n)]
+    [~s(<circle cx="), cx, ~s(" cy="), cy, ~s(" r="), r, ~s(" fill="), ?", fill, ?", ~s(/>\n)]
   end
 
   defp render_diamond(x, y, mod, fill) do
@@ -273,12 +338,29 @@ defmodule Qiroex.Render.SVG do
     left_x = Float.to_string(x + 0.0)
     left_y = Float.to_string(y + half)
 
-    [~s(<polygon points="),
-     top_x, ?,, top_y, ?\s,
-     right_x, ?,, right_y, ?\s,
-     bottom_x, ?,, bottom_y, ?\s,
-     left_x, ?,, left_y,
-     ~s(" fill="), ?", fill, ?", ~s(/>\n)]
+    [
+      ~s(<polygon points="),
+      top_x,
+      ?,,
+      top_y,
+      ?\s,
+      right_x,
+      ?,,
+      right_y,
+      ?\s,
+      bottom_x,
+      ?,,
+      bottom_y,
+      ?\s,
+      left_x,
+      ?,,
+      left_y,
+      ~s(" fill="),
+      ?",
+      fill,
+      ?",
+      ~s(/>\n)
+    ]
   end
 
   # === Gradient Defs ===
@@ -292,10 +374,22 @@ defmodule Qiroex.Render.SVG do
     [
       ~s(<defs>\n),
       ~s(<linearGradient id="qr-gradient" ),
-      ~s(x1="), Float.to_string(x1), ~s(" y1="), Float.to_string(y1), ~s(" ),
-      ~s(x2="), Float.to_string(x2), ~s(" y2="), Float.to_string(y2), ~s(">\n),
-      ~s(<stop offset="0%" stop-color="), g.start_color, ~s("/>\n),
-      ~s(<stop offset="100%" stop-color="), g.end_color, ~s("/>\n),
+      ~s(x1="),
+      Float.to_string(x1),
+      ~s(" y1="),
+      Float.to_string(y1),
+      ~s(" ),
+      ~s(x2="),
+      Float.to_string(x2),
+      ~s(" y2="),
+      Float.to_string(y2),
+      ~s(">\n),
+      ~s(<stop offset="0%" stop-color="),
+      g.start_color,
+      ~s("/>\n),
+      ~s(<stop offset="100%" stop-color="),
+      g.end_color,
+      ~s("/>\n),
       ~s(</linearGradient>\n),
       ~s(</defs>\n)
     ]
@@ -305,8 +399,12 @@ defmodule Qiroex.Render.SVG do
     [
       ~s(<defs>\n),
       ~s(<radialGradient id="qr-gradient" cx="50%" cy="50%" r="50%">\n),
-      ~s(<stop offset="0%" stop-color="), g.start_color, ~s("/>\n),
-      ~s(<stop offset="100%" stop-color="), g.end_color, ~s("/>\n),
+      ~s(<stop offset="0%" stop-color="),
+      g.start_color,
+      ~s("/>\n),
+      ~s(<stop offset="100%" stop-color="),
+      g.end_color,
+      ~s("/>\n),
       ~s(</radialGradient>\n),
       ~s(</defs>\n)
     ]
@@ -339,9 +437,17 @@ defmodule Qiroex.Render.SVG do
       ~s(<?xml version="1.0" encoding="UTF-8"?>\n),
       ~s(<svg xmlns="http://www.w3.org/2000/svg" ),
       ~s(version="1.1" ),
-      ~s(width="), width, ~s(" ),
-      ~s(height="), height, ~s(" ),
-      ~s(viewBox="0 0 ), width, ~s( ), height, ~s(">\n)
+      ~s(width="),
+      width,
+      ~s(" ),
+      ~s(height="),
+      height,
+      ~s(" ),
+      ~s(viewBox="0 0 ),
+      width,
+      ~s( ),
+      height,
+      ~s(">\n)
     ]
   end
 

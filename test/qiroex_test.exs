@@ -284,9 +284,10 @@ defmodule QiroexTest do
 
   describe "print/2" do
     test "prints to stdout" do
-      output = ExUnit.CaptureIO.capture_io(fn ->
-        Qiroex.print("HELLO")
-      end)
+      output =
+        ExUnit.CaptureIO.capture_io(fn ->
+          Qiroex.print("HELLO")
+        end)
 
       assert String.length(output) > 0
     end
@@ -306,7 +307,9 @@ defmodule QiroexTest do
     end
 
     test "generates vCard QR in terminal format" do
-      assert {:ok, str} = Qiroex.payload(:vcard, [first_name: "Jane", last_name: "Doe"], :terminal)
+      assert {:ok, str} =
+               Qiroex.payload(:vcard, [first_name: "Jane", last_name: "Doe"], :terminal)
+
       assert is_binary(str)
     end
 
@@ -377,7 +380,8 @@ defmodule QiroexTest do
       {:ok, qr} = Qiroex.encode("test", version: 10)
       info = Qiroex.info(qr)
       assert info.version == 10
-      assert info.modules == 57  # version 10 = 4*10+17 = 57
+      # version 10 = 4*10+17 = 57
+      assert info.modules == 57
     end
   end
 

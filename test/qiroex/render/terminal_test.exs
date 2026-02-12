@@ -22,8 +22,8 @@ defmodule Qiroex.Render.TerminalTest do
       # Should contain at least some of these characters
       has_blocks =
         String.contains?(result, "█") or
-        String.contains?(result, "▀") or
-        String.contains?(result, "▄")
+          String.contains?(result, "▀") or
+          String.contains?(result, "▄")
 
       assert has_blocks
     end
@@ -100,9 +100,10 @@ defmodule Qiroex.Render.TerminalTest do
   describe "print/2" do
     test "prints to stdout without error", %{matrix: matrix} do
       # Capture IO to prevent actual terminal output in tests
-      output = ExUnit.CaptureIO.capture_io(fn ->
-        Terminal.print(matrix, quiet_zone: 1)
-      end)
+      output =
+        ExUnit.CaptureIO.capture_io(fn ->
+          Terminal.print(matrix, quiet_zone: 1)
+        end)
 
       assert String.length(output) > 0
     end

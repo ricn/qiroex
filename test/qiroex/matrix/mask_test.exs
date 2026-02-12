@@ -86,13 +86,14 @@ defmodule Qiroex.Matrix.MaskTest do
 
     test "applying same mask twice restores original" do
       matrix = Builder.build(1)
-      bits = Enum.map(0..207, fn i -> rem(i, 3) == 0 && 1 || 0 end)
+      bits = Enum.map(0..207, fn i -> (rem(i, 3) == 0 && 1) || 0 end)
       matrix = DataPlacer.place(matrix, bits)
 
       double_masked = matrix |> Mask.apply_mask(3) |> Mask.apply_mask(3)
 
       # Data modules should be restored
       positions = DataPlacer.data_module_positions(matrix)
+
       for pos <- positions do
         assert Matrix.get(double_masked, pos) == Matrix.get(matrix, pos),
                "Position #{inspect(pos)} should be restored after double mask"
@@ -153,6 +154,7 @@ defmodule Qiroex.Matrix.MaskTest do
 
       for mask_num <- 0..7 do
         penalty = Mask.apply_mask(matrix, mask_num) |> Mask.evaluate_penalty()
+
         assert best_penalty <= penalty,
                "Mask #{best_mask} (penalty #{best_penalty}) should be <= mask #{mask_num} (penalty #{penalty})"
       end

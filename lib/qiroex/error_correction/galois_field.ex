@@ -41,6 +41,7 @@ defmodule Qiroex.ErrorCorrection.GaloisField do
   @doc "Returns the discrete log base α of value. Value must be 1..255."
   @spec log(non_neg_integer()) :: non_neg_integer()
   def log(0), do: raise(ArgumentError, "log(0) is undefined in GF(2^8)")
+
   def log(value) when value >= 1 and value <= 255 do
     Map.fetch!(@log_table, value)
   end
@@ -56,6 +57,7 @@ defmodule Qiroex.ErrorCorrection.GaloisField do
   @spec multiply(non_neg_integer(), non_neg_integer()) :: non_neg_integer()
   def multiply(0, _), do: 0
   def multiply(_, 0), do: 0
+
   def multiply(a, b) do
     exp(Map.fetch!(@log_table, a) + Map.fetch!(@log_table, b))
   end
@@ -63,6 +65,7 @@ defmodule Qiroex.ErrorCorrection.GaloisField do
   @doc "Returns the multiplicative inverse of a in GF(2⁸)."
   @spec inverse(non_neg_integer()) :: non_neg_integer()
   def inverse(0), do: raise(ArgumentError, "inverse(0) is undefined in GF(2^8)")
+
   def inverse(a) do
     exp(255 - Map.fetch!(@log_table, a))
   end
@@ -72,6 +75,7 @@ defmodule Qiroex.ErrorCorrection.GaloisField do
   def power(0, 0), do: raise(ArgumentError, "0^0 is undefined")
   def power(0, _), do: 0
   def power(_, 0), do: 1
+
   def power(a, n) do
     exp(rem(Map.fetch!(@log_table, a) * n, 255))
   end

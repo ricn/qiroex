@@ -51,6 +51,7 @@ defmodule Qiroex.Matrix.BuilderTest do
       for r <- 0..7 do
         assert Matrix.get(matrix, {r, 7}) == :light, "TL right separator (#{r},7)"
       end
+
       # Bottom separator of TL finder: row 7, cols 0-7
       for c <- 0..7 do
         assert Matrix.get(matrix, {7, c}) == :light, "TL bottom separator (7,#{c})"
@@ -62,6 +63,7 @@ defmodule Qiroex.Matrix.BuilderTest do
       # Timing pattern on row 6, between columns 8 and 12 (between separators)
       for col <- 8..12 do
         expected = if rem(col, 2) == 0, do: :dark, else: :light
+
         assert Matrix.get(matrix, {6, col}) == expected,
                "Timing row 6, col #{col} should be #{expected}"
       end
@@ -69,8 +71,10 @@ defmodule Qiroex.Matrix.BuilderTest do
 
     test "timing pattern alternates on col 6 for V1" do
       matrix = Builder.build(1)
+
       for row <- 8..12 do
         expected = if rem(row, 2) == 0, do: :dark, else: :light
+
         assert Matrix.get(matrix, {row, 6}) == expected,
                "Timing col 6, row #{row} should be #{expected}"
       end
@@ -117,6 +121,7 @@ defmodule Qiroex.Matrix.BuilderTest do
 
     test "all positions are either reserved or nil after build" do
       matrix = Builder.build(1)
+
       for r <- 0..20, c <- 0..20 do
         if Matrix.reserved?(matrix, {r, c}) do
           assert Matrix.get(matrix, {r, c}) in [:dark, :light],

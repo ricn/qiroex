@@ -95,10 +95,13 @@ defmodule Qiroex.Render.Terminal do
     lines =
       if rem(total_rows, 2) == 1 do
         last_row = List.last(rows)
-        last_line = Enum.map(last_row, fn
-          1 -> @upper_half
-          0 -> " "
-        end)
+
+        last_line =
+          Enum.map(last_row, fn
+            1 -> @upper_half
+            0 -> " "
+          end)
+
         lines ++ [last_line]
       else
         lines

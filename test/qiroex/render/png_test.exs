@@ -38,8 +38,7 @@ defmodule Qiroex.Render.PNGTest do
       # Default: V1(21) + 2*4 quiet zone = 29, × 10 = 290 pixels
       expected_px = (matrix.size + 8) * 10
 
-      <<@png_signature, 13::32, "IHDR",
-        width::32, height::32, _rest::binary>> = png
+      <<@png_signature, 13::32, "IHDR", width::32, height::32, _rest::binary>> = png
 
       assert width == expected_px
       assert height == expected_px
@@ -50,8 +49,7 @@ defmodule Qiroex.Render.PNGTest do
 
       expected_px = (matrix.size + 8) * 5
 
-      <<@png_signature, 13::32, "IHDR",
-        width::32, height::32, _rest::binary>> = png
+      <<@png_signature, 13::32, "IHDR", width::32, height::32, _rest::binary>> = png
 
       assert width == expected_px
       assert height == expected_px
@@ -62,8 +60,7 @@ defmodule Qiroex.Render.PNGTest do
 
       expected_px = (matrix.size + 4) * 10
 
-      <<@png_signature, 13::32, "IHDR",
-        width::32, height::32, _rest::binary>> = png
+      <<@png_signature, 13::32, "IHDR", width::32, height::32, _rest::binary>> = png
 
       assert width == expected_px
       assert height == expected_px
@@ -97,8 +94,8 @@ defmodule Qiroex.Render.PNGTest do
 
       {offset, _} = plte_idx
       # 4 bytes before "PLTE" is the length
-      <<_before::binary-size(offset - 4), 6::32, "PLTE",
-        lr::8, lg::8, lb::8, dr::8, dg::8, db::8, _rest::binary>> = png
+      <<_before::binary-size(offset - 4), 6::32, "PLTE", lr::8, lg::8, lb::8, dr::8, dg::8, db::8,
+        _rest::binary>> = png
 
       # Default: light = white, dark = black
       assert {lr, lg, lb} == {255, 255, 255}
@@ -109,8 +106,9 @@ defmodule Qiroex.Render.PNGTest do
       png = PNG.render(matrix, dark_color: {255, 0, 0}, light_color: {0, 255, 0})
 
       {offset, _} = :binary.match(png, "PLTE")
-      <<_before::binary-size(offset - 4), 6::32, "PLTE",
-        lr::8, lg::8, lb::8, dr::8, dg::8, db::8, _rest::binary>> = png
+
+      <<_before::binary-size(offset - 4), 6::32, "PLTE", lr::8, lg::8, lb::8, dr::8, dg::8, db::8,
+        _rest::binary>> = png
 
       assert {lr, lg, lb} == {0, 255, 0}
       assert {dr, dg, db} == {255, 0, 0}
@@ -129,11 +127,12 @@ defmodule Qiroex.Render.PNGTest do
     test "uses indexed color type (3)", %{matrix: matrix} do
       png = PNG.render(matrix)
 
-      <<@png_signature, 13::32, "IHDR",
-        _w::32, _h::32, bit_depth::8, color_type::8, _rest::binary>> = png
+      <<@png_signature, 13::32, "IHDR", _w::32, _h::32, bit_depth::8, color_type::8,
+        _rest::binary>> = png
 
       assert bit_depth == 8
-      assert color_type == 3  # indexed color
+      # indexed color
+      assert color_type == 3
     end
   end
 

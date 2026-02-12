@@ -218,9 +218,17 @@ defmodule Qiroex.Logo do
 
   defp render_bg_square(logo, geo) do
     [
-      ~s(<rect x="), to_s(geo.clear_x), ~s(" y="), to_s(geo.clear_y),
-      ~s(" width="), to_s(geo.clear_px), ~s(" height="), to_s(geo.clear_px),
-      ~s(" fill="), logo.background, ~s("/>\n)
+      ~s(<rect x="),
+      to_s(geo.clear_x),
+      ~s(" y="),
+      to_s(geo.clear_y),
+      ~s(" width="),
+      to_s(geo.clear_px),
+      ~s(" height="),
+      to_s(geo.clear_px),
+      ~s(" fill="),
+      logo.background,
+      ~s("/>\n)
     ]
   end
 
@@ -228,10 +236,21 @@ defmodule Qiroex.Logo do
     r = to_s(logo.border_radius)
 
     [
-      ~s(<rect x="), to_s(geo.clear_x), ~s(" y="), to_s(geo.clear_y),
-      ~s(" width="), to_s(geo.clear_px), ~s(" height="), to_s(geo.clear_px),
-      ~s(" rx="), r, ~s(" ry="), r,
-      ~s(" fill="), logo.background, ~s("/>\n)
+      ~s(<rect x="),
+      to_s(geo.clear_x),
+      ~s(" y="),
+      to_s(geo.clear_y),
+      ~s(" width="),
+      to_s(geo.clear_px),
+      ~s(" height="),
+      to_s(geo.clear_px),
+      ~s(" rx="),
+      r,
+      ~s(" ry="),
+      r,
+      ~s(" fill="),
+      logo.background,
+      ~s("/>\n)
     ]
   end
 
@@ -241,8 +260,15 @@ defmodule Qiroex.Logo do
     r = to_s(div(geo.clear_px, 2))
 
     [
-      ~s(<circle cx="), cx, ~s(" cy="), cy, ~s(" r="), r,
-      ~s(" fill="), logo.background, ~s("/>\n)
+      ~s(<circle cx="),
+      cx,
+      ~s(" cy="),
+      cy,
+      ~s(" r="),
+      r,
+      ~s(" fill="),
+      logo.background,
+      ~s("/>\n)
     ]
   end
 
@@ -252,10 +278,17 @@ defmodule Qiroex.Logo do
     # Embed the logo SVG using <foreignObject> or nested <svg>
     # Using nested <svg> is simpler and more broadly supported
     [
-      ~s(<svg x="), to_s(geo.logo_x), ~s(" y="), to_s(geo.logo_y),
-      ~s(" width="), to_s(geo.logo_px), ~s(" height="), to_s(geo.logo_px),
+      ~s(<svg x="),
+      to_s(geo.logo_x),
+      ~s(" y="),
+      to_s(geo.logo_y),
+      ~s(" width="),
+      to_s(geo.logo_px),
+      ~s(" height="),
+      to_s(geo.logo_px),
       ~s(">\n),
-      logo.svg, ~s(\n),
+      logo.svg,
+      ~s(\n),
       ~s(</svg>\n)
     ]
   end

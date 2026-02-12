@@ -14,11 +14,15 @@ defmodule Qiroex.Render.PNG.StyledTest do
 
   describe "styled PNG rendering" do
     test "valid PNG with finder colors", %{matrix: matrix} do
-      style = Style.new(finder: %{
-        outer: "#1a5276",
-        inner: "#d5e8f0",
-        eye: "#e74c3c"
-      })
+      style =
+        Style.new(
+          finder: %{
+            outer: "#1a5276",
+            inner: "#d5e8f0",
+            eye: "#e74c3c"
+          }
+        )
+
       png = PNG.render(matrix, style: style)
 
       assert is_binary(png)
@@ -26,11 +30,15 @@ defmodule Qiroex.Render.PNG.StyledTest do
     end
 
     test "PLTE chunk has 5 entries with finder styling", %{matrix: matrix} do
-      style = Style.new(finder: %{
-        outer: "#ff0000",
-        inner: "#00ff00",
-        eye: "#0000ff"
-      })
+      style =
+        Style.new(
+          finder: %{
+            outer: "#ff0000",
+            inner: "#00ff00",
+            eye: "#0000ff"
+          }
+        )
+
       png = PNG.render(matrix, style: style)
 
       # Find PLTE chunk: 5 colors × 3 bytes = 15 bytes
@@ -50,8 +58,7 @@ defmodule Qiroex.Render.PNG.StyledTest do
 
       expected_px = (matrix.size + 8) * 5
 
-      <<@png_signature, 13::32, "IHDR",
-        width::32, height::32, _rest::binary>> = png
+      <<@png_signature, 13::32, "IHDR", width::32, height::32, _rest::binary>> = png
 
       assert width == expected_px
       assert height == expected_px

@@ -25,11 +25,13 @@ defmodule Qiroex.Encoder.SegmentTest do
       segments = [{:byte, "A"}]
       codewords = Segment.encode(segments, 1, :m)
 
-      assert length(codewords) == 16  # V1-M has 16 data codewords
+      # V1-M has 16 data codewords
+      assert length(codewords) == 16
 
       # After mode(4b)+count(8b)+data(8b)+terminator(4b) = 24 bits = 3 bytes
       # Check that the remaining padding bytes are 0xEC and 0x11
-      padding_start = 3  # First 3 bytes have actual data
+      # First 3 bytes have actual data
+      padding_start = 3
       padding = Enum.drop(codewords, padding_start)
       assert Enum.all?(padding, &(&1 in [0xEC, 0x11]))
     end
@@ -39,6 +41,7 @@ defmodule Qiroex.Encoder.SegmentTest do
         segments = [{:byte, "test"}]
         codewords = Segment.encode(segments, 1, ec)
         expected = Spec.total_data_codewords(1, ec)
+
         assert length(codewords) == expected,
                "V1-#{ec}: expected #{expected} codewords, got #{length(codewords)}"
       end

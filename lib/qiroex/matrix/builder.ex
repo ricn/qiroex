@@ -42,9 +42,12 @@ defmodule Qiroex.Matrix.Builder do
     size = matrix.size
 
     matrix
-    |> place_finder_pattern(0, 0)                    # Top-left
-    |> place_finder_pattern(0, size - 7)             # Top-right
-    |> place_finder_pattern(size - 7, 0)             # Bottom-left
+    # Top-left
+    |> place_finder_pattern(0, 0)
+    # Top-right
+    |> place_finder_pattern(0, size - 7)
+    # Bottom-left
+    |> place_finder_pattern(size - 7, 0)
   end
 
   defp place_finder_pattern(matrix, row_offset, col_offset) do
@@ -73,14 +76,20 @@ defmodule Qiroex.Matrix.Builder do
 
     matrix
     # Top-left separator (right and bottom of TL finder)
-    |> place_separator_line(7, 0, 8, :horizontal)  # bottom of TL
-    |> place_separator_line(0, 7, 8, :vertical)     # right of TL
+    # bottom of TL
+    |> place_separator_line(7, 0, 8, :horizontal)
+    # right of TL
+    |> place_separator_line(0, 7, 8, :vertical)
     # Top-right separator (left and bottom of TR finder)
-    |> place_separator_line(7, size - 8, 8, :horizontal)  # bottom of TR
-    |> place_separator_line(0, size - 8, 8, :vertical)     # left of TR
+    # bottom of TR
+    |> place_separator_line(7, size - 8, 8, :horizontal)
+    # left of TR
+    |> place_separator_line(0, size - 8, 8, :vertical)
     # Bottom-left separator (right and top of BL finder)
-    |> place_separator_line(size - 8, 0, 8, :horizontal)  # top of BL
-    |> place_separator_line(size - 8, 7, 8, :vertical)     # right of BL
+    # top of BL
+    |> place_separator_line(size - 8, 0, 8, :horizontal)
+    # right of BL
+    |> place_separator_line(size - 8, 7, 8, :vertical)
   end
 
   defp place_separator_line(matrix, row, col, count, :horizontal) do
@@ -119,11 +128,11 @@ defmodule Qiroex.Matrix.Builder do
     size = matrix.size
 
     # Top-left finder + separator: rows 0-8, cols 0-8
-    (row <= 8 and col <= 8) or
     # Top-right finder + separator: rows 0-8, cols (size-9) to (size-1)
-    (row <= 8 and col >= size - 9) or
     # Bottom-left finder + separator: rows (size-9) to (size-1), cols 0-8
-    (row >= size - 9 and col <= 8)
+    (row <= 8 and col <= 8) or
+      (row <= 8 and col >= size - 9) or
+      (row >= size - 9 and col <= 8)
   end
 
   defp place_alignment_pattern(matrix, center_row, center_col) do
@@ -151,8 +160,10 @@ defmodule Qiroex.Matrix.Builder do
       value = if rem(i, 2) == 0, do: :dark, else: :light
 
       mat
-      |> set_if_unset({6, i}, value)  # Horizontal timing (row 6)
-      |> set_if_unset({i, 6}, value)  # Vertical timing (col 6)
+      # Horizontal timing (row 6)
+      |> set_if_unset({6, i}, value)
+      # Vertical timing (col 6)
+      |> set_if_unset({i, 6}, value)
     end)
   end
 
@@ -204,7 +215,7 @@ defmodule Qiroex.Matrix.Builder do
     # Bit 7: row 8, col 8
     left_bottom = [{7, 8}, {8, 8}]
     # Bits 8-14: row 8, cols 7 down to 0 (skip col 6 = timing)
-    top = [{8, 7}] ++ (for i <- 5..0//-1, do: {8, i})
+    top = [{8, 7}] ++ for i <- 5..0//-1, do: {8, i}
 
     left_top ++ left_bottom ++ top
   end
@@ -223,6 +234,7 @@ defmodule Qiroex.Matrix.Builder do
   # 18-bit version info for V7+ in two 6×3 blocks
 
   defp reserve_version_areas(matrix, version) when version < 7, do: matrix
+
   defp reserve_version_areas(matrix, _version) do
     size = matrix.size
     positions = version_info_positions(size)
@@ -260,6 +272,7 @@ defmodule Qiroex.Matrix.Builder do
   # === Place Version Information ===
 
   defp place_version_info(%Matrix{version: version} = matrix) when version < 7, do: matrix
+
   defp place_version_info(%Matrix{version: version, size: size} = matrix) do
     bits = BCH.version_info_bits(version)
 

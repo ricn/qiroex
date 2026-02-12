@@ -13,15 +13,15 @@ defmodule Qiroex.QR do
   alias Qiroex.Matrix.{Builder, DataPlacer, Mask}
 
   @type t :: %__MODULE__{
-    data: binary(),
-    version: Spec.version(),
-    ec_level: Spec.ec_level(),
-    mask: non_neg_integer(),
-    mode: Spec.mode() | :auto,
-    segments: [{Spec.mode(), binary()}],
-    matrix: Matrix.t(),
-    codewords: list(non_neg_integer())
-  }
+          data: binary(),
+          version: Spec.version(),
+          ec_level: Spec.ec_level(),
+          mask: non_neg_integer(),
+          mode: Spec.mode() | :auto,
+          segments: [{Spec.mode(), binary()}],
+          matrix: Matrix.t(),
+          codewords: list(non_neg_integer())
+        }
 
   defstruct [:data, :version, :ec_level, :mask, :mode, :segments, :matrix, :codewords]
 
@@ -54,16 +54,17 @@ defmodule Qiroex.QR do
          matrix <- build_matrix(version, data_bits, ec_level, mask_opt) do
       {mask, final_matrix} = matrix
 
-      {:ok, %__MODULE__{
-        data: data,
-        version: version,
-        ec_level: ec_level,
-        mask: mask,
-        mode: detected_mode,
-        segments: segments,
-        matrix: final_matrix,
-        codewords: all_codewords
-      }}
+      {:ok,
+       %__MODULE__{
+         data: data,
+         version: version,
+         ec_level: ec_level,
+         mask: mask,
+         mode: detected_mode,
+         segments: segments,
+         matrix: final_matrix,
+         codewords: all_codewords
+       }}
     end
   end
 
@@ -89,12 +90,16 @@ defmodule Qiroex.QR do
   defp validate_data(_), do: {:error, "Data must be a binary string"}
 
   defp detect_mode(data, :auto), do: {:ok, Mode.detect(data)}
-  defp detect_mode(_data, mode) when mode in [:numeric, :alphanumeric, :byte, :kanji], do: {:ok, mode}
+
+  defp detect_mode(_data, mode) when mode in [:numeric, :alphanumeric, :byte, :kanji],
+    do: {:ok, mode}
+
   defp detect_mode(_, mode), do: {:error, "Invalid mode: #{inspect(mode)}"}
 
   defp resolve_version(data, ec_level, mode, :auto) do
     Version.select(data, ec_level, mode)
   end
+
   defp resolve_version(data, ec_level, mode, version) when is_integer(version) do
     if Version.fits?(data, version, ec_level, mode) do
       {:ok, version}
@@ -123,9 +128,10 @@ defmodule Qiroex.QR do
     blocks = split_into_blocks(data_codewords, groups)
 
     # Generate EC for each block
-    ec_blocks = Enum.map(blocks, fn block ->
-      ReedSolomon.encode(block, ec_per_block)
-    end)
+    ec_blocks =
+      Enum.map(blocks, fn block ->
+        ReedSolomon.encode(block, ec_per_block)
+      end)
 
     # Interleave data codewords
     interleaved_data = interleave(blocks)
@@ -140,7 +146,8 @@ defmodule Qiroex.QR do
   # Split data codewords into blocks according to group structure
   defp split_into_blocks(data_codewords, groups) do
     {blocks, _remaining} =
-      Enum.reduce(groups, {[], data_codewords}, fn {block_count, cw_per_block}, {acc, remaining} ->
+      Enum.reduce(groups, {[], data_codewords}, fn {block_count, cw_per_block},
+                                                   {acc, remaining} ->
         {new_blocks, rest} =
           Enum.reduce(1..block_count, {[], remaining}, fn _, {blk_acc, rem_data} ->
             {block, rest} = Enum.split(rem_data, cw_per_block)

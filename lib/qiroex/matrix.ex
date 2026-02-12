@@ -12,11 +12,11 @@ defmodule Qiroex.Matrix do
   @type position :: {non_neg_integer(), non_neg_integer()}
   @type value :: :dark | :light | nil
   @type t :: %__MODULE__{
-    size: non_neg_integer(),
-    version: non_neg_integer(),
-    modules: %{position() => value()},
-    reserved: MapSet.t(position())
-  }
+          size: non_neg_integer(),
+          version: non_neg_integer(),
+          modules: %{position() => value()},
+          reserved: MapSet.t(position())
+        }
 
   defstruct [:size, :version, modules: %{}, reserved: MapSet.new()]
 
@@ -36,9 +36,10 @@ defmodule Qiroex.Matrix do
   @doc "Sets a module value and marks the position as reserved."
   @spec set(t(), position(), value()) :: t()
   def set(%__MODULE__{} = matrix, pos, value) do
-    %{matrix |
-      modules: Map.put(matrix.modules, pos, value),
-      reserved: MapSet.put(matrix.reserved, pos)
+    %{
+      matrix
+      | modules: Map.put(matrix.modules, pos, value),
+        reserved: MapSet.put(matrix.reserved, pos)
     }
   end
 

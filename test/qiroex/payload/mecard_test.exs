@@ -10,33 +10,39 @@ defmodule Qiroex.Payload.MeCardTest do
     end
 
     test "with phone and email" do
-      {:ok, payload} = MeCard.encode(
-        name: "Doe,John",
-        phone: "+1234567890",
-        email: "john@example.com"
-      )
+      {:ok, payload} =
+        MeCard.encode(
+          name: "Doe,John",
+          phone: "+1234567890",
+          email: "john@example.com"
+        )
+
       assert String.contains?(payload, "TEL:+1234567890")
       assert String.contains?(payload, "EMAIL:john@example.com")
       assert String.ends_with?(payload, ";;")
     end
 
     test "with URL and address" do
-      {:ok, payload} = MeCard.encode(
-        name: "Doe,John",
-        url: "https://john.dev",
-        address: "123 Main St"
-      )
+      {:ok, payload} =
+        MeCard.encode(
+          name: "Doe,John",
+          url: "https://john.dev",
+          address: "123 Main St"
+        )
+
       assert String.contains?(payload, "URL:https\\://john.dev")
       assert String.contains?(payload, "ADR:123 Main St")
     end
 
     test "with note, birthday, and org" do
-      {:ok, payload} = MeCard.encode(
-        name: "Jane",
-        note: "Friend",
-        birthday: "19900101",
-        org: "Acme"
-      )
+      {:ok, payload} =
+        MeCard.encode(
+          name: "Jane",
+          note: "Friend",
+          birthday: "19900101",
+          org: "Acme"
+        )
+
       assert String.contains?(payload, "NOTE:Friend")
       assert String.contains?(payload, "BDAY:19900101")
       assert String.contains?(payload, "ORG:Acme")
