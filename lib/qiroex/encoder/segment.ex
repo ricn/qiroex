@@ -47,10 +47,14 @@ defmodule Qiroex.Encoder.Segment do
     remaining_bytes = total_data_codewords - current_bytes
 
     pad_bytes =
-      0..(remaining_bytes - 1)
-      |> Enum.map(fn i ->
-        if rem(i, 2) == 0, do: 0xEC, else: 0x11
-      end)
+      if remaining_bytes > 0 do
+        0..(remaining_bytes - 1)
+        |> Enum.map(fn i ->
+          if rem(i, 2) == 0, do: 0xEC, else: 0x11
+        end)
+      else
+        []
+      end
 
     bits =
       Enum.reduce(pad_bytes, bits, fn byte, acc ->
