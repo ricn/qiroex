@@ -194,4 +194,63 @@ defmodule Qiroex do
     {render_opts, encode_opts} = Keyword.split(opts, render_keys)
     {render_opts, encode_opts}
   end
+
+  # === Payload Helpers ===
+
+  @doc """
+  Encodes a payload and generates a QR code in one step.
+
+  ## Examples
+
+      # WiFi
+      {:ok, svg} = Qiroex.payload(:wifi, [ssid: "MyNet", password: "secret"], :svg)
+
+      # vCard
+      {:ok, png} = Qiroex.payload(:vcard, [first_name: "Jane", last_name: "Doe", phone: "+1234567890"], :png)
+
+      # URL
+      {:ok, svg} = Qiroex.payload(:url, [url: "https://elixir-lang.org"], :svg)
+
+  ## Parameters
+    - `type` - payload type atom (`:wifi`, `:url`, `:email`, `:sms`, `:phone`, `:geo`,
+      `:vcard`, `:vevent`, `:mecard`, `:bitcoin`, `:whatsapp`)
+    - `payload_opts` - keyword list of payload-specific options
+    - `format` - output format (`:svg`, `:png`, `:terminal`, `:matrix`, `:encode`)
+    - `render_opts` - keyword list of render/encode options (optional)
+  """
+  @spec payload(atom(), keyword(), atom(), keyword()) ::
+          {:ok, term()} | {:error, String.t()}
+  def payload(type, payload_opts, format, render_opts \\ []) do
+    with {:ok, data} <- build_payload(type, payload_opts) do
+      case format do
+        :svg -> to_svg(data, render_opts)
+        :png -> to_png(data, render_opts)
+        :terminal -> to_terminal(data, render_opts)
+        :matrix -> to_matrix(data, render_opts)
+        :encode -> encode(data, render_opts)
+        other -> {:error, "Unknown format: #{inspect(other)}"}
+      end
+    end
+  end
+
+  @payload_modules %{
+    wifi: Qiroex.Payload.WiFi,
+    url: Qiroex.Payload.URL,
+    email: Qiroex.Payload.Email,
+    sms: Qiroex.Payload.SMS,
+    phone: Qiroex.Payload.Phone,
+    geo: Qiroex.Payload.Geo,
+    vcard: Qiroex.Payload.VCard,
+    vevent: Qiroex.Payload.VEvent,
+    mecard: Qiroex.Payload.MeCard,
+    bitcoin: Qiroex.Payload.Bitcoin,
+    whatsapp: Qiroex.Payload.WhatsApp
+  }
+
+  defp build_payload(type, opts) do
+    case Map.fetch(@payload_modules, type) do
+      {:ok, module} -> module.encode(opts)
+      :error -> {:error, "Unknown payload type: #{inspect(type)}"}
+    end
+  end
 end
