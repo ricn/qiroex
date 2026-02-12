@@ -1,6 +1,31 @@
-# Qiroex
+<p align="center">
+  <img src="assets/logo_styled.svg" alt="Qiroex" width="180" />
+</p>
 
-A pure Elixir QR code generation library with zero external dependencies. Supports all 40 QR versions, 4 encoding modes (numeric, alphanumeric, byte, kanji), and 4 error correction levels.
+<h1 align="center">Qiroex</h1>
+
+<p align="center">
+  <strong>A pure-Elixir QR code generator — zero dependencies, full spec, beautiful output.</strong>
+</p>
+
+<p align="center">
+  <a href="#installation">Installation</a> · <a href="#quick-start">Quick Start</a> · <a href="#styling">Styling</a> · <a href="#logo-embedding">Logos</a> · <a href="#payload-builders">Payloads</a> · <a href="#api-reference">API</a>
+</p>
+
+---
+
+Qiroex generates **valid, scannable QR codes** entirely in Elixir with no external dependencies — no C NIFs, no system libraries, no ImageMagick. It implements the full **ISO 18004** specification and outputs to **SVG**, **PNG**, and **terminal**.
+
+## Features
+
+- **Zero dependencies** — pure Elixir, runs anywhere the BEAM runs
+- **Full QR spec** — versions 1–40, error correction L/M/Q/H, all 4 encoding modes (numeric, alphanumeric, byte, kanji), 8 mask patterns
+- **Three output formats** — SVG (vector), PNG (raster), terminal (Unicode art)
+- **Visual styling** — module shapes (circle, rounded, diamond), custom colors, gradients, finder pattern colors
+- **Logo embedding** — embed SVG logos in the center with automatic coverage validation
+- **11 payload builders** — WiFi, URL, Email, SMS, Phone, Geo, vCard, vEvent, MeCard, Bitcoin, WhatsApp
+- **Input validation** — descriptive error messages for every misconfiguration
+- **Thoroughly tested** — 500+ unit and integration tests
 
 ## Installation
 
@@ -14,155 +39,380 @@ def deps do
 end
 ```
 
-## Usage
+Then run `mix deps.get`.
 
-### Basic encoding
+## Quick Start
+
+### Generate and save an SVG
 
 ```elixir
-# Encode data into a QR code struct
-{:ok, qr} = Qiroex.encode("Hello, World!")
-
-# Inspect the selected version, EC level, and mask
-qr.version   #=> 1
-qr.ec_level  #=> :m
-qr.mask      #=> 0..7
-
-# Bang variant raises on error
-qr = Qiroex.encode!("Hello, World!")
+Qiroex.save_svg("https://example.com", "qr.svg")
 ```
 
-### Error correction levels
+<img src="assets/basic.svg" alt="Basic QR code" width="200" />
+
+### Generate and save a PNG
 
 ```elixir
-# :l (7%), :m (15%, default), :q (25%), :h (30%)
-{:ok, qr} = Qiroex.encode("Hello", level: :h)
-qr.ec_level  #=> :h
+Qiroex.save_png("https://example.com", "qr.png")
 ```
 
-### Forcing a version
+### Print to terminal
 
 ```elixir
-# Force a specific QR version (1-40)
-{:ok, qr} = Qiroex.encode("Hello", version: 5, level: :m)
-qr.version  #=> 5
+Qiroex.print("Hello from Qiroex!")
 ```
 
-### Getting the matrix as a 2D list
+### Work with raw data
 
 ```elixir
-# Returns a 2D list of 0s (light) and 1s (dark), including a quiet zone
-{:ok, matrix} = Qiroex.to_matrix("Hello, World!")
+# Get an SVG string
+{:ok, svg} = Qiroex.to_svg("Hello")
 
-# Or use the bang variant
-matrix = Qiroex.to_matrix!("Hello, World!", level: :q)
+# Get a PNG binary
+{:ok, png} = Qiroex.to_png("Hello")
 
-# Each row is a list of 0/1 integers
-Enum.count(matrix)      #=> matrix size + 8 (4-module quiet zone on each side)
-Enum.count(hd(matrix))  #=> same
-
-# Access from a QR struct directly (margin = quiet zone modules per side)
+# Get a QR struct for inspection
 {:ok, qr} = Qiroex.encode("Hello")
-rows = Qiroex.QR.to_matrix(qr)       # default margin: 4
-rows = Qiroex.QR.to_matrix(qr, 2)    # custom margin: 2
+Qiroex.info(qr)
+# => %{version: 1, ec_level: :m, mode: :byte, mask: 4, modules: 21, data_bytes: 5}
+
+# Get the raw 0/1 matrix
+{:ok, matrix} = Qiroex.to_matrix("Hello")
 ```
 
-### SVG output
+## Encoding Options
+
+Control the encoding process with these options (available on all functions):
 
 ```elixir
-# Generate an SVG string
-{:ok, svg} = Qiroex.to_svg("https://example.com")
+# Error correction level (:l, :m, :q, :h)
+Qiroex.save_svg("Hello", "qr.svg", level: :h)
 
-# Bang variant
-svg = Qiroex.to_svg!("https://example.com")
+# Force a specific version (1–40)
+Qiroex.save_svg("Hello", "qr.svg", version: 5)
 
-# Write directly to a file
-:ok = Qiroex.save_svg("https://example.com", "qr.svg")
+# Force encoding mode
+Qiroex.save_svg("12345", "qr.svg", mode: :numeric)
 
-# Customize appearance
-svg = Qiroex.to_svg!("Hello",
-  module_size: 5,
-  quiet_zone: 2,
-  dark_color: "#1a1a2e",
-  light_color: "#e0e0e0"
+# Force mask pattern (0–7)
+Qiroex.save_svg("Hello", "qr.svg", mask: 2)
+
+# Combine freely
+Qiroex.save_svg("Hello", "qr.svg", level: :q, version: 3, mask: 0)
+```
+
+## Render Options
+
+### SVG Options
+
+```elixir
+Qiroex.save_svg("Hello", "qr.svg",
+  module_size: 12,             # pixel size of each module (default: 10)
+  quiet_zone: 2,               # modules of white border (default: 4)
+  dark_color: "#4B275F",       # any CSS color
+  light_color: "#F4F1F6"       # background color
 )
 ```
 
-### PNG output
+<img src="assets/colors.svg" alt="Custom colors" width="200" />
+
+### PNG Options
 
 ```elixir
-# Generate a PNG binary
-{:ok, png} = Qiroex.to_png("https://example.com")
-
-# Bang variant
-png = Qiroex.to_png!("https://example.com")
-
-# Write directly to a file
-:ok = Qiroex.save_png("https://example.com", "qr.png")
-
-# Customize appearance (colors are {r, g, b} tuples)
-png = Qiroex.to_png!("Hello",
-  module_size: 20,
-  quiet_zone: 2,
-  dark_color: {0, 0, 128},
-  light_color: {255, 255, 240}
+Qiroex.save_png("Hello", "qr.png",
+  module_size: 20,                   # pixel size per module (default: 10)
+  quiet_zone: 3,                     # quiet zone modules (default: 4)
+  dark_color: {75, 39, 95},          # {r, g, b} tuple, 0–255
+  light_color: {244, 241, 246}       # background color
 )
 ```
 
-### Terminal output
+## Styling
+
+Qiroex supports rich visual customization through the `Qiroex.Style` struct. All style options apply to **SVG output**; PNG supports finder pattern colors.
+
+### Module Shapes
+
+Choose how individual data modules are rendered:
 
 ```elixir
-# Print directly to the terminal (compact mode, 2 rows per line)
-Qiroex.print("https://example.com")
+# Circular dots
+style = Qiroex.Style.new(module_shape: :circle)
+Qiroex.save_svg("Hello", "circles.svg", style: style)
 
-# Get as a string instead
-{:ok, output} = Qiroex.to_terminal("Hello")
+# Rounded squares
+style = Qiroex.Style.new(module_shape: :rounded, module_radius: 0.4)
+Qiroex.save_svg("Hello", "rounded.svg", style: style)
 
-# Simple mode (1 row per line, wider output)
-Qiroex.print("Hello", compact: false)
-
-# Custom quiet zone
-Qiroex.print("Hello", quiet_zone: 1)
+# Diamond (rotated squares)
+style = Qiroex.Style.new(module_shape: :diamond)
+Qiroex.save_svg("Hello", "diamond.svg", style: style)
 ```
 
-### Encoding modes
+<table>
+  <tr>
+    <td align="center"><img src="assets/circles.svg" alt="Circle modules" width="180" /><br /><code>:circle</code></td>
+    <td align="center"><img src="assets/rounded.svg" alt="Rounded modules" width="180" /><br /><code>:rounded</code></td>
+    <td align="center"><img src="assets/diamond.svg" alt="Diamond modules" width="180" /><br /><code>:diamond</code></td>
+  </tr>
+</table>
 
-The library auto-detects the most efficient encoding mode:
+### Finder Pattern Colors
+
+Customize the three concentric layers of each finder pattern independently:
 
 ```elixir
-# Numeric (0-9 only) — most compact
-{:ok, qr} = Qiroex.encode("0123456789")
-qr.mode  #=> :numeric
+style = Qiroex.Style.new(
+  module_shape: :rounded,
+  module_radius: 0.3,
+  finder: %{
+    outer: "#E63946",    # 7×7 dark border ring
+    inner: "#F1FAEE",    # 5×5 light ring
+    eye:   "#1D3557"     # 3×3 dark center
+  }
+)
 
-# Alphanumeric (0-9, A-Z, space, $%*+-./:)
-{:ok, qr} = Qiroex.encode("HELLO WORLD")
-qr.mode  #=> :alphanumeric
-
-# Byte (any UTF-8 / Latin-1 text)
-{:ok, qr} = Qiroex.encode("hello world")
-qr.mode  #=> :byte
-
-# Force a specific mode
-{:ok, qr} = Qiroex.encode("123", mode: :byte)
-qr.mode  #=> :byte
+Qiroex.save_svg("Hello", "finder.svg", style: style)
 ```
 
-### Error handling
+<img src="assets/finder_colors.svg" alt="Finder pattern colors" width="200" />
+
+### Gradient Fills
+
+Apply linear or radial gradients to dark modules:
 
 ```elixir
-# Data too large for requested EC level
-{:error, reason} = Qiroex.encode(String.duplicate("A", 5000), level: :h)
+# Linear gradient at 135°
+style = Qiroex.Style.new(
+  module_shape: :circle,
+  gradient: %{
+    type: :linear,
+    start_color: "#667EEA",
+    end_color: "#764BA2",
+    angle: 135
+  }
+)
 
-# Empty data
-{:error, "Data cannot be empty"} = Qiroex.encode("")
+Qiroex.save_svg("Hello", "gradient.svg", style: style)
 ```
 
-## Roadmap
+<table>
+  <tr>
+    <td align="center"><img src="assets/gradient.svg" alt="Linear gradient" width="180" /><br />Linear</td>
+    <td align="center"><img src="assets/radial.svg" alt="Radial gradient" width="180" /><br />Radial</td>
+    <td align="center"><img src="assets/styled.svg" alt="Full styled" width="180" /><br />Combined</td>
+  </tr>
+</table>
 
-- [x] Core QR engine (all 40 versions, 4 modes, 4 EC levels, masking)
-- [x] SVG renderer
-- [x] PNG renderer
-- [x] Terminal renderer
-- [ ] Payload builders (WiFi, vCard, URL, email, SMS, geo, etc.)
-- [ ] Visual styling (colors, shapes, gradients)
-- [ ] SVG logo embedding
+### Kitchen Sink
+
+Combine everything for maximum visual impact:
+
+```elixir
+style = Qiroex.Style.new(
+  module_shape: :circle,
+  finder: %{outer: "#2D3436", inner: "#FFFFFF", eye: "#E17055"},
+  gradient: %{type: :linear, start_color: "#2D3436", end_color: "#636E72", angle: 45}
+)
+
+Qiroex.save_svg("https://elixir-lang.org", "styled.svg", style: style)
+```
+
+## Logo Embedding
+
+Embed an SVG logo in the center of your QR code. Qiroex automatically clears the modules behind the logo area and validates that the logo doesn't exceed the error correction capacity.
+
+```elixir
+logo = Qiroex.Logo.new(
+  svg: ~s(<svg viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="40" fill="#9B59B6"/>
+    <text x="50" y="62" text-anchor="middle" font-size="36"
+          font-weight="bold" fill="white" font-family="sans-serif">Ex</text>
+  </svg>),
+  size: 0.22,          # 22% of QR code size
+  shape: :circle,      # background shape (:square, :rounded, :circle)
+  padding: 1           # padding in modules around the logo
+)
+
+# Use high EC level (:h) for best scan reliability with logos
+Qiroex.save_svg("https://elixir-lang.org", "logo.svg", level: :h, logo: logo)
+```
+
+<table>
+  <tr>
+    <td align="center"><img src="assets/logo.svg" alt="Logo embedding" width="200" /><br />Basic + Logo</td>
+    <td align="center"><img src="assets/logo_styled.svg" alt="Styled + Logo" width="200" /><br />Styled + Logo</td>
+  </tr>
+</table>
+
+### Logo + Style
+
+Logos work seamlessly with all styling options:
+
+```elixir
+style = Qiroex.Style.new(
+  module_shape: :rounded,
+  module_radius: 0.3,
+  finder: %{outer: "#4B275F", inner: "#FFFFFF", eye: "#9B59B6"}
+)
+
+Qiroex.save_svg("https://elixir-lang.org", "branded.svg",
+  level: :h, style: style, logo: logo)
+```
+
+### Logo Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `:svg` | *required* | SVG markup string for the logo |
+| `:size` | `0.2` | Logo size as fraction of QR code (0.0–0.4) |
+| `:padding` | `1` | Padding around logo in modules |
+| `:background` | `"#ffffff"` | Background color behind the logo |
+| `:shape` | `:square` | Background shape: `:square`, `:rounded`, `:circle` |
+| `:border_radius` | `4` | Corner radius for `:rounded` shape |
+
+### Coverage Validation
+
+Qiroex automatically validates that the logo doesn't cover too many modules. If the logo is too large for the chosen error correction level, you'll get a clear error message:
+
+```elixir
+large_logo = Qiroex.Logo.new(svg: "<svg/>", size: 0.4)
+
+{:error, message} = Qiroex.to_svg("Hello", level: :l, logo: large_logo)
+# => "Logo covers 28.3% of modules, but EC level :l safely supports only 5.6%.
+#     Use a higher EC level or a smaller logo size."
+```
+
+> **Tip:** Always use error correction level `:h` when embedding logos for maximum scan reliability.
+
+## Payload Builders
+
+Generate structured data payloads for common QR code use cases with a single function call:
+
+```elixir
+# WiFi network
+{:ok, svg} = Qiroex.payload(:wifi,
+  [ssid: "CoffeeShop", password: "latte2024", security: "WPA"],
+  :svg, dark_color: "#2C3E50")
+```
+
+<table>
+  <tr>
+    <td align="center"><img src="assets/wifi.svg" alt="WiFi QR" width="180" /><br />WiFi</td>
+    <td align="center"><img src="assets/vcard.svg" alt="vCard QR" width="180" /><br />vCard</td>
+  </tr>
+</table>
+
+### Supported Payload Types
+
+| Type | Example |
+|------|---------|
+| **WiFi** | `Qiroex.payload(:wifi, [ssid: "Net", password: "pass", security: "WPA"], :svg)` |
+| **URL** | `Qiroex.payload(:url, [url: "https://example.com"], :svg)` |
+| **Email** | `Qiroex.payload(:email, [to: "hi@example.com", subject: "Hello"], :svg)` |
+| **SMS** | `Qiroex.payload(:sms, [number: "+1234567890", message: "Hi!"], :svg)` |
+| **Phone** | `Qiroex.payload(:phone, [number: "+1234567890"], :svg)` |
+| **Geo** | `Qiroex.payload(:geo, [latitude: 40.7128, longitude: -74.0060], :svg)` |
+| **vCard** | `Qiroex.payload(:vcard, [first_name: "Jane", last_name: "Doe", phone: "+1234"], :svg)` |
+| **vEvent** | `Qiroex.payload(:vevent, [summary: "Meeting", dtstart: "20260301T090000"], :svg)` |
+| **MeCard** | `Qiroex.payload(:mecard, [name: "Doe,Jane", tel: "+1234567890"], :svg)` |
+| **Bitcoin** | `Qiroex.payload(:bitcoin, [address: "1A1zP1..."], :svg)` |
+| **WhatsApp** | `Qiroex.payload(:whatsapp, [number: "+1234567890", message: "Hello!"], :svg)` |
+
+The third argument is the output format: `:svg`, `:png`, `:terminal`, `:matrix`, or `:encode`.
+
+## Error Handling
+
+All functions return `{:ok, result}` / `{:error, reason}` tuples. Bang variants raise `ArgumentError`:
+
+```elixir
+# Safe — returns error tuple
+{:error, message} = Qiroex.encode("")
+# => "Data cannot be empty"
+
+{:error, message} = Qiroex.to_svg("test", level: :x)
+# => "invalid error correction level: :x. Must be one of [:l, :m, :q, :h]"
+
+{:error, message} = Qiroex.to_png("test", dark_color: "#000")
+# => "invalid dark_color: \"#000\". Must be an {r, g, b} tuple with values 0–255"
+
+# Bang — raises on error
+svg = Qiroex.to_svg!("Hello")        # returns SVG string directly
+png = Qiroex.to_png!("Hello")        # returns PNG binary directly
+qr  = Qiroex.encode!("Hello")        # returns QR struct directly
+```
+
+## API Reference
+
+### Core Functions
+
+| Function | Description |
+|----------|-------------|
+| `Qiroex.encode(data, opts)` | Encode data into a `%Qiroex.QR{}` struct |
+| `Qiroex.to_svg(data, opts)` | Generate SVG string |
+| `Qiroex.to_png(data, opts)` | Generate PNG binary |
+| `Qiroex.to_terminal(data, opts)` | Generate terminal-printable string |
+| `Qiroex.to_matrix(data, opts)` | Generate 2D list of `0`/`1` |
+| `Qiroex.save_svg(data, path, opts)` | Write SVG to file |
+| `Qiroex.save_png(data, path, opts)` | Write PNG to file |
+| `Qiroex.print(data, opts)` | Print QR code to terminal |
+| `Qiroex.payload(type, opts, format)` | Generate payload QR code |
+| `Qiroex.info(qr)` | Get metadata about an encoded QR |
+
+All functions have bang (`!`) variants that raise instead of returning error tuples.
+
+### Encoding Options
+
+| Option | Values | Default | Description |
+|--------|--------|---------|-------------|
+| `:level` | `:l`, `:m`, `:q`, `:h` | `:m` | Error correction level |
+| `:version` | `1`–`40`, `:auto` | `:auto` | QR version (size) |
+| `:mode` | `:numeric`, `:alphanumeric`, `:byte`, `:kanji`, `:auto` | `:auto` | Encoding mode |
+| `:mask` | `0`–`7`, `:auto` | `:auto` | Mask pattern |
+
+### SVG Render Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `:module_size` | integer | `10` | Pixel size of each module |
+| `:quiet_zone` | integer | `4` | Quiet zone border in modules |
+| `:dark_color` | string | `"#000000"` | CSS color for dark modules |
+| `:light_color` | string | `"#ffffff"` | CSS color for background |
+| `:style` | `%Style{}` | `nil` | Visual styling configuration |
+| `:logo` | `%Logo{}` | `nil` | Center logo configuration |
+
+### PNG Render Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `:module_size` | integer | `10` | Pixel size of each module |
+| `:quiet_zone` | integer | `4` | Quiet zone border in modules |
+| `:dark_color` | `{r,g,b}` | `{0,0,0}` | RGB tuple for dark modules |
+| `:light_color` | `{r,g,b}` | `{255,255,255}` | RGB tuple for background |
+| `:style` | `%Style{}` | `nil` | Finder pattern colors |
+
+## Architecture
+
+Qiroex implements the full QR code pipeline from scratch:
+
+```
+Data → Mode Detection → Version Selection → Bit Encoding
+    → Reed-Solomon EC → Interleaving → Matrix Placement
+    → Masking (8 patterns × 4 penalty rules) → Format Info
+    → Render (SVG / PNG / Terminal)
+```
+
+Key implementation details:
+
+- **Galois Field GF(2⁸)** with primitive polynomial 285 and compile-time lookup tables
+- **Reed-Solomon** error correction with polynomial division
+- **BCH** encoding for format and version information
+- **Matrix** stored as a `Map` of `{row, col} => :dark | :light` with `MapSet` for reserved positions
+- **SVG** built with IO lists for zero-copy string assembly
+- **PNG** encoded with pure-Erlang `:zlib` and `:erlang.crc32` — no image libraries needed
+
+## License
+
+MIT License. See [LICENSE](LICENSE) for details.
 
