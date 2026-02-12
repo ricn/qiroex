@@ -8,20 +8,27 @@ defmodule Qiroex do
 
   ## Quick Start
 
-      # Generate a QR code matrix
+      # Generate a QR code
       {:ok, qr} = Qiroex.encode("Hello, World!")
 
-      # Get as 2D boolean list
-      matrix = Qiroex.to_matrix("Hello, World!")
+      # Render as SVG
+      svg = Qiroex.to_svg("Hello, World!")
+
+      # Render as PNG binary
+      png = Qiroex.to_png("Hello, World!")
+
+      # Print to terminal
+      Qiroex.print("Hello, World!")
   """
 
   alias Qiroex.QR
+  alias Qiroex.Render.{SVG, PNG, Terminal}
 
   @doc """
   Encodes data into a QR code.
 
   ## Options
-    - `:ec_level` - error correction level (`:l`, `:m`, `:q`, `:h`). Default: `:m`
+    - `:level` / `:ec_level` - error correction level (`:l`, `:m`, `:q`, `:h`). Default: `:m`
     - `:version` - force a specific version (1-40) or `:auto`. Default: `:auto`
     - `:mode` - force encoding mode or `:auto`. Default: `:auto`
     - `:mask` - force mask pattern (0-7) or `:auto`. Default: `:auto`
@@ -37,8 +44,7 @@ defmodule Qiroex do
   defdelegate encode!(data, opts \\ []), to: QR
 
   @doc """
-  Generates a QR code and returns it as a 2D boolean list.
-  `true` = dark module, `false` = light module.
+  Generates a QR code and returns it as a 2D list of 0s and 1s.
 
   ## Options
     Same as `encode/2`, plus:
@@ -60,5 +66,132 @@ defmodule Qiroex do
     margin = Keyword.get(opts, :margin, 4)
     qr = QR.encode!(data, opts)
     QR.to_matrix(qr, margin)
+  end
+
+  # === SVG ===
+
+  @doc """
+  Generates a QR code and renders it as an SVG string.
+
+  ## Options
+    Same as `encode/2`, plus:
+    - `:module_size` - pixel size of each module (default: 10)
+    - `:quiet_zone` - quiet zone modules (default: 4)
+    - `:dark_color` - CSS color for dark modules (default: `"#000000"`)
+    - `:light_color` - CSS color for background (default: `"#ffffff"`)
+
+  ## Returns
+    SVG string or `{:error, reason}`.
+  """
+  @spec to_svg(binary(), keyword()) :: {:ok, String.t()} | {:error, String.t()}
+  def to_svg(data, opts \\ []) do
+    {render_opts, encode_opts} = split_render_opts(opts, [:module_size, :quiet_zone, :dark_color, :light_color])
+
+    case QR.encode(data, encode_opts) do
+      {:ok, qr} -> {:ok, SVG.render(qr.matrix, render_opts)}
+      error -> error
+    end
+  end
+
+  @doc "Generates a QR code SVG string, raising on error."
+  @spec to_svg!(binary(), keyword()) :: String.t()
+  def to_svg!(data, opts \\ []) do
+    {render_opts, encode_opts} = split_render_opts(opts, [:module_size, :quiet_zone, :dark_color, :light_color])
+    qr = QR.encode!(data, encode_opts)
+    SVG.render(qr.matrix, render_opts)
+  end
+
+  # === PNG ===
+
+  @doc """
+  Generates a QR code and renders it as a PNG binary.
+
+  ## Options
+    Same as `encode/2`, plus:
+    - `:module_size` - pixel size of each module (default: 10)
+    - `:quiet_zone` - quiet zone modules (default: 4)
+    - `:dark_color` - `{r, g, b}` tuple 0-255 (default: `{0, 0, 0}`)
+    - `:light_color` - `{r, g, b}` tuple 0-255 (default: `{255, 255, 255}`)
+
+  ## Returns
+    PNG binary or `{:error, reason}`.
+  """
+  @spec to_png(binary(), keyword()) :: {:ok, binary()} | {:error, String.t()}
+  def to_png(data, opts \\ []) do
+    {render_opts, encode_opts} = split_render_opts(opts, [:module_size, :quiet_zone, :dark_color, :light_color])
+
+    case QR.encode(data, encode_opts) do
+      {:ok, qr} -> {:ok, PNG.render(qr.matrix, render_opts)}
+      error -> error
+    end
+  end
+
+  @doc "Generates a QR code PNG binary, raising on error."
+  @spec to_png!(binary(), keyword()) :: binary()
+  def to_png!(data, opts \\ []) do
+    {render_opts, encode_opts} = split_render_opts(opts, [:module_size, :quiet_zone, :dark_color, :light_color])
+    qr = QR.encode!(data, encode_opts)
+    PNG.render(qr.matrix, render_opts)
+  end
+
+  @doc """
+  Generates a QR code PNG and writes it to a file.
+
+  ## Returns
+    `:ok` or `{:error, reason}`
+  """
+  @spec save_png(binary(), Path.t(), keyword()) :: :ok | {:error, term()}
+  def save_png(data, path, opts \\ []) do
+    {render_opts, encode_opts} = split_render_opts(opts, [:module_size, :quiet_zone, :dark_color, :light_color])
+    qr = QR.encode!(data, encode_opts)
+    PNG.save(qr.matrix, path, render_opts)
+  end
+
+  @doc """
+  Generates a QR code SVG and writes it to a file.
+
+  ## Returns
+    `:ok` or `{:error, reason}`
+  """
+  @spec save_svg(binary(), Path.t(), keyword()) :: :ok | {:error, term()}
+  def save_svg(data, path, opts \\ []) do
+    {render_opts, encode_opts} = split_render_opts(opts, [:module_size, :quiet_zone, :dark_color, :light_color])
+    qr = QR.encode!(data, encode_opts)
+    svg = SVG.render(qr.matrix, render_opts)
+    File.write(path, svg)
+  end
+
+  # === Terminal ===
+
+  @doc """
+  Generates a QR code and renders it as a terminal string.
+
+  ## Options
+    Same as `encode/2`, plus:
+    - `:quiet_zone` - quiet zone modules (default: 4)
+    - `:compact` - use compact 2-row-per-line rendering (default: `true`)
+  """
+  @spec to_terminal(binary(), keyword()) :: {:ok, String.t()} | {:error, String.t()}
+  def to_terminal(data, opts \\ []) do
+    {render_opts, encode_opts} = split_render_opts(opts, [:quiet_zone, :compact])
+
+    case QR.encode(data, encode_opts) do
+      {:ok, qr} -> {:ok, Terminal.render(qr.matrix, render_opts)}
+      error -> error
+    end
+  end
+
+  @doc "Generates a QR code and prints it directly to the terminal."
+  @spec print(binary(), keyword()) :: :ok
+  def print(data, opts \\ []) do
+    {render_opts, encode_opts} = split_render_opts(opts, [:quiet_zone, :compact])
+    qr = QR.encode!(data, encode_opts)
+    Terminal.print(qr.matrix, render_opts)
+  end
+
+  # Split options into render-specific and encode options
+  defp split_render_opts(opts, render_keys) do
+    {render_opts, encode_opts} = Keyword.split(opts, render_keys)
+    {render_opts, encode_opts}
   end
 end
