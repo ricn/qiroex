@@ -1,11 +1,10 @@
 # Qiroex
 
-**TODO: Add description**
+A pure Elixir QR code generation library with zero external dependencies. Supports all 40 QR versions, 4 encoding modes (numeric, alphanumeric, byte, kanji), and 4 error correction levels.
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `qiroex` to your list of dependencies in `mix.exs`:
+Add `qiroex` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
@@ -15,7 +14,111 @@ def deps do
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/qiroex>.
+## Usage
+
+### Basic encoding
+
+```elixir
+# Encode data into a QR code struct
+{:ok, qr} = Qiroex.encode("Hello, World!")
+
+# Inspect the selected version, EC level, and mask
+qr.version   #=> 1
+qr.ec_level  #=> :m
+qr.mask      #=> 0..7
+
+# Bang variant raises on error
+qr = Qiroex.encode!("Hello, World!")
+```
+
+### Error correction levels
+
+```elixir
+# :l (7%), :m (15%, default), :q (25%), :h (30%)
+{:ok, qr} = Qiroex.encode("Hello", level: :h)
+qr.ec_level  #=> :h
+```
+
+### Forcing a version
+
+```elixir
+# Force a specific QR version (1-40)
+{:ok, qr} = Qiroex.encode("Hello", version: 5, level: :m)
+qr.version  #=> 5
+```
+
+### Getting the matrix as a 2D list
+
+```elixir
+# Returns a 2D list of 0s (light) and 1s (dark), including a quiet zone
+{:ok, matrix} = Qiroex.to_matrix("Hello, World!")
+
+# Or use the bang variant
+matrix = Qiroex.to_matrix!("Hello, World!", level: :q)
+
+# Each row is a list of 0/1 integers
+Enum.count(matrix)      #=> matrix size + 8 (4-module quiet zone on each side)
+Enum.count(hd(matrix))  #=> same
+
+# Access from a QR struct directly (margin = quiet zone modules per side)
+{:ok, qr} = Qiroex.encode("Hello")
+rows = Qiroex.QR.to_matrix(qr)       # default margin: 4
+rows = Qiroex.QR.to_matrix(qr, 2)    # custom margin: 2
+```
+
+### Quick terminal preview
+
+```elixir
+# Print a QR code to the terminal using Unicode block characters
+qr = Qiroex.encode!("https://example.com", level: :m)
+rows = Qiroex.QR.to_matrix(qr, 2)
+
+for row <- rows do
+  row
+  |> Enum.map(fn 1 -> "██"; 0 -> "  " end)
+  |> IO.puts()
+end
+```
+
+### Encoding modes
+
+The library auto-detects the most efficient encoding mode:
+
+```elixir
+# Numeric (0-9 only) — most compact
+{:ok, qr} = Qiroex.encode("0123456789")
+qr.mode  #=> :numeric
+
+# Alphanumeric (0-9, A-Z, space, $%*+-./:)
+{:ok, qr} = Qiroex.encode("HELLO WORLD")
+qr.mode  #=> :alphanumeric
+
+# Byte (any UTF-8 / Latin-1 text)
+{:ok, qr} = Qiroex.encode("hello world")
+qr.mode  #=> :byte
+
+# Force a specific mode
+{:ok, qr} = Qiroex.encode("123", mode: :byte)
+qr.mode  #=> :byte
+```
+
+### Error handling
+
+```elixir
+# Data too large for requested EC level
+{:error, reason} = Qiroex.encode(String.duplicate("A", 5000), level: :h)
+
+# Empty data
+{:error, "Data cannot be empty"} = Qiroex.encode("")
+```
+
+## Roadmap
+
+- [x] Core QR engine (all 40 versions, 4 modes, 4 EC levels, masking)
+- [ ] SVG renderer
+- [ ] PNG renderer
+- [ ] Terminal renderer
+- [ ] Payload builders (WiFi, vCard, URL, email, SMS, geo, etc.)
+- [ ] Visual styling (colors, shapes, gradients)
+- [ ] SVG logo embedding
 
