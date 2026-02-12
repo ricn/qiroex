@@ -1,0 +1,613 @@
+defmodule Qiroex.Spec do
+  @moduledoc """
+  ISO/IEC 18004 specification lookup tables for QR code generation.
+
+  Contains all hardcoded tables required by the QR code standard:
+  - Character capacity per version/EC level/mode
+  - Error correction block structure
+  - Alignment pattern positions
+  - Character count indicator bit lengths
+  - Alphanumeric character values
+  - Remainder bits per version
+  - Total data codewords per version/EC level
+  """
+
+  @type ec_level :: :l | :m | :q | :h
+  @type mode :: :numeric | :alphanumeric | :byte | :kanji
+  @type version :: 1..40
+
+  # Alphanumeric character value mapping (45 characters)
+  @alphanumeric_values %{
+    ?0 => 0, ?1 => 1, ?2 => 2, ?3 => 3, ?4 => 4,
+    ?5 => 5, ?6 => 6, ?7 => 7, ?8 => 8, ?9 => 9,
+    ?A => 10, ?B => 11, ?C => 12, ?D => 13, ?E => 14,
+    ?F => 15, ?G => 16, ?H => 17, ?I => 18, ?J => 19,
+    ?K => 20, ?L => 21, ?M => 22, ?N => 23, ?O => 24,
+    ?P => 25, ?Q => 26, ?R => 27, ?S => 28, ?T => 29,
+    ?U => 30, ?V => 31, ?W => 32, ?X => 33, ?Y => 34,
+    ?Z => 35, ?\s => 36, ?$ => 37, ?% => 38, ?* => 39,
+    ?+ => 40, ?- => 41, ?. => 42, ?/ => 43, ?: => 44
+  }
+
+  @doc "Returns the alphanumeric value for a character, or nil if not in the set."
+  @spec alphanumeric_value(non_neg_integer()) :: non_neg_integer() | nil
+  def alphanumeric_value(char), do: Map.get(@alphanumeric_values, char)
+
+  @doc "Returns true if the character is in the alphanumeric character set."
+  @spec alphanumeric_char?(non_neg_integer()) :: boolean()
+  def alphanumeric_char?(char), do: Map.has_key?(@alphanumeric_values, char)
+
+  @doc "Returns true if the character is a digit 0-9."
+  @spec numeric_char?(non_neg_integer()) :: boolean()
+  def numeric_char?(char), do: char >= ?0 and char <= ?9
+
+  # Character count indicator bit lengths: {numeric, alphanumeric, byte, kanji}
+  # Indexed by version group
+  @doc "Returns the character count indicator bit length for the given mode and version."
+  @spec char_count_bits(mode(), version()) :: non_neg_integer()
+  def char_count_bits(mode, version) when version >= 1 and version <= 9 do
+    case mode do
+      :numeric -> 10
+      :alphanumeric -> 9
+      :byte -> 8
+      :kanji -> 8
+    end
+  end
+
+  def char_count_bits(mode, version) when version >= 10 and version <= 26 do
+    case mode do
+      :numeric -> 12
+      :alphanumeric -> 11
+      :byte -> 16
+      :kanji -> 10
+    end
+  end
+
+  def char_count_bits(mode, version) when version >= 27 and version <= 40 do
+    case mode do
+      :numeric -> 14
+      :alphanumeric -> 13
+      :byte -> 16
+      :kanji -> 12
+    end
+  end
+
+  @doc "Returns the mode indicator bits (4 bits) for the given mode."
+  @spec mode_indicator(mode()) :: non_neg_integer()
+  def mode_indicator(:numeric), do: 0b0001
+  def mode_indicator(:alphanumeric), do: 0b0010
+  def mode_indicator(:byte), do: 0b0100
+  def mode_indicator(:kanji), do: 0b1000
+
+  @doc "Returns the matrix size (modules per side) for the given version."
+  @spec matrix_size(version()) :: non_neg_integer()
+  def matrix_size(version) when version >= 1 and version <= 40 do
+    (version - 1) * 4 + 21
+  end
+
+  @doc "Returns the remainder bits to append after the data for the given version."
+  @spec remainder_bits(version()) :: non_neg_integer()
+  def remainder_bits(1), do: 0
+  def remainder_bits(v) when v >= 2 and v <= 6, do: 7
+  def remainder_bits(v) when v >= 7 and v <= 13, do: 0
+  def remainder_bits(v) when v >= 14 and v <= 20, do: 3
+  def remainder_bits(v) when v >= 21 and v <= 27, do: 4
+  def remainder_bits(v) when v >= 28 and v <= 34, do: 3
+  def remainder_bits(v) when v >= 35 and v <= 40, do: 0
+
+  # Alignment pattern center coordinates per version
+  # Version 1 has no alignment patterns
+  @alignment_patterns %{
+    1 => [],
+    2 => [6, 18],
+    3 => [6, 22],
+    4 => [6, 26],
+    5 => [6, 30],
+    6 => [6, 34],
+    7 => [6, 22, 38],
+    8 => [6, 24, 42],
+    9 => [6, 26, 46],
+    10 => [6, 28, 50],
+    11 => [6, 30, 54],
+    12 => [6, 32, 58],
+    13 => [6, 34, 62],
+    14 => [6, 26, 46, 66],
+    15 => [6, 26, 48, 70],
+    16 => [6, 26, 50, 74],
+    17 => [6, 30, 54, 78],
+    18 => [6, 30, 56, 82],
+    19 => [6, 30, 58, 86],
+    20 => [6, 34, 62, 90],
+    21 => [6, 28, 50, 72, 94],
+    22 => [6, 26, 50, 74, 98],
+    23 => [6, 30, 54, 78, 102],
+    24 => [6, 28, 54, 80, 106],
+    25 => [6, 32, 58, 84, 110],
+    26 => [6, 30, 58, 86, 114],
+    27 => [6, 34, 62, 90, 118],
+    28 => [6, 26, 50, 74, 98, 122],
+    29 => [6, 30, 54, 78, 102, 126],
+    30 => [6, 26, 52, 78, 104, 130],
+    31 => [6, 30, 56, 82, 108, 134],
+    32 => [6, 34, 60, 86, 112, 138],
+    33 => [6, 30, 58, 86, 114, 142],
+    34 => [6, 34, 62, 90, 118, 146],
+    35 => [6, 30, 54, 78, 102, 126, 150],
+    36 => [6, 24, 50, 76, 102, 128, 154],
+    37 => [6, 28, 54, 80, 106, 132, 158],
+    38 => [6, 32, 58, 84, 110, 136, 162],
+    39 => [6, 26, 54, 82, 110, 138, 166],
+    40 => [6, 30, 58, 86, 114, 142, 170]
+  }
+
+  @doc "Returns the list of alignment pattern center coordinates for the given version."
+  @spec alignment_pattern_positions(version()) :: [non_neg_integer()]
+  def alignment_pattern_positions(version), do: Map.fetch!(@alignment_patterns, version)
+
+  # Error correction block structure table
+  # Format: {version, ec_level} => {total_data_codewords, ec_codewords_per_block, [{block_count, data_codewords_per_block}, ...]}
+  @ec_table %{
+    # Version 1
+    {1, :l} => {19, 7, [{1, 19}]},
+    {1, :m} => {16, 10, [{1, 16}]},
+    {1, :q} => {13, 13, [{1, 13}]},
+    {1, :h} => {9, 17, [{1, 9}]},
+    # Version 2
+    {2, :l} => {34, 10, [{1, 34}]},
+    {2, :m} => {28, 16, [{1, 28}]},
+    {2, :q} => {22, 22, [{1, 22}]},
+    {2, :h} => {16, 28, [{1, 16}]},
+    # Version 3
+    {3, :l} => {55, 15, [{1, 55}]},
+    {3, :m} => {44, 26, [{1, 44}]},
+    {3, :q} => {34, 18, [{2, 17}]},
+    {3, :h} => {26, 22, [{2, 13}]},
+    # Version 4
+    {4, :l} => {80, 20, [{1, 80}]},
+    {4, :m} => {64, 18, [{2, 32}]},
+    {4, :q} => {48, 26, [{2, 24}]},
+    {4, :h} => {36, 16, [{4, 9}]},
+    # Version 5
+    {5, :l} => {108, 26, [{1, 108}]},
+    {5, :m} => {86, 24, [{2, 43}]},
+    {5, :q} => {62, 18, [{2, 15}, {2, 16}]},
+    {5, :h} => {46, 22, [{2, 11}, {2, 12}]},
+    # Version 6
+    {6, :l} => {136, 18, [{2, 68}]},
+    {6, :m} => {108, 16, [{4, 27}]},
+    {6, :q} => {76, 24, [{4, 19}]},
+    {6, :h} => {60, 28, [{4, 15}]},
+    # Version 7
+    {7, :l} => {156, 20, [{2, 78}]},
+    {7, :m} => {124, 18, [{4, 31}]},
+    {7, :q} => {88, 18, [{2, 14}, {4, 15}]},
+    {7, :h} => {66, 26, [{4, 13}, {1, 14}]},
+    # Version 8
+    {8, :l} => {194, 24, [{2, 97}]},
+    {8, :m} => {154, 22, [{2, 38}, {2, 39}]},
+    {8, :q} => {110, 22, [{4, 18}, {2, 19}]},
+    {8, :h} => {86, 26, [{4, 14}, {2, 15}]},
+    # Version 9
+    {9, :l} => {232, 30, [{2, 116}]},
+    {9, :m} => {182, 22, [{3, 36}, {2, 37}]},
+    {9, :q} => {132, 20, [{4, 16}, {4, 17}]},
+    {9, :h} => {100, 24, [{4, 12}, {4, 13}]},
+    # Version 10
+    {10, :l} => {274, 18, [{2, 68}, {2, 69}]},
+    {10, :m} => {216, 26, [{4, 43}, {1, 44}]},
+    {10, :q} => {154, 24, [{6, 19}, {2, 20}]},
+    {10, :h} => {122, 28, [{6, 15}, {2, 16}]},
+    # Version 11
+    {11, :l} => {324, 20, [{4, 81}]},
+    {11, :m} => {254, 30, [{1, 50}, {4, 51}]},
+    {11, :q} => {180, 28, [{4, 22}, {4, 23}]},
+    {11, :h} => {140, 24, [{3, 12}, {8, 13}]},
+    # Version 12
+    {12, :l} => {370, 24, [{2, 92}, {2, 93}]},
+    {12, :m} => {290, 22, [{6, 36}, {2, 37}]},
+    {12, :q} => {206, 26, [{4, 20}, {6, 21}]},
+    {12, :h} => {158, 28, [{7, 14}, {4, 15}]},
+    # Version 13
+    {13, :l} => {428, 26, [{4, 107}]},
+    {13, :m} => {334, 22, [{8, 37}, {1, 38}]},
+    {13, :q} => {244, 24, [{8, 20}, {4, 21}]},
+    {13, :h} => {180, 22, [{12, 11}, {4, 12}]},
+    # Version 14
+    {14, :l} => {461, 30, [{3, 115}, {1, 116}]},
+    {14, :m} => {365, 24, [{4, 40}, {5, 41}]},
+    {14, :q} => {261, 20, [{11, 16}, {5, 17}]},
+    {14, :h} => {197, 24, [{11, 12}, {5, 13}]},
+    # Version 15
+    {15, :l} => {523, 22, [{5, 87}, {1, 88}]},
+    {15, :m} => {415, 24, [{5, 41}, {5, 42}]},
+    {15, :q} => {295, 30, [{5, 24}, {7, 25}]},
+    {15, :h} => {223, 24, [{11, 12}, {7, 13}]},
+    # Version 16
+    {16, :l} => {589, 24, [{5, 98}, {1, 99}]},
+    {16, :m} => {453, 28, [{7, 45}, {3, 46}]},
+    {16, :q} => {325, 24, [{15, 19}, {2, 20}]},
+    {16, :h} => {253, 30, [{3, 15}, {13, 16}]},
+    # Version 17
+    {17, :l} => {647, 28, [{1, 107}, {5, 108}]},
+    {17, :m} => {507, 28, [{10, 46}, {1, 47}]},
+    {17, :q} => {367, 28, [{1, 22}, {15, 23}]},
+    {17, :h} => {283, 28, [{2, 14}, {17, 15}]},
+    # Version 18
+    {18, :l} => {721, 30, [{5, 120}, {1, 121}]},
+    {18, :m} => {563, 26, [{9, 43}, {4, 44}]},
+    {18, :q} => {397, 28, [{17, 22}, {1, 23}]},
+    {18, :h} => {313, 28, [{2, 14}, {19, 15}]},
+    # Version 19
+    {19, :l} => {795, 28, [{3, 113}, {4, 114}]},
+    {19, :m} => {627, 26, [{3, 44}, {11, 45}]},
+    {19, :q} => {445, 26, [{17, 21}, {4, 22}]},
+    {19, :h} => {341, 26, [{9, 13}, {16, 14}]},
+    # Version 20
+    {20, :l} => {861, 28, [{3, 107}, {5, 108}]},
+    {20, :m} => {669, 26, [{3, 41}, {13, 42}]},
+    {20, :q} => {485, 28, [{15, 24}, {5, 25}]},
+    {20, :h} => {385, 28, [{15, 15}, {10, 16}]},
+    # Version 21
+    {21, :l} => {932, 28, [{4, 116}, {4, 117}]},
+    {21, :m} => {714, 26, [{17, 42}]},
+    {21, :q} => {512, 30, [{17, 22}, {6, 23}]},
+    {21, :h} => {406, 28, [{19, 16}, {6, 17}]},
+    # Version 22
+    {22, :l} => {1006, 28, [{2, 111}, {7, 112}]},
+    {22, :m} => {782, 28, [{17, 46}]},
+    {22, :q} => {568, 24, [{7, 24}, {16, 25}]},
+    {22, :h} => {442, 30, [{34, 13}]},
+    # Version 23
+    {23, :l} => {1094, 30, [{4, 121}, {5, 122}]},
+    {23, :m} => {860, 28, [{4, 47}, {14, 48}]},
+    {23, :q} => {614, 30, [{11, 24}, {14, 25}]},
+    {23, :h} => {464, 30, [{16, 15}, {14, 16}]},
+    # Version 24
+    {24, :l} => {1174, 30, [{6, 117}, {4, 118}]},
+    {24, :m} => {914, 28, [{6, 45}, {14, 46}]},
+    {24, :q} => {664, 30, [{11, 24}, {16, 25}]},
+    {24, :h} => {514, 30, [{30, 16}, {2, 17}]},
+    # Version 25
+    {25, :l} => {1276, 26, [{8, 106}, {4, 107}]},
+    {25, :m} => {1000, 28, [{8, 47}, {13, 48}]},
+    {25, :q} => {718, 30, [{7, 24}, {22, 25}]},
+    {25, :h} => {538, 30, [{22, 15}, {13, 16}]},
+    # Version 26
+    {26, :l} => {1370, 28, [{10, 114}, {2, 115}]},
+    {26, :m} => {1062, 28, [{19, 46}, {4, 47}]},
+    {26, :q} => {754, 28, [{28, 22}, {6, 23}]},
+    {26, :h} => {596, 30, [{33, 16}, {4, 17}]},
+    # Version 27
+    {27, :l} => {1468, 30, [{8, 122}, {4, 123}]},
+    {27, :m} => {1128, 28, [{22, 45}, {3, 46}]},
+    {27, :q} => {808, 30, [{8, 23}, {26, 24}]},
+    {27, :h} => {628, 30, [{12, 15}, {28, 16}]},
+    # Version 28
+    {28, :l} => {1531, 30, [{3, 117}, {10, 118}]},
+    {28, :m} => {1193, 28, [{3, 45}, {23, 46}]},
+    {28, :q} => {871, 30, [{4, 24}, {31, 25}]},
+    {28, :h} => {661, 30, [{11, 15}, {31, 16}]},
+    # Version 29
+    {29, :l} => {1631, 30, [{7, 116}, {7, 117}]},
+    {29, :m} => {1267, 28, [{21, 45}, {7, 46}]},
+    {29, :q} => {911, 30, [{1, 23}, {37, 24}]},
+    {29, :h} => {701, 30, [{19, 15}, {26, 16}]},
+    # Version 30
+    {30, :l} => {1735, 30, [{5, 115}, {10, 116}]},
+    {30, :m} => {1373, 28, [{19, 47}, {10, 48}]},
+    {30, :q} => {985, 30, [{15, 24}, {25, 25}]},
+    {30, :h} => {745, 30, [{23, 15}, {25, 16}]},
+    # Version 31
+    {31, :l} => {1843, 30, [{13, 115}, {3, 116}]},
+    {31, :m} => {1455, 28, [{2, 46}, {29, 47}]},
+    {31, :q} => {1033, 30, [{42, 24}, {1, 25}]},
+    {31, :h} => {793, 30, [{23, 15}, {28, 16}]},
+    # Version 32
+    {32, :l} => {1955, 30, [{17, 115}]},
+    {32, :m} => {1541, 28, [{10, 46}, {23, 47}]},
+    {32, :q} => {1115, 30, [{10, 24}, {35, 25}]},
+    {32, :h} => {845, 30, [{19, 15}, {35, 16}]},
+    # Version 33
+    {33, :l} => {2071, 30, [{17, 115}, {1, 116}]},
+    {33, :m} => {1631, 28, [{14, 46}, {21, 47}]},
+    {33, :q} => {1171, 30, [{29, 24}, {19, 25}]},
+    {33, :h} => {901, 30, [{11, 15}, {46, 16}]},
+    # Version 34
+    {34, :l} => {2191, 30, [{13, 115}, {6, 116}]},
+    {34, :m} => {1725, 28, [{14, 46}, {23, 47}]},
+    {34, :q} => {1231, 30, [{44, 24}, {7, 25}]},
+    {34, :h} => {961, 30, [{59, 16}, {1, 17}]},
+    # Version 35
+    {35, :l} => {2306, 30, [{12, 121}, {7, 122}]},
+    {35, :m} => {1812, 28, [{12, 47}, {26, 48}]},
+    {35, :q} => {1286, 30, [{39, 24}, {14, 25}]},
+    {35, :h} => {986, 30, [{22, 15}, {41, 16}]},
+    # Version 36
+    {36, :l} => {2434, 30, [{6, 121}, {14, 122}]},
+    {36, :m} => {1914, 28, [{6, 47}, {34, 48}]},
+    {36, :q} => {1354, 30, [{46, 24}, {10, 25}]},
+    {36, :h} => {1054, 30, [{2, 15}, {64, 16}]},
+    # Version 37
+    {37, :l} => {2566, 30, [{17, 122}, {4, 123}]},
+    {37, :m} => {1992, 28, [{29, 46}, {14, 47}]},
+    {37, :q} => {1426, 30, [{49, 24}, {10, 25}]},
+    {37, :h} => {1096, 30, [{24, 15}, {46, 16}]},
+    # Version 38
+    {38, :l} => {2702, 30, [{4, 122}, {18, 123}]},
+    {38, :m} => {2102, 28, [{13, 46}, {32, 47}]},
+    {38, :q} => {1502, 30, [{48, 24}, {14, 25}]},
+    {38, :h} => {1142, 30, [{42, 15}, {32, 16}]},
+    # Version 39
+    {39, :l} => {2812, 30, [{20, 117}, {4, 118}]},
+    {39, :m} => {2216, 28, [{40, 47}, {7, 48}]},
+    {39, :q} => {1582, 30, [{43, 24}, {22, 25}]},
+    {39, :h} => {1222, 30, [{10, 15}, {67, 16}]},
+    # Version 40
+    {40, :l} => {2956, 30, [{19, 118}, {6, 119}]},
+    {40, :m} => {2334, 28, [{18, 47}, {31, 48}]},
+    {40, :q} => {1666, 30, [{34, 24}, {34, 25}]},
+    {40, :h} => {1276, 30, [{20, 15}, {61, 16}]}
+  }
+
+  @doc """
+  Returns the error correction block structure for the given version and EC level.
+
+  Returns `{total_data_codewords, ec_codewords_per_block, block_groups}` where
+  `block_groups` is a list of `{block_count, data_codewords_per_block}` tuples.
+  """
+  @spec ec_info(version(), ec_level()) :: {non_neg_integer(), non_neg_integer(), [{non_neg_integer(), non_neg_integer()}]}
+  def ec_info(version, ec_level) do
+    Map.fetch!(@ec_table, {version, ec_level})
+  end
+
+  @doc "Returns the total number of data codewords for the given version and EC level."
+  @spec total_data_codewords(version(), ec_level()) :: non_neg_integer()
+  def total_data_codewords(version, ec_level) do
+    {total, _ec_per_block, _groups} = ec_info(version, ec_level)
+    total
+  end
+
+  @doc "Returns the total number of codewords (data + EC) for the given version."
+  @spec total_codewords(version()) :: non_neg_integer()
+  def total_codewords(version) do
+    # Total codewords = total modules in data region / 8
+    # data region = total modules - function pattern modules
+    # But it's easier to compute from EC table: total_data + total_ec
+    {total_data, ec_per_block, groups} = ec_info(version, :l)
+    total_blocks = Enum.reduce(groups, 0, fn {count, _}, acc -> acc + count end)
+    total_data + total_blocks * ec_per_block
+  end
+
+  # Character capacity table
+  # {version, ec_level, mode} => max_characters
+  # Built from the ISO 18004 standard tables
+  @capacity_table %{
+    {1, :l, :numeric} => 41, {1, :l, :alphanumeric} => 25, {1, :l, :byte} => 17, {1, :l, :kanji} => 10,
+    {1, :m, :numeric} => 34, {1, :m, :alphanumeric} => 20, {1, :m, :byte} => 14, {1, :m, :kanji} => 8,
+    {1, :q, :numeric} => 27, {1, :q, :alphanumeric} => 16, {1, :q, :byte} => 11, {1, :q, :kanji} => 7,
+    {1, :h, :numeric} => 17, {1, :h, :alphanumeric} => 10, {1, :h, :byte} => 7, {1, :h, :kanji} => 4,
+
+    {2, :l, :numeric} => 77, {2, :l, :alphanumeric} => 47, {2, :l, :byte} => 32, {2, :l, :kanji} => 20,
+    {2, :m, :numeric} => 63, {2, :m, :alphanumeric} => 38, {2, :m, :byte} => 26, {2, :m, :kanji} => 16,
+    {2, :q, :numeric} => 48, {2, :q, :alphanumeric} => 29, {2, :q, :byte} => 20, {2, :q, :kanji} => 12,
+    {2, :h, :numeric} => 34, {2, :h, :alphanumeric} => 20, {2, :h, :byte} => 14, {2, :h, :kanji} => 8,
+
+    {3, :l, :numeric} => 127, {3, :l, :alphanumeric} => 77, {3, :l, :byte} => 53, {3, :l, :kanji} => 32,
+    {3, :m, :numeric} => 101, {3, :m, :alphanumeric} => 61, {3, :m, :byte} => 42, {3, :m, :kanji} => 26,
+    {3, :q, :numeric} => 77, {3, :q, :alphanumeric} => 47, {3, :q, :byte} => 32, {3, :q, :kanji} => 20,
+    {3, :h, :numeric} => 58, {3, :h, :alphanumeric} => 35, {3, :h, :byte} => 24, {3, :h, :kanji} => 15,
+
+    {4, :l, :numeric} => 187, {4, :l, :alphanumeric} => 114, {4, :l, :byte} => 78, {4, :l, :kanji} => 48,
+    {4, :m, :numeric} => 149, {4, :m, :alphanumeric} => 90, {4, :m, :byte} => 62, {4, :m, :kanji} => 38,
+    {4, :q, :numeric} => 111, {4, :q, :alphanumeric} => 67, {4, :q, :byte} => 46, {4, :q, :kanji} => 28,
+    {4, :h, :numeric} => 82, {4, :h, :alphanumeric} => 50, {4, :h, :byte} => 34, {4, :h, :kanji} => 21,
+
+    {5, :l, :numeric} => 255, {5, :l, :alphanumeric} => 154, {5, :l, :byte} => 106, {5, :l, :kanji} => 65,
+    {5, :m, :numeric} => 202, {5, :m, :alphanumeric} => 122, {5, :m, :byte} => 84, {5, :m, :kanji} => 52,
+    {5, :q, :numeric} => 144, {5, :q, :alphanumeric} => 87, {5, :q, :byte} => 60, {5, :q, :kanji} => 37,
+    {5, :h, :numeric} => 106, {5, :h, :alphanumeric} => 64, {5, :h, :byte} => 44, {5, :h, :kanji} => 27,
+
+    {6, :l, :numeric} => 322, {6, :l, :alphanumeric} => 195, {6, :l, :byte} => 134, {6, :l, :kanji} => 82,
+    {6, :m, :numeric} => 255, {6, :m, :alphanumeric} => 154, {6, :m, :byte} => 106, {6, :m, :kanji} => 65,
+    {6, :q, :numeric} => 178, {6, :q, :alphanumeric} => 108, {6, :q, :byte} => 74, {6, :q, :kanji} => 45,
+    {6, :h, :numeric} => 139, {6, :h, :alphanumeric} => 84, {6, :h, :byte} => 58, {6, :h, :kanji} => 36,
+
+    {7, :l, :numeric} => 370, {7, :l, :alphanumeric} => 224, {7, :l, :byte} => 154, {7, :l, :kanji} => 95,
+    {7, :m, :numeric} => 293, {7, :m, :alphanumeric} => 178, {7, :m, :byte} => 122, {7, :m, :kanji} => 75,
+    {7, :q, :numeric} => 207, {7, :q, :alphanumeric} => 125, {7, :q, :byte} => 86, {7, :q, :kanji} => 53,
+    {7, :h, :numeric} => 154, {7, :h, :alphanumeric} => 93, {7, :h, :byte} => 64, {7, :h, :kanji} => 39,
+
+    {8, :l, :numeric} => 461, {8, :l, :alphanumeric} => 279, {8, :l, :byte} => 192, {8, :l, :kanji} => 118,
+    {8, :m, :numeric} => 365, {8, :m, :alphanumeric} => 221, {8, :m, :byte} => 152, {8, :m, :kanji} => 93,
+    {8, :q, :numeric} => 259, {8, :q, :alphanumeric} => 157, {8, :q, :byte} => 108, {8, :q, :kanji} => 66,
+    {8, :h, :numeric} => 202, {8, :h, :alphanumeric} => 122, {8, :h, :byte} => 84, {8, :h, :kanji} => 52,
+
+    {9, :l, :numeric} => 552, {9, :l, :alphanumeric} => 335, {9, :l, :byte} => 230, {9, :l, :kanji} => 141,
+    {9, :m, :numeric} => 432, {9, :m, :alphanumeric} => 262, {9, :m, :byte} => 180, {9, :m, :kanji} => 111,
+    {9, :q, :numeric} => 312, {9, :q, :alphanumeric} => 189, {9, :q, :byte} => 130, {9, :q, :kanji} => 80,
+    {9, :h, :numeric} => 235, {9, :h, :alphanumeric} => 143, {9, :h, :byte} => 98, {9, :h, :kanji} => 60,
+
+    {10, :l, :numeric} => 652, {10, :l, :alphanumeric} => 395, {10, :l, :byte} => 271, {10, :l, :kanji} => 167,
+    {10, :m, :numeric} => 513, {10, :m, :alphanumeric} => 311, {10, :m, :byte} => 213, {10, :m, :kanji} => 131,
+    {10, :q, :numeric} => 364, {10, :q, :alphanumeric} => 221, {10, :q, :byte} => 151, {10, :q, :kanji} => 93,
+    {10, :h, :numeric} => 288, {10, :h, :alphanumeric} => 174, {10, :h, :byte} => 119, {10, :h, :kanji} => 74,
+
+    {11, :l, :numeric} => 772, {11, :l, :alphanumeric} => 468, {11, :l, :byte} => 321, {11, :l, :kanji} => 198,
+    {11, :m, :numeric} => 604, {11, :m, :alphanumeric} => 366, {11, :m, :byte} => 251, {11, :m, :kanji} => 155,
+    {11, :q, :numeric} => 427, {11, :q, :alphanumeric} => 259, {11, :q, :byte} => 177, {11, :q, :kanji} => 109,
+    {11, :h, :numeric} => 331, {11, :h, :alphanumeric} => 200, {11, :h, :byte} => 137, {11, :h, :kanji} => 85,
+
+    {12, :l, :numeric} => 883, {12, :l, :alphanumeric} => 535, {12, :l, :byte} => 367, {12, :l, :kanji} => 226,
+    {12, :m, :numeric} => 691, {12, :m, :alphanumeric} => 419, {12, :m, :byte} => 287, {12, :m, :kanji} => 177,
+    {12, :q, :numeric} => 489, {12, :q, :alphanumeric} => 296, {12, :q, :byte} => 203, {12, :q, :kanji} => 125,
+    {12, :h, :numeric} => 374, {12, :h, :alphanumeric} => 227, {12, :h, :byte} => 155, {12, :h, :kanji} => 96,
+
+    {13, :l, :numeric} => 1022, {13, :l, :alphanumeric} => 619, {13, :l, :byte} => 425, {13, :l, :kanji} => 262,
+    {13, :m, :numeric} => 796, {13, :m, :alphanumeric} => 483, {13, :m, :byte} => 331, {13, :m, :kanji} => 204,
+    {13, :q, :numeric} => 580, {13, :q, :alphanumeric} => 352, {13, :q, :byte} => 241, {13, :q, :kanji} => 149,
+    {13, :h, :numeric} => 427, {13, :h, :alphanumeric} => 259, {13, :h, :byte} => 177, {13, :h, :kanji} => 109,
+
+    {14, :l, :numeric} => 1101, {14, :l, :alphanumeric} => 667, {14, :l, :byte} => 458, {14, :l, :kanji} => 282,
+    {14, :m, :numeric} => 871, {14, :m, :alphanumeric} => 528, {14, :m, :byte} => 362, {14, :m, :kanji} => 223,
+    {14, :q, :numeric} => 621, {14, :q, :alphanumeric} => 376, {14, :q, :byte} => 258, {14, :q, :kanji} => 159,
+    {14, :h, :numeric} => 468, {14, :h, :alphanumeric} => 283, {14, :h, :byte} => 194, {14, :h, :kanji} => 120,
+
+    {15, :l, :numeric} => 1250, {15, :l, :alphanumeric} => 758, {15, :l, :byte} => 520, {15, :l, :kanji} => 320,
+    {15, :m, :numeric} => 991, {15, :m, :alphanumeric} => 600, {15, :m, :byte} => 412, {15, :m, :kanji} => 254,
+    {15, :q, :numeric} => 703, {15, :q, :alphanumeric} => 426, {15, :q, :byte} => 292, {15, :q, :kanji} => 180,
+    {15, :h, :numeric} => 530, {15, :h, :alphanumeric} => 321, {15, :h, :byte} => 220, {15, :h, :kanji} => 136,
+
+    {16, :l, :numeric} => 1408, {16, :l, :alphanumeric} => 854, {16, :l, :byte} => 586, {16, :l, :kanji} => 361,
+    {16, :m, :numeric} => 1082, {16, :m, :alphanumeric} => 656, {16, :m, :byte} => 450, {16, :m, :kanji} => 277,
+    {16, :q, :numeric} => 775, {16, :q, :alphanumeric} => 470, {16, :q, :byte} => 322, {16, :q, :kanji} => 198,
+    {16, :h, :numeric} => 602, {16, :h, :alphanumeric} => 365, {16, :h, :byte} => 250, {16, :h, :kanji} => 154,
+
+    {17, :l, :numeric} => 1548, {17, :l, :alphanumeric} => 938, {17, :l, :byte} => 644, {17, :l, :kanji} => 397,
+    {17, :m, :numeric} => 1212, {17, :m, :alphanumeric} => 734, {17, :m, :byte} => 504, {17, :m, :kanji} => 310,
+    {17, :q, :numeric} => 876, {17, :q, :alphanumeric} => 531, {17, :q, :byte} => 364, {17, :q, :kanji} => 224,
+    {17, :h, :numeric} => 674, {17, :h, :alphanumeric} => 408, {17, :h, :byte} => 280, {17, :h, :kanji} => 173,
+
+    {18, :l, :numeric} => 1725, {18, :l, :alphanumeric} => 1046, {18, :l, :byte} => 718, {18, :l, :kanji} => 442,
+    {18, :m, :numeric} => 1346, {18, :m, :alphanumeric} => 816, {18, :m, :byte} => 560, {18, :m, :kanji} => 345,
+    {18, :q, :numeric} => 948, {18, :q, :alphanumeric} => 574, {18, :q, :byte} => 394, {18, :q, :kanji} => 243,
+    {18, :h, :numeric} => 746, {18, :h, :alphanumeric} => 452, {18, :h, :byte} => 310, {18, :h, :kanji} => 191,
+
+    {19, :l, :numeric} => 1903, {19, :l, :alphanumeric} => 1153, {19, :l, :byte} => 792, {19, :l, :kanji} => 488,
+    {19, :m, :numeric} => 1500, {19, :m, :alphanumeric} => 909, {19, :m, :byte} => 624, {19, :m, :kanji} => 384,
+    {19, :q, :numeric} => 1063, {19, :q, :alphanumeric} => 644, {19, :q, :byte} => 442, {19, :q, :kanji} => 272,
+    {19, :h, :numeric} => 813, {19, :h, :alphanumeric} => 493, {19, :h, :byte} => 338, {19, :h, :kanji} => 208,
+
+    {20, :l, :numeric} => 2061, {20, :l, :alphanumeric} => 1249, {20, :l, :byte} => 858, {20, :l, :kanji} => 528,
+    {20, :m, :numeric} => 1600, {20, :m, :alphanumeric} => 970, {20, :m, :byte} => 666, {20, :m, :kanji} => 410,
+    {20, :q, :numeric} => 1159, {20, :q, :alphanumeric} => 702, {20, :q, :byte} => 482, {20, :q, :kanji} => 297,
+    {20, :h, :numeric} => 919, {20, :h, :alphanumeric} => 557, {20, :h, :byte} => 382, {20, :h, :kanji} => 235,
+
+    {21, :l, :numeric} => 2232, {21, :l, :alphanumeric} => 1352, {21, :l, :byte} => 929, {21, :l, :kanji} => 572,
+    {21, :m, :numeric} => 1708, {21, :m, :alphanumeric} => 1035, {21, :m, :byte} => 711, {21, :m, :kanji} => 438,
+    {21, :q, :numeric} => 1224, {21, :q, :alphanumeric} => 742, {21, :q, :byte} => 509, {21, :q, :kanji} => 314,
+    {21, :h, :numeric} => 969, {21, :h, :alphanumeric} => 587, {21, :h, :byte} => 403, {21, :h, :kanji} => 248,
+
+    {22, :l, :numeric} => 2409, {22, :l, :alphanumeric} => 1460, {22, :l, :byte} => 1003, {22, :l, :kanji} => 618,
+    {22, :m, :numeric} => 1872, {22, :m, :alphanumeric} => 1134, {22, :m, :byte} => 779, {22, :m, :kanji} => 480,
+    {22, :q, :numeric} => 1358, {22, :q, :alphanumeric} => 823, {22, :q, :byte} => 565, {22, :q, :kanji} => 348,
+    {22, :h, :numeric} => 1056, {22, :h, :alphanumeric} => 640, {22, :h, :byte} => 439, {22, :h, :kanji} => 270,
+
+    {23, :l, :numeric} => 2620, {23, :l, :alphanumeric} => 1588, {23, :l, :byte} => 1091, {23, :l, :kanji} => 672,
+    {23, :m, :numeric} => 2059, {23, :m, :alphanumeric} => 1248, {23, :m, :byte} => 857, {23, :m, :kanji} => 528,
+    {23, :q, :numeric} => 1468, {23, :q, :alphanumeric} => 890, {23, :q, :byte} => 611, {23, :q, :kanji} => 376,
+    {23, :h, :numeric} => 1108, {23, :h, :alphanumeric} => 672, {23, :h, :byte} => 461, {23, :h, :kanji} => 284,
+
+    {24, :l, :numeric} => 2812, {24, :l, :alphanumeric} => 1704, {24, :l, :byte} => 1171, {24, :l, :kanji} => 721,
+    {24, :m, :numeric} => 2188, {24, :m, :alphanumeric} => 1326, {24, :m, :byte} => 911, {24, :m, :kanji} => 561,
+    {24, :q, :numeric} => 1588, {24, :q, :alphanumeric} => 963, {24, :q, :byte} => 661, {24, :q, :kanji} => 407,
+    {24, :h, :numeric} => 1228, {24, :h, :alphanumeric} => 744, {24, :h, :byte} => 511, {24, :h, :kanji} => 315,
+
+    {25, :l, :numeric} => 3057, {25, :l, :alphanumeric} => 1853, {25, :l, :byte} => 1273, {25, :l, :kanji} => 784,
+    {25, :m, :numeric} => 2395, {25, :m, :alphanumeric} => 1451, {25, :m, :byte} => 997, {25, :m, :kanji} => 614,
+    {25, :q, :numeric} => 1718, {25, :q, :alphanumeric} => 1041, {25, :q, :byte} => 715, {25, :q, :kanji} => 440,
+    {25, :h, :numeric} => 1286, {25, :h, :alphanumeric} => 779, {25, :h, :byte} => 535, {25, :h, :kanji} => 330,
+
+    {26, :l, :numeric} => 3283, {26, :l, :alphanumeric} => 1990, {26, :l, :byte} => 1367, {26, :l, :kanji} => 842,
+    {26, :m, :numeric} => 2544, {26, :m, :alphanumeric} => 1542, {26, :m, :byte} => 1059, {26, :m, :kanji} => 652,
+    {26, :q, :numeric} => 1804, {26, :q, :alphanumeric} => 1094, {26, :q, :byte} => 751, {26, :q, :kanji} => 462,
+    {26, :h, :numeric} => 1425, {26, :h, :alphanumeric} => 864, {26, :h, :byte} => 593, {26, :h, :kanji} => 365,
+
+    {27, :l, :numeric} => 3517, {27, :l, :alphanumeric} => 2132, {27, :l, :byte} => 1465, {27, :l, :kanji} => 902,
+    {27, :m, :numeric} => 2701, {27, :m, :alphanumeric} => 1637, {27, :m, :byte} => 1125, {27, :m, :kanji} => 692,
+    {27, :q, :numeric} => 1933, {27, :q, :alphanumeric} => 1172, {27, :q, :byte} => 805, {27, :q, :kanji} => 496,
+    {27, :h, :numeric} => 1501, {27, :h, :alphanumeric} => 910, {27, :h, :byte} => 625, {27, :h, :kanji} => 385,
+
+    {28, :l, :numeric} => 3669, {28, :l, :alphanumeric} => 2223, {28, :l, :byte} => 1528, {28, :l, :kanji} => 940,
+    {28, :m, :numeric} => 2857, {28, :m, :alphanumeric} => 1732, {28, :m, :byte} => 1190, {28, :m, :kanji} => 732,
+    {28, :q, :numeric} => 2085, {28, :q, :alphanumeric} => 1263, {28, :q, :byte} => 868, {28, :q, :kanji} => 534,
+    {28, :h, :numeric} => 1581, {28, :h, :alphanumeric} => 958, {28, :h, :byte} => 658, {28, :h, :kanji} => 405,
+
+    {29, :l, :numeric} => 3909, {29, :l, :alphanumeric} => 2369, {29, :l, :byte} => 1628, {29, :l, :kanji} => 1002,
+    {29, :m, :numeric} => 3035, {29, :m, :alphanumeric} => 1839, {29, :m, :byte} => 1264, {29, :m, :kanji} => 778,
+    {29, :q, :numeric} => 2181, {29, :q, :alphanumeric} => 1322, {29, :q, :byte} => 908, {29, :q, :kanji} => 559,
+    {29, :h, :numeric} => 1677, {29, :h, :alphanumeric} => 1016, {29, :h, :byte} => 698, {29, :h, :kanji} => 430,
+
+    {30, :l, :numeric} => 4158, {30, :l, :alphanumeric} => 2520, {30, :l, :byte} => 1732, {30, :l, :kanji} => 1066,
+    {30, :m, :numeric} => 3289, {30, :m, :alphanumeric} => 1994, {30, :m, :byte} => 1370, {30, :m, :kanji} => 843,
+    {30, :q, :numeric} => 2358, {30, :q, :alphanumeric} => 1429, {30, :q, :byte} => 982, {30, :q, :kanji} => 604,
+    {30, :h, :numeric} => 1782, {30, :h, :alphanumeric} => 1080, {30, :h, :byte} => 742, {30, :h, :kanji} => 457,
+
+    {31, :l, :numeric} => 4417, {31, :l, :alphanumeric} => 2677, {31, :l, :byte} => 1840, {31, :l, :kanji} => 1132,
+    {31, :m, :numeric} => 3486, {31, :m, :alphanumeric} => 2113, {31, :m, :byte} => 1452, {31, :m, :kanji} => 894,
+    {31, :q, :numeric} => 2473, {31, :q, :alphanumeric} => 1499, {31, :q, :byte} => 1030, {31, :q, :kanji} => 634,
+    {31, :h, :numeric} => 1897, {31, :h, :alphanumeric} => 1150, {31, :h, :byte} => 790, {31, :h, :kanji} => 486,
+
+    {32, :l, :numeric} => 4686, {32, :l, :alphanumeric} => 2840, {32, :l, :byte} => 1952, {32, :l, :kanji} => 1201,
+    {32, :m, :numeric} => 3693, {32, :m, :alphanumeric} => 2238, {32, :m, :byte} => 1538, {32, :m, :kanji} => 947,
+    {32, :q, :numeric} => 2670, {32, :q, :alphanumeric} => 1618, {32, :q, :byte} => 1112, {32, :q, :kanji} => 684,
+    {32, :h, :numeric} => 2022, {32, :h, :alphanumeric} => 1226, {32, :h, :byte} => 842, {32, :h, :kanji} => 518,
+
+    {33, :l, :numeric} => 4965, {33, :l, :alphanumeric} => 3009, {33, :l, :byte} => 2068, {33, :l, :kanji} => 1273,
+    {33, :m, :numeric} => 3909, {33, :m, :alphanumeric} => 2369, {33, :m, :byte} => 1628, {33, :m, :kanji} => 1002,
+    {33, :q, :numeric} => 2805, {33, :q, :alphanumeric} => 1700, {33, :q, :byte} => 1168, {33, :q, :kanji} => 719,
+    {33, :h, :numeric} => 2157, {33, :h, :alphanumeric} => 1307, {33, :h, :byte} => 898, {33, :h, :kanji} => 553,
+
+    {34, :l, :numeric} => 5253, {34, :l, :alphanumeric} => 3183, {34, :l, :byte} => 2188, {34, :l, :kanji} => 1347,
+    {34, :m, :numeric} => 4134, {34, :m, :alphanumeric} => 2506, {34, :m, :byte} => 1722, {34, :m, :kanji} => 1060,
+    {34, :q, :numeric} => 2949, {34, :q, :alphanumeric} => 1787, {34, :q, :byte} => 1228, {34, :q, :kanji} => 756,
+    {34, :h, :numeric} => 2301, {34, :h, :alphanumeric} => 1394, {34, :h, :byte} => 958, {34, :h, :kanji} => 590,
+
+    {35, :l, :numeric} => 5529, {35, :l, :alphanumeric} => 3351, {35, :l, :byte} => 2303, {35, :l, :kanji} => 1417,
+    {35, :m, :numeric} => 4343, {35, :m, :alphanumeric} => 2632, {35, :m, :byte} => 1809, {35, :m, :kanji} => 1113,
+    {35, :q, :numeric} => 3081, {35, :q, :alphanumeric} => 1867, {35, :q, :byte} => 1283, {35, :q, :kanji} => 790,
+    {35, :h, :numeric} => 2361, {35, :h, :alphanumeric} => 1431, {35, :h, :byte} => 983, {35, :h, :kanji} => 605,
+
+    {36, :l, :numeric} => 5836, {36, :l, :alphanumeric} => 3537, {36, :l, :byte} => 2431, {36, :l, :kanji} => 1496,
+    {36, :m, :numeric} => 4588, {36, :m, :alphanumeric} => 2780, {36, :m, :byte} => 1911, {36, :m, :kanji} => 1176,
+    {36, :q, :numeric} => 3244, {36, :q, :alphanumeric} => 1966, {36, :q, :byte} => 1351, {36, :q, :kanji} => 832,
+    {36, :h, :numeric} => 2524, {36, :h, :alphanumeric} => 1530, {36, :h, :byte} => 1051, {36, :h, :kanji} => 647,
+
+    {37, :l, :numeric} => 6153, {37, :l, :alphanumeric} => 3729, {37, :l, :byte} => 2563, {37, :l, :kanji} => 1577,
+    {37, :m, :numeric} => 4775, {37, :m, :alphanumeric} => 2894, {37, :m, :byte} => 1989, {37, :m, :kanji} => 1224,
+    {37, :q, :numeric} => 3417, {37, :q, :alphanumeric} => 2071, {37, :q, :byte} => 1423, {37, :q, :kanji} => 876,
+    {37, :h, :numeric} => 2625, {37, :h, :alphanumeric} => 1591, {37, :h, :byte} => 1093, {37, :h, :kanji} => 673,
+
+    {38, :l, :numeric} => 6479, {38, :l, :alphanumeric} => 3927, {38, :l, :byte} => 2699, {38, :l, :kanji} => 1661,
+    {38, :m, :numeric} => 5039, {38, :m, :alphanumeric} => 3054, {38, :m, :byte} => 2099, {38, :m, :kanji} => 1292,
+    {38, :q, :numeric} => 3599, {38, :q, :alphanumeric} => 2181, {38, :q, :byte} => 1499, {38, :q, :kanji} => 923,
+    {38, :h, :numeric} => 2735, {38, :h, :alphanumeric} => 1658, {38, :h, :byte} => 1139, {38, :h, :kanji} => 701,
+
+    {39, :l, :numeric} => 6743, {39, :l, :alphanumeric} => 4087, {39, :l, :byte} => 2809, {39, :l, :kanji} => 1729,
+    {39, :m, :numeric} => 5313, {39, :m, :alphanumeric} => 3220, {39, :m, :byte} => 2213, {39, :m, :kanji} => 1362,
+    {39, :q, :numeric} => 3791, {39, :q, :alphanumeric} => 2298, {39, :q, :byte} => 1579, {39, :q, :kanji} => 972,
+    {39, :h, :numeric} => 2927, {39, :h, :alphanumeric} => 1774, {39, :h, :byte} => 1219, {39, :h, :kanji} => 750,
+
+    {40, :l, :numeric} => 7089, {40, :l, :alphanumeric} => 4296, {40, :l, :byte} => 2953, {40, :l, :kanji} => 1817,
+    {40, :m, :numeric} => 5596, {40, :m, :alphanumeric} => 3391, {40, :m, :byte} => 2331, {40, :m, :kanji} => 1435,
+    {40, :q, :numeric} => 3993, {40, :q, :alphanumeric} => 2420, {40, :q, :byte} => 1663, {40, :q, :kanji} => 1024,
+    {40, :h, :numeric} => 3057, {40, :h, :alphanumeric} => 1852, {40, :h, :byte} => 1273, {40, :h, :kanji} => 784
+  }
+
+  @doc "Returns the maximum number of characters for the given version, EC level, and mode."
+  @spec capacity(version(), ec_level(), mode()) :: non_neg_integer()
+  def capacity(version, ec_level, mode) do
+    Map.fetch!(@capacity_table, {version, ec_level, mode})
+  end
+
+  @doc """
+  Returns the EC level bits (2-bit value) for format information encoding.
+  Note: the bit values are NOT in alphabetical order per the ISO spec.
+  """
+  @spec ec_level_bits(ec_level()) :: non_neg_integer()
+  def ec_level_bits(:l), do: 0b01
+  def ec_level_bits(:m), do: 0b00
+  def ec_level_bits(:q), do: 0b11
+  def ec_level_bits(:h), do: 0b10
+
+  @doc "Returns the format information XOR mask."
+  @spec format_mask() :: non_neg_integer()
+  def format_mask, do: 0b101010000010010
+
+  @doc "Returns the BCH generator polynomial for format information (degree 10)."
+  @spec format_generator() :: non_neg_integer()
+  def format_generator, do: 0b10100110111
+
+  @doc "Returns the BCH generator polynomial for version information (degree 12)."
+  @spec version_generator() :: non_neg_integer()
+  def version_generator, do: 0b1111100100101
+end
