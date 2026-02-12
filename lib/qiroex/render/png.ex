@@ -4,16 +4,19 @@ defmodule Qiroex.Render.PNG do
 
   Produces a minimal valid PNG file using only Erlang stdlib (`:zlib` for
   DEFLATE compression, `:erlang.crc32` for CRC-32). The image uses an
-  indexed color palette (2 colors: light and dark).
+  indexed color palette.
 
   ## Options
     - `:module_size` - size of each module in pixels (default: 10)
     - `:quiet_zone` - number of quiet zone modules (default: 4)
     - `:dark_color` - `{r, g, b}` tuple 0-255 (default: `{0, 0, 0}`)
     - `:light_color` - `{r, g, b}` tuple 0-255 (default: `{255, 255, 255}`)
+    - `:style` - a `%Qiroex.Style{}` struct for finder pattern colors (optional)
   """
 
   alias Qiroex.Matrix
+  alias Qiroex.Matrix.Regions
+  alias Qiroex.Style
 
   @png_signature <<137, 80, 78, 71, 13, 10, 26, 10>>
 
@@ -21,7 +24,8 @@ defmodule Qiroex.Render.PNG do
     module_size: 10,
     quiet_zone: 4,
     dark_color: {0, 0, 0},
-    light_color: {255, 255, 255}
+    light_color: {255, 255, 255},
+    style: nil
   }
 
   @doc """
@@ -56,52 +60,105 @@ defmodule Qiroex.Render.PNG do
       module_size: Keyword.get(opts, :module_size, @default_opts.module_size),
       quiet_zone: Keyword.get(opts, :quiet_zone, @default_opts.quiet_zone),
       dark_color: Keyword.get(opts, :dark_color, @default_opts.dark_color),
-      light_color: Keyword.get(opts, :light_color, @default_opts.light_color)
+      light_color: Keyword.get(opts, :light_color, @default_opts.light_color),
+      style: Keyword.get(opts, :style, @default_opts.style)
     }
   end
 
   defp build_png(matrix, config) do
-    %{module_size: mod, quiet_zone: qz, dark_color: dark, light_color: light} = config
+    %{module_size: mod, quiet_zone: qz, dark_color: dark, light_color: light, style: style} =
+      config
 
     total_modules = matrix.size + 2 * qz
     width = total_modules * mod
     height = total_modules * mod
 
+    if Style.custom_finder?(style) do
+      build_styled_png(matrix, width, height, mod, qz, dark, light, style)
+    else
+      build_simple_png(matrix, width, height, mod, qz, dark, light)
+    end
+  end
+
+  # Simple 2-color PNG (original path)
+  defp build_simple_png(matrix, width, height, mod, qz, dark, light) do
     ihdr = build_ihdr(width, height)
-    plte = build_plte(light, dark)
-    idat = build_idat(matrix, width, height, mod, qz)
+    plte = build_plte([light, dark])
+    idat = build_idat_simple(matrix, width, height, mod, qz)
     iend = build_iend()
 
     IO.iodata_to_binary([@png_signature, ihdr, plte, idat, iend])
   end
 
-  # IHDR chunk: 13 bytes of image header
-  # Width (4), Height (4), Bit depth (1), Color type (1), Compression (1), Filter (1), Interlace (1)
+  # Multi-color PNG with finder pattern styling
+  defp build_styled_png(matrix, width, height, mod, qz, dark, light, style) do
+    # Palette: 0=light, 1=dark, 2=finder_outer, 3=finder_inner, 4=finder_eye
+    finder_outer = parse_css_color(Style.finder_color(style, :outer, nil), dark)
+    finder_inner = parse_css_color(Style.finder_color(style, :inner, nil), light)
+    finder_eye = parse_css_color(Style.finder_color(style, :eye, nil), dark)
+
+    palette = [light, dark, finder_outer, finder_inner, finder_eye]
+
+    ihdr = build_ihdr(width, height)
+    plte = build_plte(palette)
+    region_map = Regions.build_map(matrix)
+    idat = build_idat_styled(matrix, region_map, width, height, mod, qz)
+    iend = build_iend()
+
+    IO.iodata_to_binary([@png_signature, ihdr, plte, idat, iend])
+  end
+
+  # Parse a CSS hex color to {r, g, b} tuple, or use the default tuple
+  defp parse_css_color(nil, default_tuple), do: default_tuple
+
+  defp parse_css_color("#" <> hex, _default) when byte_size(hex) == 6 do
+    {r, ""} = Integer.parse(String.slice(hex, 0, 2), 16)
+    {g, ""} = Integer.parse(String.slice(hex, 2, 2), 16)
+    {b, ""} = Integer.parse(String.slice(hex, 4, 2), 16)
+    {r, g, b}
+  end
+
+  defp parse_css_color(color, _default) when is_tuple(color), do: color
+  defp parse_css_color(_, default_tuple), do: default_tuple
+
+  # IHDR chunk
   defp build_ihdr(width, height) do
     data = <<
       width::32,
       height::32,
-      8::8,           # bit depth: 8 bits per pixel
-      3::8,           # color type: indexed color (palette)
-      0::8,           # compression: deflate
-      0::8,           # filter: adaptive
-      0::8            # interlace: none
+      8::8,
+      3::8,
+      0::8,
+      0::8,
+      0::8
     >>
 
     build_chunk("IHDR", data)
   end
 
-  # PLTE chunk: palette with 2 colors (index 0 = light, index 1 = dark)
-  defp build_plte({lr, lg, lb}, {dr, dg, db}) do
-    data = <<lr::8, lg::8, lb::8, dr::8, dg::8, db::8>>
+  # PLTE chunk: supports variable number of palette entries
+  defp build_plte(colors) do
+    data =
+      colors
+      |> Enum.map(fn {r, g, b} -> <<r::8, g::8, b::8>> end)
+      |> IO.iodata_to_binary()
+
     build_chunk("PLTE", data)
   end
 
-  # IDAT chunk: compressed image data
-  # Each row starts with a filter byte (0 = None), then pixel indices
-  defp build_idat(matrix, width, height, mod, qz) do
-    raw_data = build_raw_image_data(matrix, width, height, mod, qz)
+  # Simple IDAT: 2-color indexed
+  defp build_idat_simple(matrix, _width, _height, mod, qz) do
+    raw_data = build_raw_image_data_simple(matrix, mod, qz)
+    compress_idat(raw_data)
+  end
 
+  # Styled IDAT: multi-color indexed with region awareness
+  defp build_idat_styled(matrix, region_map, _width, _height, mod, qz) do
+    raw_data = build_raw_image_data_styled(matrix, region_map, mod, qz)
+    compress_idat(raw_data)
+  end
+
+  defp compress_idat(raw_data) do
     z = :zlib.open()
     :zlib.deflateInit(z)
     compressed = :zlib.deflate(z, raw_data, :finish)
@@ -111,11 +168,10 @@ defmodule Qiroex.Render.PNG do
     build_chunk("IDAT", IO.iodata_to_binary(compressed))
   end
 
-  # Build raw (uncompressed) image data with filter bytes
-  defp build_raw_image_data(matrix, _width, _height, mod, qz) do
+  # Build raw image data for simple 2-color mode
+  defp build_raw_image_data_simple(matrix, mod, qz) do
     total_modules = matrix.size + 2 * qz
 
-    # Build one row of module indices (without pixel scaling)
     module_rows =
       for mr <- 0..(total_modules - 1) do
         row_bytes =
@@ -126,31 +182,60 @@ defmodule Qiroex.Render.PNG do
             if r >= 0 and r < matrix.size and c >= 0 and c < matrix.size do
               if Matrix.dark?(matrix, {r, c}), do: 1, else: 0
             else
-              0  # quiet zone = light
+              0
             end
           end
 
-        # Scale each module pixel to mod × mod
-        scaled_row = Enum.flat_map(row_bytes, fn byte ->
-          List.duplicate(byte, mod)
-        end)
-
-        # Add filter byte (0 = None) and convert to binary
+        scaled_row = Enum.flat_map(row_bytes, fn byte -> List.duplicate(byte, mod) end)
         pixel_row = [0 | scaled_row] |> :binary.list_to_bin()
-
-        # Repeat this row `mod` times for vertical scaling
         List.duplicate(pixel_row, mod)
       end
 
     IO.iodata_to_binary(module_rows)
   end
 
-  # IEND chunk: empty end marker
+  # Build raw image data with region-aware palette indices
+  defp build_raw_image_data_styled(matrix, region_map, mod, qz) do
+    total_modules = matrix.size + 2 * qz
+
+    module_rows =
+      for mr <- 0..(total_modules - 1) do
+        row_bytes =
+          for mc <- 0..(total_modules - 1) do
+            r = mr - qz
+            c = mc - qz
+
+            if r >= 0 and r < matrix.size and c >= 0 and c < matrix.size do
+              region = Map.get(region_map, {r, c}, :data)
+              is_dark = Matrix.dark?(matrix, {r, c})
+              region_to_palette_index(region, is_dark)
+            else
+              0
+            end
+          end
+
+        scaled_row = Enum.flat_map(row_bytes, fn byte -> List.duplicate(byte, mod) end)
+        pixel_row = [0 | scaled_row] |> :binary.list_to_bin()
+        List.duplicate(pixel_row, mod)
+      end
+
+    IO.iodata_to_binary(module_rows)
+  end
+
+  # Map region + dark/light state to palette index
+  # 0=light, 1=dark, 2=finder_outer, 3=finder_inner, 4=finder_eye
+  defp region_to_palette_index(:finder_outer, true), do: 2
+  defp region_to_palette_index(:finder_outer, false), do: 0
+  defp region_to_palette_index(:finder_inner, _), do: 3
+  defp region_to_palette_index(:finder_eye, true), do: 4
+  defp region_to_palette_index(:finder_eye, false), do: 3
+  defp region_to_palette_index(_, true), do: 1
+  defp region_to_palette_index(_, false), do: 0
+
   defp build_iend do
     build_chunk("IEND", <<>>)
   end
 
-  # Build a PNG chunk: length(4) + type(4) + data + crc(4)
   defp build_chunk(type, data) do
     type_bin = type
     length = byte_size(data)

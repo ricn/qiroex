@@ -24,6 +24,9 @@ defmodule Qiroex do
   alias Qiroex.QR
   alias Qiroex.Render.{SVG, PNG, Terminal}
 
+  @svg_render_keys [:module_size, :quiet_zone, :dark_color, :light_color, :style]
+  @png_render_keys [:module_size, :quiet_zone, :dark_color, :light_color, :style]
+
   @doc """
   Encodes data into a QR code.
 
@@ -85,7 +88,7 @@ defmodule Qiroex do
   """
   @spec to_svg(binary(), keyword()) :: {:ok, String.t()} | {:error, String.t()}
   def to_svg(data, opts \\ []) do
-    {render_opts, encode_opts} = split_render_opts(opts, [:module_size, :quiet_zone, :dark_color, :light_color])
+    {render_opts, encode_opts} = split_render_opts(opts, @svg_render_keys)
 
     case QR.encode(data, encode_opts) do
       {:ok, qr} -> {:ok, SVG.render(qr.matrix, render_opts)}
@@ -96,7 +99,7 @@ defmodule Qiroex do
   @doc "Generates a QR code SVG string, raising on error."
   @spec to_svg!(binary(), keyword()) :: String.t()
   def to_svg!(data, opts \\ []) do
-    {render_opts, encode_opts} = split_render_opts(opts, [:module_size, :quiet_zone, :dark_color, :light_color])
+    {render_opts, encode_opts} = split_render_opts(opts, @svg_render_keys)
     qr = QR.encode!(data, encode_opts)
     SVG.render(qr.matrix, render_opts)
   end
@@ -118,7 +121,7 @@ defmodule Qiroex do
   """
   @spec to_png(binary(), keyword()) :: {:ok, binary()} | {:error, String.t()}
   def to_png(data, opts \\ []) do
-    {render_opts, encode_opts} = split_render_opts(opts, [:module_size, :quiet_zone, :dark_color, :light_color])
+    {render_opts, encode_opts} = split_render_opts(opts, @png_render_keys)
 
     case QR.encode(data, encode_opts) do
       {:ok, qr} -> {:ok, PNG.render(qr.matrix, render_opts)}
@@ -129,7 +132,7 @@ defmodule Qiroex do
   @doc "Generates a QR code PNG binary, raising on error."
   @spec to_png!(binary(), keyword()) :: binary()
   def to_png!(data, opts \\ []) do
-    {render_opts, encode_opts} = split_render_opts(opts, [:module_size, :quiet_zone, :dark_color, :light_color])
+    {render_opts, encode_opts} = split_render_opts(opts, @png_render_keys)
     qr = QR.encode!(data, encode_opts)
     PNG.render(qr.matrix, render_opts)
   end
@@ -142,7 +145,7 @@ defmodule Qiroex do
   """
   @spec save_png(binary(), Path.t(), keyword()) :: :ok | {:error, term()}
   def save_png(data, path, opts \\ []) do
-    {render_opts, encode_opts} = split_render_opts(opts, [:module_size, :quiet_zone, :dark_color, :light_color])
+    {render_opts, encode_opts} = split_render_opts(opts, @png_render_keys)
     qr = QR.encode!(data, encode_opts)
     PNG.save(qr.matrix, path, render_opts)
   end
@@ -155,7 +158,7 @@ defmodule Qiroex do
   """
   @spec save_svg(binary(), Path.t(), keyword()) :: :ok | {:error, term()}
   def save_svg(data, path, opts \\ []) do
-    {render_opts, encode_opts} = split_render_opts(opts, [:module_size, :quiet_zone, :dark_color, :light_color])
+    {render_opts, encode_opts} = split_render_opts(opts, @svg_render_keys)
     qr = QR.encode!(data, encode_opts)
     svg = SVG.render(qr.matrix, render_opts)
     File.write(path, svg)
