@@ -16,13 +16,15 @@ defmodule Qiroex.Render.SVG do
   alias Qiroex.Matrix
   alias Qiroex.Matrix.Regions
   alias Qiroex.Style
+  alias Qiroex.Logo
 
   @default_opts %{
     module_size: 10,
     quiet_zone: 4,
     dark_color: "#000000",
     light_color: "#ffffff",
-    style: nil
+    style: nil,
+    logo: nil
   }
 
   @doc """
@@ -56,13 +58,14 @@ defmodule Qiroex.Render.SVG do
       quiet_zone: Keyword.get(opts, :quiet_zone, @default_opts.quiet_zone),
       dark_color: Keyword.get(opts, :dark_color, @default_opts.dark_color),
       light_color: Keyword.get(opts, :light_color, @default_opts.light_color),
-      style: Keyword.get(opts, :style, @default_opts.style)
+      style: Keyword.get(opts, :style, @default_opts.style),
+      logo: Keyword.get(opts, :logo, @default_opts.logo)
     }
   end
 
   defp build_iolist(matrix, config) do
-    %{module_size: mod, quiet_zone: qz, dark_color: dark, light_color: light, style: style} =
-      config
+    %{module_size: mod, quiet_zone: qz, dark_color: dark, light_color: light,
+      style: style, logo: logo} = config
 
     total_modules = matrix.size + 2 * qz
     total_px = total_modules * mod
@@ -70,10 +73,22 @@ defmodule Qiroex.Render.SVG do
     width = Integer.to_string(total_px)
     height = Integer.to_string(total_px)
 
+    # Compute cleared positions for logo (if any)
+    cleared = if logo, do: Logo.cleared_positions(logo, matrix.size, mod, qz), else: MapSet.new()
+
+    # Build the logo SVG fragment (if any)
+    logo_fragment =
+      if logo do
+        geo = Logo.geometry(logo, matrix.size, mod, qz)
+        Logo.render_svg(logo, geo)
+      else
+        []
+      end
+
     if styled?(style) do
-      build_styled_iolist(matrix, mod, qz, dark, light, style, width, height)
+      build_styled_iolist(matrix, mod, qz, dark, light, style, width, height, cleared, logo_fragment)
     else
-      build_simple_iolist(matrix, mod, qz, dark, light, width, height)
+      build_simple_iolist(matrix, mod, qz, dark, light, width, height, cleared, logo_fragment)
     end
   end
 
@@ -82,26 +97,28 @@ defmodule Qiroex.Render.SVG do
 
   # === Simple Rendering (original fast path) ===
 
-  defp build_simple_iolist(matrix, mod, qz, dark, light, width, height) do
-    path_data = build_path_data(matrix, mod, qz)
+  defp build_simple_iolist(matrix, mod, qz, dark, light, width, height, cleared, logo_fragment) do
+    path_data = build_path_data(matrix, mod, qz, cleared)
 
     [
       svg_header(width, height),
       background_rect(light),
       ~s(<path d="), path_data, ~s(" fill="), dark, ~s("/>\n),
+      logo_fragment,
       ~s(</svg>\n)
     ]
   end
 
   # Build SVG path data string for all dark modules (square shape).
-  defp build_path_data(matrix, mod, qz) do
+  defp build_path_data(matrix, mod, qz, cleared) do
     size = matrix.size
     mod_s = Integer.to_string(mod)
     neg_mod_s = Integer.to_string(-mod)
 
     for row <- 0..(size - 1),
         col <- 0..(size - 1),
-        Matrix.dark?(matrix, {row, col}) do
+        Matrix.dark?(matrix, {row, col}),
+        not MapSet.member?(cleared, {row, col}) do
       x = Integer.to_string((col + qz) * mod)
       y = Integer.to_string((row + qz) * mod)
 
@@ -111,29 +128,31 @@ defmodule Qiroex.Render.SVG do
 
   # === Styled Rendering ===
 
-  defp build_styled_iolist(matrix, mod, qz, dark, light, style, width, height) do
+  defp build_styled_iolist(matrix, mod, qz, dark, light, style, width, height, cleared, logo_fragment) do
     region_map = Regions.build_map(matrix)
     defs = build_defs(style, width, height)
 
     # Classify dark modules by region and render with appropriate style
-    module_elements = build_styled_modules(matrix, region_map, mod, qz, dark, light, style)
+    module_elements = build_styled_modules(matrix, region_map, mod, qz, dark, light, style, cleared)
 
     [
       svg_header(width, height),
       defs,
       background_rect(light),
       module_elements,
+      logo_fragment,
       ~s(</svg>\n)
     ]
   end
 
-  defp build_styled_modules(matrix, region_map, mod, qz, dark, light, style) do
+  defp build_styled_modules(matrix, region_map, mod, qz, dark, light, style, cleared) do
     size = matrix.size
 
     # Group modules by their effective fill color and shape
     modules =
       for row <- 0..(size - 1),
-          col <- 0..(size - 1) do
+          col <- 0..(size - 1),
+          not MapSet.member?(cleared, {row, col}) do
         pos = {row, col}
         region = Map.get(region_map, pos, :data)
         is_dark = Matrix.dark?(matrix, pos)

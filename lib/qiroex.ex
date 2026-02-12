@@ -24,7 +24,7 @@ defmodule Qiroex do
   alias Qiroex.QR
   alias Qiroex.Render.{SVG, PNG, Terminal}
 
-  @svg_render_keys [:module_size, :quiet_zone, :dark_color, :light_color, :style]
+  @svg_render_keys [:module_size, :quiet_zone, :dark_color, :light_color, :style, :logo]
   @png_render_keys [:module_size, :quiet_zone, :dark_color, :light_color, :style]
 
   @doc """
