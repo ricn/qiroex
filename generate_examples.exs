@@ -125,12 +125,83 @@ Qiroex.save_svg(vcard_data, "#{out}/vcard.svg",
   module_size: 6, quiet_zone: 2, style: style_vcard)
 IO.puts("  ✓ vcard.svg")
 
-# ── 14. PNG example ──────────────────────────────────────────────
+# ── 14. URL payload ──────────────────────────────────────────────
+{:ok, url_data} = Qiroex.Payload.URL.encode(url: "https://elixir-lang.org")
+Qiroex.save_svg(url_data, "#{out}/url.svg",
+  module_size: 8, quiet_zone: 2, dark_color: "#2980B9")
+IO.puts("  ✓ url.svg")
+
+# ── 15. Email payload ────────────────────────────────────────────
+{:ok, email_data} = Qiroex.Payload.Email.encode(
+  to: "hello@example.com", subject: "Hi there!", body: "Nice to meet you."
+)
+Qiroex.save_svg(email_data, "#{out}/email.svg",
+  module_size: 8, quiet_zone: 2, dark_color: "#E74C3C")
+IO.puts("  ✓ email.svg")
+
+# ── 16. SMS payload ──────────────────────────────────────────────
+{:ok, sms_data} = Qiroex.Payload.SMS.encode(number: "+1-555-0123", message: "Hello from Qiroex!")
+Qiroex.save_svg(sms_data, "#{out}/sms.svg",
+  module_size: 8, quiet_zone: 2, dark_color: "#27AE60")
+IO.puts("  ✓ sms.svg")
+
+# ── 17. Phone payload ────────────────────────────────────────────
+{:ok, phone_data} = Qiroex.Payload.Phone.encode(number: "+1-555-0199")
+Qiroex.save_svg(phone_data, "#{out}/phone.svg",
+  module_size: 8, quiet_zone: 2, dark_color: "#34495E")
+IO.puts("  ✓ phone.svg")
+
+# ── 18. Geo payload ──────────────────────────────────────────────
+{:ok, geo_data} = Qiroex.Payload.Geo.encode(
+  latitude: 48.8566, longitude: 2.3522, query: "Eiffel Tower"
+)
+Qiroex.save_svg(geo_data, "#{out}/geo.svg",
+  module_size: 8, quiet_zone: 2, dark_color: "#16A085")
+IO.puts("  ✓ geo.svg")
+
+# ── 19. vEvent payload ───────────────────────────────────────────
+{:ok, vevent_data} = Qiroex.Payload.VEvent.encode(
+  summary: "Team Standup",
+  start: ~U[2026-03-01 09:00:00Z],
+  end: ~U[2026-03-01 09:30:00Z],
+  location: "Conference Room A"
+)
+Qiroex.save_svg(vevent_data, "#{out}/vevent.svg",
+  module_size: 6, quiet_zone: 2, dark_color: "#E67E22")
+IO.puts("  ✓ vevent.svg")
+
+# ── 20. MeCard payload ───────────────────────────────────────────
+{:ok, mecard_data} = Qiroex.Payload.MeCard.encode(
+  name: "Doe,Jane", phone: "+1-555-0199", email: "jane@example.com"
+)
+Qiroex.save_svg(mecard_data, "#{out}/mecard.svg",
+  module_size: 8, quiet_zone: 2, dark_color: "#8E44AD")
+IO.puts("  ✓ mecard.svg")
+
+# ── 21. Bitcoin payload ──────────────────────────────────────────
+{:ok, bitcoin_data} = Qiroex.Payload.Bitcoin.encode(
+  address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+  amount: 0.001, label: "Donation"
+)
+Qiroex.save_svg(bitcoin_data, "#{out}/bitcoin.svg",
+  module_size: 6, quiet_zone: 2, dark_color: "#F7931A")
+IO.puts("  ✓ bitcoin.svg")
+
+# ── 22. WhatsApp payload ─────────────────────────────────────────
+{:ok, whatsapp_data} = Qiroex.Payload.WhatsApp.encode(
+  number: "+1234567890", message: "Hello from Qiroex!"
+)
+style_whatsapp = Style.new(module_shape: :rounded, module_radius: 0.3)
+Qiroex.save_svg(whatsapp_data, "#{out}/whatsapp.svg",
+  module_size: 8, quiet_zone: 2, dark_color: "#25D366", style: style_whatsapp)
+IO.puts("  ✓ whatsapp.svg")
+
+# ── 23. PNG example ──────────────────────────────────────────────
 Qiroex.save_png("https://elixir-lang.org", "#{out}/basic.png",
   module_size: 10, quiet_zone: 3)
 IO.puts("  ✓ basic.png")
 
-# ── 15. PNG styled with finder colors ────────────────────────────
+# ── 24. PNG styled with finder colors ────────────────────────────
 style_png = Style.new(finder: %{outer: "#E63946", inner: "#F1FAEE", eye: "#1D3557"})
 Qiroex.save_png("https://elixir-lang.org", "#{out}/styled.png",
   module_size: 10, quiet_zone: 3, style: style_png)

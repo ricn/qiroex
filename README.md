@@ -291,34 +291,151 @@ large_logo = Qiroex.Logo.new(svg: "<svg/>", size: 0.4)
 Generate structured data payloads for common QR code use cases with a single function call:
 
 ```elixir
-# WiFi network
+# WiFi network — scan to connect
 {:ok, svg} = Qiroex.payload(:wifi,
-  [ssid: "CoffeeShop", password: "latte2024", security: "WPA"],
+  [ssid: "CoffeeShop", password: "latte2024"],
   :svg, dark_color: "#2C3E50")
 ```
 
-<table>
-  <tr>
-    <td align="center"><img src="assets/wifi.svg" alt="WiFi QR" width="180" /><br />WiFi</td>
-    <td align="center"><img src="assets/vcard.svg" alt="vCard QR" width="180" /><br />vCard</td>
-  </tr>
-</table>
+Qiroex ships with **11 payload builders** covering the most common QR code use cases:
 
-### Supported Payload Types
+### WiFi
 
-| Type | Example |
-|------|---------|
-| **WiFi** | `Qiroex.payload(:wifi, [ssid: "Net", password: "pass", security: "WPA"], :svg)` |
-| **URL** | `Qiroex.payload(:url, [url: "https://example.com"], :svg)` |
-| **Email** | `Qiroex.payload(:email, [to: "hi@example.com", subject: "Hello"], :svg)` |
-| **SMS** | `Qiroex.payload(:sms, [number: "+1234567890", message: "Hi!"], :svg)` |
-| **Phone** | `Qiroex.payload(:phone, [number: "+1234567890"], :svg)` |
-| **Geo** | `Qiroex.payload(:geo, [latitude: 40.7128, longitude: -74.0060], :svg)` |
-| **vCard** | `Qiroex.payload(:vcard, [first_name: "Jane", last_name: "Doe", phone: "+1234"], :svg)` |
-| **vEvent** | `Qiroex.payload(:vevent, [summary: "Meeting", dtstart: "20260301T090000"], :svg)` |
-| **MeCard** | `Qiroex.payload(:mecard, [name: "Doe,Jane", tel: "+1234567890"], :svg)` |
-| **Bitcoin** | `Qiroex.payload(:bitcoin, [address: "1A1zP1..."], :svg)` |
-| **WhatsApp** | `Qiroex.payload(:whatsapp, [number: "+1234567890", message: "Hello!"], :svg)` |
+Scan to auto-connect to a network.
+
+```elixir
+{:ok, svg} = Qiroex.payload(:wifi,
+  [ssid: "MyNetwork", password: "secret123", auth: :wpa],
+  :svg)
+```
+
+<img src="assets/wifi.svg" alt="WiFi QR" width="180" />
+
+### URL
+
+Open a website in the browser.
+
+```elixir
+{:ok, svg} = Qiroex.payload(:url,
+  [url: "https://elixir-lang.org"],
+  :svg)
+```
+
+<img src="assets/url.svg" alt="URL QR" width="180" />
+
+### Email
+
+Compose an email with pre-filled fields.
+
+```elixir
+{:ok, svg} = Qiroex.payload(:email,
+  [to: "hello@example.com", subject: "Hi!", body: "Nice to meet you."],
+  :svg)
+```
+
+<img src="assets/email.svg" alt="Email QR" width="180" />
+
+### SMS
+
+Open the messaging app with a pre-filled text.
+
+```elixir
+{:ok, svg} = Qiroex.payload(:sms,
+  [number: "+1-555-0123", message: "Hello!"],
+  :svg)
+```
+
+<img src="assets/sms.svg" alt="SMS QR" width="180" />
+
+### Phone
+
+Initiate a phone call.
+
+```elixir
+{:ok, svg} = Qiroex.payload(:phone,
+  [number: "+1-555-0199"],
+  :svg)
+```
+
+<img src="assets/phone.svg" alt="Phone QR" width="180" />
+
+### Geo Location
+
+Open a map to a specific location.
+
+```elixir
+{:ok, svg} = Qiroex.payload(:geo,
+  [latitude: 48.8566, longitude: 2.3522, query: "Eiffel Tower"],
+  :svg)
+```
+
+<img src="assets/geo.svg" alt="Geo QR" width="180" />
+
+### vCard
+
+Share a full contact card.
+
+```elixir
+{:ok, svg} = Qiroex.payload(:vcard,
+  [first_name: "Jane", last_name: "Doe",
+   phone: "+1-555-0199", email: "jane@example.com",
+   org: "Acme Corp", title: "Engineer"],
+  :svg)
+```
+
+<img src="assets/vcard.svg" alt="vCard QR" width="180" />
+
+### vEvent
+
+Add a calendar event.
+
+```elixir
+{:ok, svg} = Qiroex.payload(:vevent,
+  [summary: "Team Standup",
+   start: ~U[2026-03-01 09:00:00Z],
+   end: ~U[2026-03-01 09:30:00Z],
+   location: "Conference Room A"],
+  :svg)
+```
+
+<img src="assets/vevent.svg" alt="vEvent QR" width="180" />
+
+### MeCard
+
+Share a contact (simpler alternative to vCard, popular on mobile).
+
+```elixir
+{:ok, svg} = Qiroex.payload(:mecard,
+  [name: "Doe,Jane", phone: "+1-555-0199", email: "jane@example.com"],
+  :svg)
+```
+
+<img src="assets/mecard.svg" alt="MeCard QR" width="180" />
+
+### Bitcoin
+
+Request a Bitcoin payment (BIP-21).
+
+```elixir
+{:ok, svg} = Qiroex.payload(:bitcoin,
+  [address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+   amount: 0.001, label: "Donation"],
+  :svg)
+```
+
+<img src="assets/bitcoin.svg" alt="Bitcoin QR" width="180" />
+
+### WhatsApp
+
+Open a WhatsApp chat with a pre-filled message.
+
+```elixir
+{:ok, svg} = Qiroex.payload(:whatsapp,
+  [number: "+1234567890", message: "Hello from Qiroex!"],
+  :svg)
+```
+
+<img src="assets/whatsapp.svg" alt="WhatsApp QR" width="180" />
 
 The third argument is the output format: `:svg`, `:png`, `:terminal`, `:matrix`, or `:encode`.
 
