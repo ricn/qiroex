@@ -107,6 +107,19 @@ Qiroex.save_svg("https://elixir-lang.org", "#{out}/logo_styled.svg",
   style: style_for_logo, logo: logo)
 IO.puts("  ✓ logo_styled.svg")
 
+# ── 11b. PNG raster image logo ───────────────────────────────────
+# Create a small PNG logo programmatically (purple circle "Ex" rendered as PNG)
+# We'll use the SVG logo saved as a PNG via the library itself
+{:ok, png_logo_binary} = Qiroex.to_png(
+  "Ex",
+  module_size: 4, quiet_zone: 1,
+  dark_color: {75, 39, 95}, light_color: {155, 89, 182}
+)
+png_logo = Logo.new(image: png_logo_binary, size: 0.22, shape: :rounded, border_radius: 6, padding: 1)
+Qiroex.save_svg("https://elixir-lang.org", "#{out}/logo_png.svg",
+  module_size: 8, quiet_zone: 2, level: :h, logo: png_logo)
+IO.puts("  ✓ logo_png.svg")
+
 # ── 12. WiFi payload ─────────────────────────────────────────────
 {:ok, wifi_data} = Qiroex.Payload.WiFi.encode(ssid: "CoffeeShop", password: "latte2024", security: "WPA")
 Qiroex.save_svg(wifi_data, "#{out}/wifi.svg",

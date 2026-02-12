@@ -3,8 +3,12 @@ defmodule Qiroex.Logo do
   Logo embedding configuration and geometry for QR codes.
 
   Calculates the position, size, and cleared module region for embedding
-  an SVG logo in the center of a QR code. Validates that the logo doesn't
+  a logo in the center of a QR code. Validates that the logo doesn't
   cover too many data modules for the chosen error correction level.
+
+  Logos can be provided as **SVG markup** or as **raster image binaries**
+  (PNG, JPEG, WEBP, GIF, BMP). Raster images are embedded via base64
+  data URIs — no external dependencies required.
 
   ## Coverage Limits
 
@@ -18,6 +22,8 @@ defmodule Qiroex.Logo do
 
   ## Usage
 
+  ### SVG logo
+
       logo = Qiroex.Logo.new(
         svg: ~s(<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="blue"/></svg>),
         size: 0.25
@@ -25,8 +31,17 @@ defmodule Qiroex.Logo do
 
       Qiroex.to_svg!("Hello", logo: logo)
 
+  ### Raster image logo (PNG, JPEG, etc.)
+
+      png_bytes = File.read!("logo.png")
+      logo = Qiroex.Logo.new(image: png_bytes, image_type: :png, size: 0.22, shape: :circle)
+
+      Qiroex.to_svg!("Hello", level: :h, logo: logo)
+
   ## Options
-    - `:svg` — SVG markup string for the logo (required)
+    - `:svg` — SVG markup string for the logo (provide this **or** `:image`)
+    - `:image` — binary image data for a raster logo (provide this **or** `:svg`)
+    - `:image_type` — image format atom: `:png`, `:jpeg`, `:webp`, `:gif`, `:bmp` (required when using `:image`)
     - `:size` — logo size as a fraction of the QR code (0.0–0.4, default: 0.2)
     - `:padding` — padding around the logo in modules (default: 1)
     - `:background` — background color behind the logo (default: `"#ffffff"`)
@@ -34,8 +49,12 @@ defmodule Qiroex.Logo do
     - `:border_radius` — corner radius for `:rounded` shape (default: 4)
   """
 
+  @type image_type :: :png | :jpeg | :webp | :gif | :bmp
+
   @type t :: %__MODULE__{
-          svg: String.t(),
+          svg: String.t() | nil,
+          image: binary() | nil,
+          image_type: image_type() | nil,
           size: float(),
           padding: non_neg_integer(),
           background: String.t(),
@@ -44,11 +63,15 @@ defmodule Qiroex.Logo do
         }
 
   defstruct svg: nil,
+            image: nil,
+            image_type: nil,
             size: 0.2,
             padding: 1,
             background: "#ffffff",
             shape: :square,
             border_radius: 4
+
+  @valid_image_types [:png, :jpeg, :webp, :gif, :bmp]
 
   # Safety margin: use 80% of theoretical EC capacity for logo coverage
   @safety_factor 0.80
@@ -63,8 +86,13 @@ defmodule Qiroex.Logo do
   @doc """
   Creates a new logo configuration.
 
+  Provide either `:svg` (SVG markup string) or `:image` + `:image_type`
+  (raster image binary). You cannot provide both.
+
   ## Options
-    - `:svg` — SVG markup string (required)
+    - `:svg` — SVG markup string
+    - `:image` — binary image data (PNG, JPEG, WEBP, GIF, BMP)
+    - `:image_type` — image format: `:png`, `:jpeg`, `:webp`, `:gif`, `:bmp`
     - `:size` — fraction of QR code size (0.0–0.4, default: 0.2)
     - `:padding` — padding in modules around the logo (default: 1)
     - `:background` — CSS color for the background behind the logo (default: `"#ffffff"`)
@@ -73,8 +101,17 @@ defmodule Qiroex.Logo do
   """
   @spec new(keyword()) :: t()
   def new(opts) do
+    svg = Keyword.get(opts, :svg)
+    image = Keyword.get(opts, :image)
+    image_type = Keyword.get(opts, :image_type)
+
+    # Auto-detect image type from binary magic bytes if not provided
+    image_type = if image && is_nil(image_type), do: detect_image_type(image), else: image_type
+
     logo = %__MODULE__{
-      svg: Keyword.fetch!(opts, :svg),
+      svg: svg,
+      image: image,
+      image_type: image_type,
       size: Keyword.get(opts, :size, 0.2),
       padding: Keyword.get(opts, :padding, 1),
       background: Keyword.get(opts, :background, "#ffffff"),
@@ -190,7 +227,10 @@ defmodule Qiroex.Logo do
   end
 
   @doc """
-  Renders the SVG fragment for the logo (background shape + embedded SVG).
+  Renders the SVG fragment for the logo (background shape + embedded logo image).
+
+  Supports both SVG logos (nested `<svg>` element) and raster images
+  (base64-encoded `<image>` element).
 
   ## Parameters
     - `logo` — `%Qiroex.Logo{}` struct
@@ -202,8 +242,8 @@ defmodule Qiroex.Logo do
   @spec render_svg(t(), map()) :: iolist()
   def render_svg(%__MODULE__{} = logo, geo) do
     bg = render_background(logo, geo)
-    svg_embed = render_svg_embed(logo, geo)
-    [bg, svg_embed]
+    embed = render_logo_embed(logo, geo)
+    [bg, embed]
   end
 
   # === Background Shape ===
@@ -272,11 +312,10 @@ defmodule Qiroex.Logo do
     ]
   end
 
-  # === SVG Embed ===
+  # === Logo Embed (SVG or raster) ===
 
-  defp render_svg_embed(logo, geo) do
-    # Embed the logo SVG using <foreignObject> or nested <svg>
-    # Using nested <svg> is simpler and more broadly supported
+  defp render_logo_embed(%__MODULE__{svg: svg} = _logo, geo) when is_binary(svg) do
+    # Embed SVG logo using nested <svg> element
     [
       ~s(<svg x="),
       to_s(geo.logo_x),
@@ -287,18 +326,65 @@ defmodule Qiroex.Logo do
       ~s(" height="),
       to_s(geo.logo_px),
       ~s(">\n),
-      logo.svg,
+      svg,
       ~s(\n),
       ~s(</svg>\n)
     ]
   end
 
+  defp render_logo_embed(%__MODULE__{image: image, image_type: image_type} = _logo, geo)
+       when is_binary(image) do
+    # Embed raster image using <image> with base64 data URI
+    mime = image_type_to_mime(image_type)
+    b64 = Base.encode64(image)
+
+    [
+      ~s(<image href="data:),
+      mime,
+      ~s(;base64,),
+      b64,
+      ~s(" x="),
+      to_s(geo.logo_x),
+      ~s(" y="),
+      to_s(geo.logo_y),
+      ~s(" width="),
+      to_s(geo.logo_px),
+      ~s(" height="),
+      to_s(geo.logo_px),
+      ~s(" preserveAspectRatio="xMidYMid meet"/>\n)
+    ]
+  end
+
+  @doc false
+  @spec image_type_to_mime(image_type()) :: String.t()
+  def image_type_to_mime(:png), do: "image/png"
+  def image_type_to_mime(:jpeg), do: "image/jpeg"
+  def image_type_to_mime(:webp), do: "image/webp"
+  def image_type_to_mime(:gif), do: "image/gif"
+  def image_type_to_mime(:bmp), do: "image/bmp"
+
+  # === Image Type Detection ===
+
+  @doc """
+  Detects the image format from binary magic bytes.
+
+  Returns the image type atom or `nil` if unrecognized.
+
+  Supported formats: PNG, JPEG, WEBP, GIF, BMP.
+  """
+  @spec detect_image_type(binary()) :: image_type() | nil
+  def detect_image_type(<<0x89, 0x50, 0x4E, 0x47, _::binary>>), do: :png
+  def detect_image_type(<<0xFF, 0xD8, 0xFF, _::binary>>), do: :jpeg
+  def detect_image_type(<<"RIFF", _size::32, "WEBP", _::binary>>), do: :webp
+  def detect_image_type(<<"GIF87a", _::binary>>), do: :gif
+  def detect_image_type(<<"GIF89a", _::binary>>), do: :gif
+  def detect_image_type(<<"BM", _::binary>>), do: :bmp
+  def detect_image_type(_), do: nil
+
   # === Validation ===
 
   defp validate!(%__MODULE__{} = logo) do
-    if is_nil(logo.svg) or logo.svg == "" do
-      raise ArgumentError, "Logo SVG markup is required"
-    end
+    validate_source!(logo)
 
     unless is_number(logo.size) and logo.size > 0 and logo.size <= 0.4 do
       raise ArgumentError,
@@ -312,6 +398,40 @@ defmodule Qiroex.Logo do
     unless logo.shape in [:square, :rounded, :circle] do
       raise ArgumentError,
             "Logo shape must be :square, :rounded, or :circle, got: #{inspect(logo.shape)}"
+    end
+
+    :ok
+  end
+
+  defp validate_source!(%__MODULE__{svg: nil, image: nil}) do
+    raise ArgumentError,
+          "Logo requires either :svg (SVG markup string) or :image (binary image data)"
+  end
+
+  defp validate_source!(%__MODULE__{svg: svg, image: image})
+       when not is_nil(svg) and not is_nil(image) do
+    raise ArgumentError,
+          "Logo accepts either :svg or :image, not both"
+  end
+
+  defp validate_source!(%__MODULE__{svg: svg}) when is_binary(svg) do
+    if svg == "" do
+      raise ArgumentError, "Logo SVG markup cannot be empty"
+    end
+
+    :ok
+  end
+
+  defp validate_source!(%__MODULE__{image: image, image_type: image_type})
+       when is_binary(image) do
+    if byte_size(image) == 0 do
+      raise ArgumentError, "Logo image data cannot be empty"
+    end
+
+    unless image_type in @valid_image_types do
+      raise ArgumentError,
+            "Logo image_type must be one of #{inspect(@valid_image_types)}, got: #{inspect(image_type)}. " <>
+              "Provide :image_type explicitly or use a supported format (PNG, JPEG, WEBP, GIF, BMP)"
     end
 
     :ok

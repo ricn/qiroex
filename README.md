@@ -22,7 +22,7 @@ Qiroex generates **valid, scannable QR codes** entirely in Elixir with no extern
 - **Full QR spec** — versions 1–40, error correction L/M/Q/H, all 4 encoding modes (numeric, alphanumeric, byte, kanji), 8 mask patterns
 - **Three output formats** — SVG (vector), PNG (raster), terminal (Unicode art)
 - **Visual styling** — module shapes (circle, rounded, diamond), custom colors, gradients, finder pattern colors
-- **Logo embedding** — embed SVG logos in the center with automatic coverage validation
+- **Logo embedding** — embed SVG or raster image logos (PNG, JPEG, WEBP, GIF, BMP) with automatic coverage validation
 - **11 payload builders** — WiFi, URL, Email, SMS, Phone, Geo, vCard, vEvent, MeCard, Bitcoin, WhatsApp
 - **Input validation** — descriptive error messages for every misconfiguration
 - **Thoroughly tested** — 500+ unit and integration tests
@@ -221,7 +221,9 @@ Qiroex.save_svg("https://elixir-lang.org", "styled.svg", style: style)
 
 ## Logo Embedding
 
-Embed an SVG logo in the center of your QR code. Qiroex automatically clears the modules behind the logo area and validates that the logo doesn't exceed the error correction capacity.
+Embed a logo in the center of your QR code. Qiroex supports both **SVG markup** and **raster images** (PNG, JPEG, WEBP, GIF, BMP) — all with zero dependencies. It automatically clears the modules behind the logo area and validates that the logo doesn't exceed the error correction capacity.
+
+### SVG Logo
 
 ```elixir
 logo = Qiroex.Logo.new(
@@ -239,10 +241,32 @@ logo = Qiroex.Logo.new(
 Qiroex.save_svg("https://elixir-lang.org", "logo.svg", level: :h, logo: logo)
 ```
 
+### Raster Image Logo (PNG, JPEG, WEBP, ...)
+
+Load any image file and embed it directly — the format is auto-detected from the binary:
+
+```elixir
+logo = Qiroex.Logo.new(
+  image: File.read!("company_logo.png"),
+  size: 0.22,
+  shape: :circle,
+  padding: 1
+)
+
+Qiroex.save_svg("https://example.com", "branded.svg", level: :h, logo: logo)
+```
+
+Raster images are embedded as base64 data URIs inside the SVG — no external files or dependencies needed. You can also specify the format explicitly:
+
+```elixir
+Qiroex.Logo.new(image: jpeg_bytes, image_type: :jpeg, size: 0.2)
+```
+
 <table>
   <tr>
-    <td align="center"><img src="assets/logo.svg" alt="Logo embedding" width="200" /><br />Basic + Logo</td>
+    <td align="center"><img src="assets/logo.svg" alt="Logo embedding" width="200" /><br />SVG Logo</td>
     <td align="center"><img src="assets/logo_styled.svg" alt="Styled + Logo" width="200" /><br />Styled + Logo</td>
+    <td align="center"><img src="assets/logo_png.svg" alt="PNG Logo" width="200" /><br />PNG Logo</td>
   </tr>
 </table>
 
@@ -265,7 +289,9 @@ Qiroex.save_svg("https://elixir-lang.org", "branded.svg",
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `:svg` | *required* | SVG markup string for the logo |
+| `:svg` | — | SVG markup string (provide `:svg` **or** `:image`) |
+| `:image` | — | Binary image data: PNG, JPEG, WEBP, GIF, BMP (provide `:image` **or** `:svg`) |
+| `:image_type` | *auto-detected* | Image format: `:png`, `:jpeg`, `:webp`, `:gif`, `:bmp` |
 | `:size` | `0.2` | Logo size as fraction of QR code (0.0–0.4) |
 | `:padding` | `1` | Padding around logo in modules |
 | `:background` | `"#ffffff"` | Background color behind the logo |
