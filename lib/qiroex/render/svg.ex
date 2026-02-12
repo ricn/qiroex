@@ -279,10 +279,8 @@ defmodule Qiroex.Render.SVG do
       ~s(" height="),
       ms,
       ~s(" fill="),
-      ?",
       fill,
-      ?",
-      ~s(/>\n)
+      ~s("/>\n)
     ]
   end
 
@@ -302,18 +300,12 @@ defmodule Qiroex.Render.SVG do
       ~s(" height="),
       ms,
       ~s(" rx="),
-      ?",
       r,
-      ?",
       ~s(" ry="),
-      ?",
       r,
-      ?",
       ~s(" fill="),
-      ?",
       fill,
-      ?",
-      ~s(/>\n)
+      ~s("/>\n)
     ]
   end
 
@@ -323,7 +315,7 @@ defmodule Qiroex.Render.SVG do
     cy = Float.to_string(y + half)
     r = Float.to_string(half * 0.85)
 
-    [~s(<circle cx="), cx, ~s(" cy="), cy, ~s(" r="), r, ~s(" fill="), ?", fill, ?", ~s(/>\n)]
+    [~s(<circle cx="), cx, ~s(" cy="), cy, ~s(" r="), r, ~s(" fill="), fill, ~s("/>\n)]
   end
 
   defp render_diamond(x, y, mod, fill) do
@@ -356,10 +348,8 @@ defmodule Qiroex.Render.SVG do
       ?,,
       left_y,
       ~s(" fill="),
-      ?",
       fill,
-      ?",
-      ~s(/>\n)
+      ~s("/>\n)
     ]
   end
 
