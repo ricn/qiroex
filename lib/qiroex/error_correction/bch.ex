@@ -106,6 +106,7 @@ defmodule Qiroex.ErrorCorrection.BCH do
   end
 
   defp bit_length(0), do: 0
+  @dialyzer {:nowarn_function, bit_length: 1}
 
   defp bit_length(n) when n > 0 do
     :math.log2(n) |> floor() |> Kernel.+(1)

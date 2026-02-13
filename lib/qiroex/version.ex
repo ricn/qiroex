@@ -6,8 +6,8 @@ defmodule Qiroex.Version do
   the encoded data at the chosen error correction level.
   """
 
-  alias Qiroex.Spec
   alias Qiroex.Encoder.Mode
+  alias Qiroex.Spec
 
   @doc """
   Selects the smallest version that can fit the given data at the specified EC level.

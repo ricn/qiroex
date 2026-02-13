@@ -118,7 +118,6 @@ defmodule Qiroex.Render.PNG do
     {r, g, b}
   end
 
-  defp parse_css_color(color, _default) when is_tuple(color), do: color
   defp parse_css_color(_, default_tuple), do: default_tuple
 
   # IHDR chunk

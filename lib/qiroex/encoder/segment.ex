@@ -7,8 +7,8 @@ defmodule Qiroex.Encoder.Segment do
   terminator, byte padding, and pad codewords.
   """
 
+  alias Qiroex.Encoder.{Alphanumeric, Byte, Kanji, Numeric}
   alias Qiroex.Spec
-  alias Qiroex.Encoder.{Numeric, Alphanumeric, Byte, Kanji}
 
   @doc """
   Assembles the complete encoded data codewords from segments.

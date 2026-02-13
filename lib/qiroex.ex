@@ -53,7 +53,7 @@ defmodule Qiroex do
   """
 
   alias Qiroex.{QR, Validate}
-  alias Qiroex.Render.{SVG, PNG, Terminal}
+  alias Qiroex.Render.{PNG, SVG, Terminal}
 
   @svg_render_keys [:module_size, :quiet_zone, :dark_color, :light_color, :style, :logo]
   @png_render_keys [:module_size, :quiet_zone, :dark_color, :light_color, :style]

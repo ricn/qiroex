@@ -15,10 +15,12 @@ defmodule Qiroex.Matrix do
           size: non_neg_integer(),
           version: non_neg_integer(),
           modules: %{position() => value()},
-          reserved: MapSet.t(position())
+          reserved: MapSet.t()
         }
 
   defstruct [:size, :version, modules: %{}, reserved: MapSet.new()]
+
+  @dialyzer {:no_contracts, new: 1}
 
   @doc "Creates a new empty matrix for the given version."
   @spec new(non_neg_integer()) :: t()

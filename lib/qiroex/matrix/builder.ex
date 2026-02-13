@@ -6,9 +6,9 @@ defmodule Qiroex.Matrix.Builder do
   dark module, format information areas, and version information areas.
   """
 
+  alias Qiroex.ErrorCorrection.BCH
   alias Qiroex.Matrix
   alias Qiroex.Spec
-  alias Qiroex.ErrorCorrection.BCH
 
   @doc """
   Builds a matrix with all function patterns placed.

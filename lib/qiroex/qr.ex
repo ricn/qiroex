@@ -7,10 +7,12 @@ defmodule Qiroex.QR do
   error correction → interleaving → matrix placement → masking
   """
 
-  alias Qiroex.{Spec, Version, Matrix}
   alias Qiroex.Encoder.{Mode, Segment}
   alias Qiroex.ErrorCorrection.ReedSolomon
+  alias Qiroex.Matrix
   alias Qiroex.Matrix.{Builder, DataPlacer, Mask}
+  alias Qiroex.Spec
+  alias Qiroex.Version
 
   @type t :: %__MODULE__{
           data: binary(),
@@ -108,15 +110,13 @@ defmodule Qiroex.QR do
     end
   end
 
-  defp build_segments(data, mode, version) do
-    if mode == :auto or mode in [:numeric, :alphanumeric, :byte] do
-      # Try mixed-mode for auto, use single segment for forced mode
-      case mode do
-        :auto -> Mode.segment(data, version)
-        _ -> [{mode, data}]
-      end
-    else
-      [{mode, data}]
+  defp build_segments(data, mode, _version) do
+    case mode do
+      m when m in [:numeric, :alphanumeric, :byte] ->
+        [{mode, data}]
+
+      :kanji ->
+        [{:kanji, data}]
     end
   end
 

@@ -109,7 +109,7 @@ defmodule Qiroex.Style do
   def custom_finder?(%__MODULE__{finder: f}) when is_map(f), do: true
 
   @doc "Returns the finder color for a specific layer, falling back to the given default."
-  @spec finder_color(t() | nil, :outer | :inner | :eye, String.t()) :: String.t()
+  @spec finder_color(t() | nil, :outer | :inner | :eye, String.t() | nil) :: String.t() | nil
   def finder_color(nil, _layer, default), do: default
   def finder_color(%__MODULE__{finder: nil}, _layer, default), do: default
 

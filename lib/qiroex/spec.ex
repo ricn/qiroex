@@ -181,7 +181,8 @@ defmodule Qiroex.Spec do
   def alignment_pattern_positions(version), do: Map.fetch!(@alignment_patterns, version)
 
   # Error correction block structure table
-  # Format: {version, ec_level} => {total_data_codewords, ec_codewords_per_block, [{block_count, data_codewords_per_block}, ...]}
+  # Format: {version, ec_level} =>
+  #   {total_data_codewords, ec_codewords_per_block, [{block_count, data_codewords_per_block}, ...]}
   @ec_table %{
     # Version 1
     {1, :l} => {19, 7, [{1, 19}]},

@@ -9,6 +9,13 @@
 </p>
 
 <p align="center">
+  <a href="https://hex.pm/packages/qiroex"><img src="https://img.shields.io/hexpm/v/qiroex.svg" alt="Hex.pm Version" /></a>
+  <a href="https://hexdocs.pm/qiroex"><img src="https://img.shields.io/badge/docs-hexdocs-blue.svg" alt="Documentation" /></a>
+  <a href="https://github.com/ricn/qiroex/actions/workflows/ci.yml"><img src="https://github.com/ricn/qiroex/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://github.com/ricn/qiroex/blob/main/LICENSE"><img src="https://img.shields.io/hexpm/l/qiroex.svg" alt="License" /></a>
+</p>
+
+<p align="center">
   <a href="#installation">Installation</a> · <a href="#quick-start">Quick Start</a> · <a href="#styling">Styling</a> · <a href="#logo-embedding">Logos</a> · <a href="#payload-builders">Payloads</a> · <a href="#api-reference">API</a>
 </p>
 

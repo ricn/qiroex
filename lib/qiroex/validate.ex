@@ -24,9 +24,8 @@ defmodule Qiroex.Validate do
   def encode_opts(opts) do
     with :ok <- validate_ec_level(opts),
          :ok <- validate_version(opts),
-         :ok <- validate_mode(opts),
-         :ok <- validate_mask(opts) do
-      :ok
+         :ok <- validate_mode(opts) do
+      validate_mask(opts)
     end
   end
 
@@ -46,9 +45,8 @@ defmodule Qiroex.Validate do
          :ok <- validate_quiet_zone(opts),
          :ok <- validate_css_color(opts, :dark_color),
          :ok <- validate_css_color(opts, :light_color),
-         :ok <- validate_style(opts),
-         :ok <- validate_logo(opts) do
-      :ok
+         :ok <- validate_style(opts) do
+      validate_logo(opts)
     end
   end
 
@@ -66,9 +64,8 @@ defmodule Qiroex.Validate do
     with :ok <- validate_module_size(opts),
          :ok <- validate_quiet_zone(opts),
          :ok <- validate_rgb_color(opts, :dark_color),
-         :ok <- validate_rgb_color(opts, :light_color),
-         :ok <- validate_style(opts) do
-      :ok
+         :ok <- validate_rgb_color(opts, :light_color) do
+      validate_style(opts)
     end
   end
 
@@ -81,9 +78,8 @@ defmodule Qiroex.Validate do
   """
   @spec terminal_render_opts(keyword()) :: :ok | {:error, String.t()}
   def terminal_render_opts(opts) do
-    with :ok <- validate_quiet_zone(opts),
-         :ok <- validate_compact(opts) do
-      :ok
+    with :ok <- validate_quiet_zone(opts) do
+      validate_compact(opts)
     end
   end
 

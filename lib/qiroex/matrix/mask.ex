@@ -8,6 +8,7 @@ defmodule Qiroex.Matrix.Mask do
   """
 
   alias Qiroex.Matrix
+  alias Qiroex.Matrix.Builder
 
   @doc """
   Applies the given mask pattern to data modules in the matrix.
@@ -63,7 +64,7 @@ defmodule Qiroex.Matrix.Mask do
     0..7
     |> Enum.map(fn mask ->
       masked = apply_mask(matrix, mask)
-      finalized = Qiroex.Matrix.Builder.finalize(masked, ec_level, mask)
+      finalized = Builder.finalize(masked, ec_level, mask)
       penalty = evaluate_penalty(finalized)
       {mask, finalized, penalty}
     end)

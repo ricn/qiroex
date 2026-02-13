@@ -13,10 +13,13 @@ defmodule Qiroex.Render.SVG do
     - `:style` - a `%Qiroex.Style{}` struct for advanced styling (optional)
   """
 
+  alias Qiroex.Logo
   alias Qiroex.Matrix
   alias Qiroex.Matrix.Regions
   alias Qiroex.Style
-  alias Qiroex.Logo
+
+  @dialyzer {:nowarn_function, build_path_data: 4}
+  @dialyzer {:nowarn_function, build_styled_modules: 8}
 
   @default_opts %{
     module_size: 10,
@@ -200,8 +203,8 @@ defmodule Qiroex.Render.SVG do
 
     # Render non-finder modules with the data module shape/color
     data_fill = if style.gradient, do: "url(#qr-gradient)", else: dark
-    shape = if style, do: style.module_shape, else: :square
-    radius = if style, do: style.module_radius, else: 0
+    shape = style.module_shape
+    radius = style.module_radius
 
     data_elements =
       for {pos, _region, is_dark} <- other_modules, is_dark do
