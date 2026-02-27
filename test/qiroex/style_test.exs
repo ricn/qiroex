@@ -220,9 +220,7 @@ defmodule Qiroex.StyleTest do
     end
 
     test "finder with mixed colors and shapes" do
-      assert Style.custom_finder_shapes?(
-               Style.new(finder: %{outer: "#ff0000", eye_shape: :leaf})
-             )
+      assert Style.custom_finder_shapes?(Style.new(finder: %{outer: "#ff0000", eye_shape: :leaf}))
     end
   end
 
