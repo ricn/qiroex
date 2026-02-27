@@ -126,4 +126,37 @@ defmodule Qiroex.Matrix.RegionsTest do
       assert alignment_count == 25
     end
   end
+
+  describe "finder_origins/1" do
+    test "returns three origins for version 1 (size 21)" do
+      origins = Regions.finder_origins(21)
+      assert origins == [{0, 0}, {0, 14}, {14, 0}]
+    end
+
+    test "returns three origins for version 2 (size 25)" do
+      origins = Regions.finder_origins(25)
+      assert origins == [{0, 0}, {0, 18}, {18, 0}]
+    end
+
+    test "returns three origins for version 10 (size 57)" do
+      origins = Regions.finder_origins(57)
+      assert origins == [{0, 0}, {0, 50}, {50, 0}]
+    end
+
+    test "first origin is always {0, 0}" do
+      for version <- 1..40 do
+        size = 4 * version + 17
+        [{first, _} | _] = Regions.finder_origins(size)
+        assert first == 0
+      end
+    end
+
+    test "always returns exactly three origins" do
+      for version <- [1, 5, 10, 20, 40] do
+        size = 4 * version + 17
+        origins = Regions.finder_origins(size)
+        assert length(origins) == 3
+      end
+    end
+  end
 end

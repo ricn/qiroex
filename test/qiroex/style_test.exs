@@ -13,7 +13,7 @@ defmodule Qiroex.StyleTest do
     end
 
     test "accepts module_shape" do
-      for shape <- [:square, :rounded, :circle, :diamond] do
+      for shape <- [:square, :rounded, :circle, :diamond, :leaf, :shield] do
         style = Style.new(module_shape: shape)
         assert style.module_shape == shape
       end
@@ -152,6 +152,107 @@ defmodule Qiroex.StyleTest do
     test "returns default for unconfigured layer" do
       style = Style.new(finder: %{eye: "#ff0000"})
       assert Style.finder_color(style, :outer, "#000") == "#000"
+    end
+  end
+
+  describe "finder shape keys" do
+    test "accepts finder map with shape keys" do
+      finder = %{outer_shape: :circle, inner_shape: :rounded, eye_shape: :diamond}
+      style = Style.new(finder: finder)
+      assert style.finder == finder
+    end
+
+    test "accepts all valid finder shapes" do
+      for shape <- [:square, :rounded, :circle, :diamond, :leaf, :shield] do
+        style = Style.new(finder: %{outer_shape: shape})
+        assert style.finder.outer_shape == shape
+      end
+    end
+
+    test "accepts mixed color and shape keys" do
+      finder = %{outer: "#ff0000", outer_shape: :leaf, eye: "#0000ff", eye_shape: :circle}
+      style = Style.new(finder: finder)
+      assert style.finder == finder
+    end
+
+    test "rejects invalid finder shape value" do
+      assert_raise ArgumentError, ~r/invalid finder shape/, fn ->
+        Style.new(finder: %{outer_shape: :star})
+      end
+    end
+
+    test "rejects invalid finder shape for inner" do
+      assert_raise ArgumentError, ~r/invalid finder shape/, fn ->
+        Style.new(finder: %{inner_shape: :hexagon})
+      end
+    end
+
+    test "rejects invalid finder shape for eye" do
+      assert_raise ArgumentError, ~r/invalid finder shape/, fn ->
+        Style.new(finder: %{eye_shape: :triangle})
+      end
+    end
+  end
+
+  describe "custom_finder_shapes?/1" do
+    test "nil has no custom finder shapes" do
+      refute Style.custom_finder_shapes?(nil)
+    end
+
+    test "no finder set" do
+      refute Style.custom_finder_shapes?(Style.new())
+    end
+
+    test "finder with colors only has no custom shapes" do
+      refute Style.custom_finder_shapes?(Style.new(finder: %{eye: "#ff0000"}))
+    end
+
+    test "finder with outer_shape" do
+      assert Style.custom_finder_shapes?(Style.new(finder: %{outer_shape: :circle}))
+    end
+
+    test "finder with inner_shape" do
+      assert Style.custom_finder_shapes?(Style.new(finder: %{inner_shape: :rounded}))
+    end
+
+    test "finder with eye_shape" do
+      assert Style.custom_finder_shapes?(Style.new(finder: %{eye_shape: :diamond}))
+    end
+
+    test "finder with mixed colors and shapes" do
+      assert Style.custom_finder_shapes?(
+               Style.new(finder: %{outer: "#ff0000", eye_shape: :leaf})
+             )
+    end
+  end
+
+  describe "finder_shape/3" do
+    test "returns default when style is nil" do
+      assert Style.finder_shape(nil, :outer, :square) == :square
+    end
+
+    test "returns default when no finder set" do
+      style = Style.new()
+      assert Style.finder_shape(style, :outer, :square) == :square
+    end
+
+    test "returns configured shape" do
+      style = Style.new(finder: %{outer_shape: :circle, eye_shape: :diamond})
+      assert Style.finder_shape(style, :outer, :square) == :circle
+      assert Style.finder_shape(style, :eye, :square) == :diamond
+    end
+
+    test "returns default for unconfigured layer" do
+      style = Style.new(finder: %{outer_shape: :circle})
+      assert Style.finder_shape(style, :inner, :square) == :square
+      assert Style.finder_shape(style, :eye, :square) == :square
+    end
+
+    test "returns each shape type correctly" do
+      for shape <- [:square, :rounded, :circle, :diamond, :leaf, :shield] do
+        style = Style.new(finder: %{outer_shape: shape})
+        assert Style.finder_shape(style, :outer, :square) == shape
+      end
     end
   end
 end

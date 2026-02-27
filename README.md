@@ -28,7 +28,7 @@ Qiroex generates **valid, scannable QR codes** entirely in Elixir with no extern
 - **Zero dependencies** — pure Elixir, runs anywhere the BEAM runs
 - **Full QR spec** — versions 1–40, error correction L/M/Q/H, all 4 encoding modes (numeric, alphanumeric, byte, kanji), 8 mask patterns
 - **Three output formats** — SVG (vector), PNG (raster), terminal (Unicode art)
-- **Visual styling** — module shapes (circle, rounded, diamond), custom colors, gradients, finder pattern colors
+- **Visual styling** — module shapes (circle, rounded, diamond, leaf, shield), custom colors, gradients, finder pattern colors and shapes
 - **Logo embedding** — embed SVG or raster image logos (PNG, JPEG, WEBP, GIF, BMP) with automatic coverage validation
 - **11 payload builders** — WiFi, URL, Email, SMS, Phone, Geo, vCard, vEvent, MeCard, Bitcoin, WhatsApp
 - **Input validation** — descriptive error messages for every misconfiguration
@@ -155,6 +155,14 @@ Qiroex.save_svg("Hello", "rounded.svg", style: style)
 # Diamond (rotated squares)
 style = Qiroex.Style.new(module_shape: :diamond)
 Qiroex.save_svg("Hello", "diamond.svg", style: style)
+
+# Leaf (asymmetric rounded corners)
+style = Qiroex.Style.new(module_shape: :leaf)
+Qiroex.save_svg("Hello", "leaf.svg", style: style)
+
+# Shield (flat top, curved pointed bottom)
+style = Qiroex.Style.new(module_shape: :shield)
+Qiroex.save_svg("Hello", "shield.svg", style: style)
 ```
 
 <table>
@@ -162,6 +170,11 @@ Qiroex.save_svg("Hello", "diamond.svg", style: style)
     <td align="center"><img src="assets/circles.svg" alt="Circle modules" width="180" /><br /><code>:circle</code></td>
     <td align="center"><img src="assets/rounded.svg" alt="Rounded modules" width="180" /><br /><code>:rounded</code></td>
     <td align="center"><img src="assets/diamond.svg" alt="Diamond modules" width="180" /><br /><code>:diamond</code></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/leaf.svg" alt="Leaf modules" width="180" /><br /><code>:leaf</code></td>
+    <td align="center"><img src="assets/shield.svg" alt="Shield modules" width="180" /><br /><code>:shield</code></td>
+    <td></td>
   </tr>
 </table>
 
@@ -184,6 +197,50 @@ Qiroex.save_svg("Hello", "finder.svg", style: style)
 ```
 
 <img src="assets/finder_colors.svg" alt="Finder pattern colors" width="200" />
+
+### Finder Pattern Shapes
+
+Customize the shape of each finder pattern layer independently. Finder layers are rendered as single compound SVG elements for clean visual output. Available shapes: `:square`, `:rounded`, `:circle`, `:diamond`, `:leaf`, `:shield`.
+
+```elixir
+# Circle finders with rounded data modules
+style = Qiroex.Style.new(
+  module_shape: :rounded,
+  module_radius: 0.3,
+  finder: %{
+    outer: "#E63946",  outer_shape: :rounded,
+    inner: "#F1FAEE",  inner_shape: :square,
+    eye:   "#1D3557",  eye_shape: :circle
+  }
+)
+
+Qiroex.save_svg("Hello", "finder_shapes.svg", style: style)
+```
+
+You can also set shapes without custom colors — the default dark/light colors will be used:
+
+```elixir
+style = Qiroex.Style.new(
+  finder: %{
+    outer_shape: :rounded,
+    inner_shape: :rounded,
+    eye_shape: :circle
+  }
+)
+```
+
+<table>
+  <tr>
+    <td align="center"><img src="assets/finder_rounded.svg" alt="Rounded finders" width="180" /><br />Rounded</td>
+    <td align="center"><img src="assets/finder_circle.svg" alt="Circle finders" width="180" /><br />Circle</td>
+    <td align="center"><img src="assets/finder_leaf.svg" alt="Leaf finders" width="180" /><br />Leaf</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/finder_shield.svg" alt="Shield finders" width="180" /><br />Shield</td>
+    <td align="center"><img src="assets/finder_mixed.svg" alt="Mixed finders" width="180" /><br />Mixed shapes</td>
+    <td></td>
+  </tr>
+</table>
 
 ### Gradient Fills
 

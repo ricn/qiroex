@@ -48,6 +48,77 @@ Qiroex.save_svg("https://elixir-lang.org", "#{out}/finder_colors.svg",
   module_size: 8, quiet_zone: 2, style: style_finder)
 IO.puts("  ✓ finder_colors.svg")
 
+# ── 6a. Leaf module shape ────────────────────────────────────────
+style_leaf = Style.new(module_shape: :leaf)
+Qiroex.save_svg("https://elixir-lang.org", "#{out}/leaf.svg",
+  module_size: 8, quiet_zone: 2, style: style_leaf)
+IO.puts("  ✓ leaf.svg")
+
+# ── 6b. Shield module shape ─────────────────────────────────────
+style_shield = Style.new(module_shape: :shield)
+Qiroex.save_svg("https://elixir-lang.org", "#{out}/shield.svg",
+  module_size: 8, quiet_zone: 2, style: style_shield)
+IO.puts("  ✓ shield.svg")
+
+# ── 6c. Finder pattern shapes — rounded ─────────────────────────
+style_finder_rounded = Style.new(
+  module_shape: :rounded,
+  module_radius: 0.3,
+  finder: %{outer_shape: :rounded, inner_shape: :rounded, eye_shape: :rounded}
+)
+Qiroex.save_svg("https://elixir-lang.org", "#{out}/finder_rounded.svg",
+  module_size: 8, quiet_zone: 2, style: style_finder_rounded)
+IO.puts("  ✓ finder_rounded.svg")
+
+# ── 6d. Finder pattern shapes — circle ──────────────────────────
+style_finder_circle = Style.new(
+  module_shape: :circle,
+  finder: %{outer_shape: :circle, inner_shape: :circle, eye_shape: :circle}
+)
+Qiroex.save_svg("https://elixir-lang.org", "#{out}/finder_circle.svg",
+  module_size: 8, quiet_zone: 2, style: style_finder_circle)
+IO.puts("  ✓ finder_circle.svg")
+
+# ── 6e. Finder pattern shapes — leaf ────────────────────────────
+style_finder_leaf = Style.new(
+  module_shape: :leaf,
+  finder: %{
+    outer: "#2D3436", outer_shape: :leaf,
+    inner: "#FFFFFF", inner_shape: :leaf,
+    eye:   "#E17055", eye_shape: :leaf
+  }
+)
+Qiroex.save_svg("https://elixir-lang.org", "#{out}/finder_leaf.svg",
+  module_size: 8, quiet_zone: 2, style: style_finder_leaf)
+IO.puts("  ✓ finder_leaf.svg")
+
+# ── 6f. Finder pattern shapes — shield ──────────────────────────
+style_finder_shield = Style.new(
+  module_shape: :shield,
+  finder: %{
+    outer: "#1a5276", outer_shape: :shield,
+    inner: "#d5e8f0", inner_shape: :shield,
+    eye:   "#e74c3c", eye_shape: :shield
+  }
+)
+Qiroex.save_svg("https://elixir-lang.org", "#{out}/finder_shield.svg",
+  module_size: 8, quiet_zone: 2, style: style_finder_shield)
+IO.puts("  ✓ finder_shield.svg")
+
+# ── 6g. Finder pattern shapes — mixed ───────────────────────────
+style_finder_mixed = Style.new(
+  module_shape: :rounded,
+  module_radius: 0.3,
+  finder: %{
+    outer: "#E63946",  outer_shape: :rounded,
+    inner: "#F1FAEE",  inner_shape: :square,
+    eye:   "#1D3557",  eye_shape: :circle
+  }
+)
+Qiroex.save_svg("https://elixir-lang.org", "#{out}/finder_mixed.svg",
+  module_size: 8, quiet_zone: 2, style: style_finder_mixed)
+IO.puts("  ✓ finder_mixed.svg")
+
 # ── 7. Linear gradient ──────────────────────────────────────────
 style_gradient = Style.new(
   module_shape: :circle,

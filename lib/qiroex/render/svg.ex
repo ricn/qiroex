@@ -213,12 +213,16 @@ defmodule Qiroex.Render.SVG do
 
     # Render finder patterns
     finder_elements =
-      if Style.custom_finder?(style) do
-        render_finder_modules(finder_modules, mod, qz, dark, light, style)
+      if Style.custom_finder_shapes?(style) do
+        render_compound_finders(matrix, mod, qz, dark, light, style)
       else
-        # Use standard data styling for finder patterns too
-        for {pos, _region, is_dark} <- finder_modules, is_dark do
-          render_module(pos, mod, qz, data_fill, :square, 0)
+        if Style.custom_finder?(style) do
+          render_finder_modules(finder_modules, mod, qz, dark, light, style)
+        else
+          # Use standard data styling for finder patterns too
+          for {pos, _region, is_dark} <- finder_modules, is_dark do
+            render_module(pos, mod, qz, data_fill, :square, 0)
+          end
         end
       end
 
@@ -253,6 +257,256 @@ defmodule Qiroex.Render.SVG do
     end
   end
 
+  # === Compound Finder Pattern Rendering ===
+
+  # Renders all three finder patterns as compound SVG elements (one per layer)
+  # instead of cell-by-cell. This produces cleaner shapes for non-square finders.
+  defp render_compound_finders(matrix, mod, qz, dark, light, style) do
+    outer_color = Style.finder_color(style, :outer, dark)
+    inner_color = Style.finder_color(style, :inner, light)
+    eye_color = Style.finder_color(style, :eye, dark)
+
+    outer_shape = Style.finder_shape(style, :outer, :square)
+    inner_shape = Style.finder_shape(style, :inner, :square)
+    eye_shape = Style.finder_shape(style, :eye, :square)
+
+    origins = Regions.finder_origins(matrix.size)
+
+    for {or_, oc} <- origins do
+      # Outer layer: 7×7
+      outer_x = (oc + qz) * mod
+      outer_y = (or_ + qz) * mod
+      outer_size = 7 * mod
+
+      # Inner layer: 5×5 (offset by 1 module from origin)
+      inner_x = (oc + 1 + qz) * mod
+      inner_y = (or_ + 1 + qz) * mod
+      inner_size = 5 * mod
+
+      # Eye layer: 3×3 (offset by 2 modules from origin)
+      eye_x = (oc + 2 + qz) * mod
+      eye_y = (or_ + 2 + qz) * mod
+      eye_size = 3 * mod
+
+      [
+        render_finder_layer(outer_x, outer_y, outer_size, outer_color, outer_shape),
+        render_finder_layer(inner_x, inner_y, inner_size, inner_color, inner_shape),
+        render_finder_layer(eye_x, eye_y, eye_size, eye_color, eye_shape)
+      ]
+    end
+  end
+
+  defp render_finder_layer(x, y, size, fill, :square) do
+    xs = Integer.to_string(x)
+    ys = Integer.to_string(y)
+    ss = Integer.to_string(size)
+
+    [
+      ~s(<rect x="),
+      xs,
+      ~s(" y="),
+      ys,
+      ~s(" width="),
+      ss,
+      ~s(" height="),
+      ss,
+      ~s(" fill="),
+      fill,
+      ~s("/>\n)
+    ]
+  end
+
+  defp render_finder_layer(x, y, size, fill, :rounded) do
+    xs = Integer.to_string(x)
+    ys = Integer.to_string(y)
+    ss = Integer.to_string(size)
+    # Use a generous radius proportional to the size (~20%)
+    r = Float.to_string(size * 0.2)
+
+    [
+      ~s(<rect x="),
+      xs,
+      ~s(" y="),
+      ys,
+      ~s(" width="),
+      ss,
+      ~s(" height="),
+      ss,
+      ~s(" rx="),
+      r,
+      ~s(" ry="),
+      r,
+      ~s(" fill="),
+      fill,
+      ~s("/>\n)
+    ]
+  end
+
+  defp render_finder_layer(x, y, size, fill, :circle) do
+    half = size / 2
+    cx = Float.to_string(x + half)
+    cy = Float.to_string(y + half)
+    r = Float.to_string(half)
+
+    [~s(<circle cx="), cx, ~s(" cy="), cy, ~s(" r="), r, ~s(" fill="), fill, ~s("/>\n)]
+  end
+
+  defp render_finder_layer(x, y, size, fill, :diamond) do
+    half = size / 2
+    top_x = Float.to_string(x + half)
+    top_y = Float.to_string(y + 0.0)
+    right_x = Float.to_string(x + size + 0.0)
+    right_y = Float.to_string(y + half)
+    bottom_x = Float.to_string(x + half)
+    bottom_y = Float.to_string(y + size + 0.0)
+    left_x = Float.to_string(x + 0.0)
+    left_y = Float.to_string(y + half)
+
+    [
+      ~s(<polygon points="),
+      top_x,
+      ?,,
+      top_y,
+      ?\s,
+      right_x,
+      ?,,
+      right_y,
+      ?\s,
+      bottom_x,
+      ?,,
+      bottom_y,
+      ?\s,
+      left_x,
+      ?,,
+      left_y,
+      ~s(" fill="),
+      fill,
+      ~s("/>\n)
+    ]
+  end
+
+  defp render_finder_layer(x, y, size, fill, :leaf) do
+    # Leaf shape: rounded top-right and bottom-left, sharp top-left and bottom-right
+    r = size * 0.4
+    xs = Float.to_string(x + 0.0)
+    ys = Float.to_string(y + 0.0)
+    x_end = Float.to_string(x + size + 0.0)
+    y_end = Float.to_string(y + size + 0.0)
+    x_r = Float.to_string(x + size - r)
+    y_r = Float.to_string(y + r)
+    x_l = Float.to_string(x + r)
+    y_b = Float.to_string(y + size - r)
+    rs = Float.to_string(r)
+
+    [
+      ~s(<path d="M ),
+      xs,
+      ?\s,
+      ys,
+      ~s( L ),
+      x_r,
+      ?\s,
+      ys,
+      ~s( A ),
+      rs,
+      ?\s,
+      rs,
+      ~s( 0 0 1 ),
+      x_end,
+      ?\s,
+      y_r,
+      ~s( L ),
+      x_end,
+      ?\s,
+      y_end,
+      ~s( L ),
+      x_l,
+      ?\s,
+      y_end,
+      ~s( A ),
+      rs,
+      ?\s,
+      rs,
+      ~s( 0 0 1 ),
+      xs,
+      ?\s,
+      y_b,
+      ~s( Z" fill="),
+      fill,
+      ~s("/>\n)
+    ]
+  end
+
+  defp render_finder_layer(x, y, size, fill, :shield) do
+    # Shield shape: flat top, straight sides to ~60%, then curved pointed bottom
+    x_f = x + 0.0
+    y_f = y + 0.0
+    mid_y = y_f + size * 0.55
+    bottom_y = y_f + size
+    mid_x = x_f + size / 2
+    end_x = x_f + size
+
+    xs = Float.to_string(x_f)
+    ys = Float.to_string(y_f)
+    end_xs = Float.to_string(end_x)
+    mid_ys = Float.to_string(mid_y)
+    bottom_ys = Float.to_string(bottom_y)
+    mid_xs = Float.to_string(mid_x)
+
+    # Control points for the Bézier curves
+    cp1_x = Float.to_string(end_x)
+    cp1_y = Float.to_string(mid_y + (bottom_y - mid_y) * 0.5)
+    cp2_x = Float.to_string(mid_x + size * 0.15)
+    cp2_y = Float.to_string(bottom_y)
+
+    cp3_x = Float.to_string(mid_x - size * 0.15)
+    cp3_y = Float.to_string(bottom_y)
+    cp4_x = Float.to_string(x_f)
+    cp4_y = Float.to_string(mid_y + (bottom_y - mid_y) * 0.5)
+
+    [
+      ~s(<path d="M ),
+      xs,
+      ?\s,
+      ys,
+      ~s( L ),
+      end_xs,
+      ?\s,
+      ys,
+      ~s( L ),
+      end_xs,
+      ?\s,
+      mid_ys,
+      ~s( C ),
+      cp1_x,
+      ?\s,
+      cp1_y,
+      ?\s,
+      cp2_x,
+      ?\s,
+      cp2_y,
+      ?\s,
+      mid_xs,
+      ?\s,
+      bottom_ys,
+      ~s( C ),
+      cp3_x,
+      ?\s,
+      cp3_y,
+      ?\s,
+      cp4_x,
+      ?\s,
+      cp4_y,
+      ?\s,
+      xs,
+      ?\s,
+      mid_ys,
+      ~s( Z" fill="),
+      fill,
+      ~s("/>\n)
+    ]
+  end
+
   # === Module Shape Rendering ===
 
   defp render_module({row, col}, mod, qz, fill, shape, radius) do
@@ -264,6 +518,8 @@ defmodule Qiroex.Render.SVG do
       :rounded -> render_rounded(x, y, mod, fill, radius)
       :circle -> render_circle(x, y, mod, fill)
       :diamond -> render_diamond(x, y, mod, fill)
+      :leaf -> render_leaf(x, y, mod, fill)
+      :shield -> render_shield(x, y, mod, fill)
     end
   end
 
@@ -351,6 +607,127 @@ defmodule Qiroex.Render.SVG do
       ?,,
       left_y,
       ~s(" fill="),
+      fill,
+      ~s("/>\n)
+    ]
+  end
+
+  defp render_leaf(x, y, mod, fill) do
+    # Leaf shape for module: rounded top-right and bottom-left, sharp top-left and bottom-right
+    r = mod * 0.4
+    xs = Float.to_string(x + 0.0)
+    ys = Float.to_string(y + 0.0)
+    x_end = Float.to_string(x + mod + 0.0)
+    y_end = Float.to_string(y + mod + 0.0)
+    x_r = Float.to_string(x + mod - r)
+    y_r = Float.to_string(y + r)
+    x_l = Float.to_string(x + r)
+    y_b = Float.to_string(y + mod - r)
+    rs = Float.to_string(r)
+
+    [
+      ~s(<path d="M ),
+      xs,
+      ?\s,
+      ys,
+      ~s( L ),
+      x_r,
+      ?\s,
+      ys,
+      ~s( A ),
+      rs,
+      ?\s,
+      rs,
+      ~s( 0 0 1 ),
+      x_end,
+      ?\s,
+      y_r,
+      ~s( L ),
+      x_end,
+      ?\s,
+      y_end,
+      ~s( L ),
+      x_l,
+      ?\s,
+      y_end,
+      ~s( A ),
+      rs,
+      ?\s,
+      rs,
+      ~s( 0 0 1 ),
+      xs,
+      ?\s,
+      y_b,
+      ~s( Z" fill="),
+      fill,
+      ~s("/>\n)
+    ]
+  end
+
+  defp render_shield(x, y, mod, fill) do
+    # Shield shape for module: flat top, straight sides to ~60%, curved pointed bottom
+    x_f = x + 0.0
+    y_f = y + 0.0
+    mid_y = y_f + mod * 0.55
+    bottom_y = y_f + mod
+    mid_x = x_f + mod / 2
+    end_x = x_f + mod
+
+    xs = Float.to_string(x_f)
+    ys = Float.to_string(y_f)
+    end_xs = Float.to_string(end_x)
+    mid_ys = Float.to_string(mid_y)
+    bottom_ys = Float.to_string(bottom_y)
+    mid_xs = Float.to_string(mid_x)
+
+    cp1_x = Float.to_string(end_x)
+    cp1_y = Float.to_string(mid_y + (bottom_y - mid_y) * 0.5)
+    cp2_x = Float.to_string(mid_x + mod * 0.15)
+    cp2_y = Float.to_string(bottom_y)
+
+    cp3_x = Float.to_string(mid_x - mod * 0.15)
+    cp3_y = Float.to_string(bottom_y)
+    cp4_x = Float.to_string(x_f)
+    cp4_y = Float.to_string(mid_y + (bottom_y - mid_y) * 0.5)
+
+    [
+      ~s(<path d="M ),
+      xs,
+      ?\s,
+      ys,
+      ~s( L ),
+      end_xs,
+      ?\s,
+      ys,
+      ~s( L ),
+      end_xs,
+      ?\s,
+      mid_ys,
+      ~s( C ),
+      cp1_x,
+      ?\s,
+      cp1_y,
+      ?\s,
+      cp2_x,
+      ?\s,
+      cp2_y,
+      ?\s,
+      mid_xs,
+      ?\s,
+      bottom_ys,
+      ~s( C ),
+      cp3_x,
+      ?\s,
+      cp3_y,
+      ?\s,
+      cp4_x,
+      ?\s,
+      cp4_y,
+      ?\s,
+      xs,
+      ?\s,
+      mid_ys,
+      ~s( Z" fill="),
       fill,
       ~s("/>\n)
     ]

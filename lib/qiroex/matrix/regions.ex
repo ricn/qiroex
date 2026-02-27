@@ -70,8 +70,19 @@ defmodule Qiroex.Matrix.Regions do
 
   # === Finder Pattern Regions ===
 
-  # The three finder pattern origins (top-left corner of each 7×7 block)
-  defp finder_origins(size) do
+  @doc """
+  Returns the three finder pattern origins (top-left corner of each 7×7 block).
+
+  The origins are:
+    - `{0, 0}` — top-left
+    - `{0, size - 7}` — top-right
+    - `{size - 7, 0}` — bottom-left
+
+  ## Parameters
+    - `size` — the side length of the QR matrix in modules
+  """
+  @spec finder_origins(non_neg_integer()) :: [{non_neg_integer(), non_neg_integer()}]
+  def finder_origins(size) do
     [{0, 0}, {0, size - 7}, {size - 7, 0}]
   end
 
