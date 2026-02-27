@@ -7,7 +7,7 @@ defmodule Qiroex.Logo do
   cover too many data modules for the chosen error correction level.
 
   Logos can be provided as **SVG markup** or as **raster image binaries**
-  (PNG, JPEG, WEBP, GIF, BMP). Raster images are embedded via base64
+  (PNG, JPEG, WEBP, GIF, BMP, AVIF, TIFF). Raster images are embedded via base64
   data URIs — no external dependencies required.
 
   ## Coverage Limits
@@ -41,7 +41,7 @@ defmodule Qiroex.Logo do
   ## Options
     - `:svg` — SVG markup string for the logo (provide this **or** `:image`)
     - `:image` — binary image data for a raster logo (provide this **or** `:svg`)
-    - `:image_type` — image format atom: `:png`, `:jpeg`, `:webp`, `:gif`, `:bmp` (required when using `:image`)
+    - `:image_type` — image format atom: `:png`, `:jpeg`, `:webp`, `:gif`, `:bmp`, `:avif`, `:tiff` (required when using `:image`)
     - `:size` — logo size as a fraction of the QR code (0.0–0.4, default: 0.2)
     - `:padding` — padding around the logo in modules (default: 1)
     - `:background` — background color behind the logo (default: `"#ffffff"`)
@@ -49,7 +49,7 @@ defmodule Qiroex.Logo do
     - `:border_radius` — corner radius for `:rounded` shape (default: 4)
   """
 
-  @type image_type :: :png | :jpeg | :webp | :gif | :bmp
+  @type image_type :: :png | :jpeg | :webp | :gif | :bmp | :avif | :tiff
 
   @type t :: %__MODULE__{
           svg: String.t() | nil,
@@ -71,7 +71,7 @@ defmodule Qiroex.Logo do
             shape: :square,
             border_radius: 4
 
-  @valid_image_types [:png, :jpeg, :webp, :gif, :bmp]
+  @valid_image_types [:png, :jpeg, :webp, :gif, :bmp, :avif, :tiff]
 
   # Safety margin: use 80% of theoretical EC capacity for logo coverage
   @safety_factor 0.80
@@ -91,8 +91,8 @@ defmodule Qiroex.Logo do
 
   ## Options
     - `:svg` — SVG markup string
-    - `:image` — binary image data (PNG, JPEG, WEBP, GIF, BMP)
-    - `:image_type` — image format: `:png`, `:jpeg`, `:webp`, `:gif`, `:bmp`
+    - `:image` — binary image data (PNG, JPEG, WEBP, GIF, BMP, AVIF, TIFF)
+    - `:image_type` — image format: `:png`, `:jpeg`, `:webp`, `:gif`, `:bmp`, `:avif`, `:tiff`
     - `:size` — fraction of QR code size (0.0–0.4, default: 0.2)
     - `:padding` — padding in modules around the logo (default: 1)
     - `:background` — CSS color for the background behind the logo (default: `"#ffffff"`)
@@ -362,6 +362,8 @@ defmodule Qiroex.Logo do
   def image_type_to_mime(:webp), do: "image/webp"
   def image_type_to_mime(:gif), do: "image/gif"
   def image_type_to_mime(:bmp), do: "image/bmp"
+  def image_type_to_mime(:avif), do: "image/avif"
+  def image_type_to_mime(:tiff), do: "image/tiff"
 
   # === Image Type Detection ===
 
@@ -370,7 +372,7 @@ defmodule Qiroex.Logo do
 
   Returns the image type atom or `nil` if unrecognized.
 
-  Supported formats: PNG, JPEG, WEBP, GIF, BMP.
+  Supported formats: PNG, JPEG, WEBP, GIF, BMP, AVIF, TIFF.
   """
   @spec detect_image_type(binary()) :: image_type() | nil
   def detect_image_type(<<0x89, 0x50, 0x4E, 0x47, _::binary>>), do: :png
@@ -379,6 +381,10 @@ defmodule Qiroex.Logo do
   def detect_image_type(<<"GIF87a", _::binary>>), do: :gif
   def detect_image_type(<<"GIF89a", _::binary>>), do: :gif
   def detect_image_type(<<"BM", _::binary>>), do: :bmp
+  def detect_image_type(<<_size::32-big, "ftyp", "avif", _::binary>>), do: :avif
+  def detect_image_type(<<_size::32-big, "ftyp", "avis", _::binary>>), do: :avif
+  def detect_image_type(<<0x49, 0x49, 0x2A, 0x00, _::binary>>), do: :tiff
+  def detect_image_type(<<0x4D, 0x4D, 0x00, 0x2A, _::binary>>), do: :tiff
   def detect_image_type(_), do: nil
 
   # === Validation ===
@@ -431,7 +437,7 @@ defmodule Qiroex.Logo do
     unless image_type in @valid_image_types do
       raise ArgumentError,
             "Logo image_type must be one of #{inspect(@valid_image_types)}, got: #{inspect(image_type)}. " <>
-              "Provide :image_type explicitly or use a supported format (PNG, JPEG, WEBP, GIF, BMP)"
+              "Provide :image_type explicitly or use a supported format (PNG, JPEG, WEBP, GIF, BMP, AVIF, TIFF)"
     end
 
     :ok

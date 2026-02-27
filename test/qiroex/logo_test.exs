@@ -126,6 +126,24 @@ defmodule Qiroex.LogoTest do
       assert logo.image_type == :bmp
     end
 
+    test "auto-detects AVIF from magic bytes" do
+      avif = <<0x00, 0x00, 0x00, 0x1C, "ftypavif", 0x00, 0x00, 0x00, 0x00>>
+      logo = Logo.new(image: avif)
+      assert logo.image_type == :avif
+    end
+
+    test "auto-detects TIFF (little-endian) from magic bytes" do
+      tiff = <<0x49, 0x49, 0x2A, 0x00, 0x08, 0x00, 0x00, 0x00>>
+      logo = Logo.new(image: tiff)
+      assert logo.image_type == :tiff
+    end
+
+    test "auto-detects TIFF (big-endian) from magic bytes" do
+      tiff = <<0x4D, 0x4D, 0x00, 0x2A, 0x00, 0x00, 0x00, 0x08>>
+      logo = Logo.new(image: tiff)
+      assert logo.image_type == :tiff
+    end
+
     test "accepts custom size and shape for raster logo" do
       logo = Logo.new(image: @sample_png, image_type: :png, size: 0.3, shape: :circle)
       assert logo.size == 0.3
@@ -152,7 +170,7 @@ defmodule Qiroex.LogoTest do
 
     test "rejects invalid image_type atom" do
       assert_raise ArgumentError, ~r/image_type must be one of/, fn ->
-        Logo.new(image: @sample_png, image_type: :tiff)
+        Logo.new(image: @sample_png, image_type: :ico)
       end
     end
   end
@@ -181,6 +199,22 @@ defmodule Qiroex.LogoTest do
 
     test "detects BMP" do
       assert Logo.detect_image_type(<<"BM", 0x00, 0x00>>) == :bmp
+    end
+
+    test "detects AVIF (avif brand)" do
+      assert Logo.detect_image_type(<<0x00, 0x00, 0x00, 0x1C, "ftypavif", 0x00>>) == :avif
+    end
+
+    test "detects AVIF (avis brand)" do
+      assert Logo.detect_image_type(<<0x00, 0x00, 0x00, 0x1C, "ftypavis", 0x00>>) == :avif
+    end
+
+    test "detects TIFF (little-endian)" do
+      assert Logo.detect_image_type(<<0x49, 0x49, 0x2A, 0x00, 0x08>>) == :tiff
+    end
+
+    test "detects TIFF (big-endian)" do
+      assert Logo.detect_image_type(<<0x4D, 0x4D, 0x00, 0x2A, 0x08>>) == :tiff
     end
 
     test "returns nil for unknown format" do

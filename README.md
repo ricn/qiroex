@@ -29,7 +29,7 @@ Qiroex generates **valid, scannable QR codes** entirely in Elixir with no extern
 - **Full QR spec** — versions 1–40, error correction L/M/Q/H, all 4 encoding modes (numeric, alphanumeric, byte, kanji), 8 mask patterns
 - **Three output formats** — SVG (vector), PNG (raster), terminal (Unicode art)
 - **Visual styling** — module shapes (circle, rounded, diamond, leaf, shield), custom colors, gradients, finder pattern colors and shapes
-- **Logo embedding** — embed SVG or raster image logos (PNG, JPEG, WEBP, GIF, BMP) with automatic coverage validation
+- **Logo embedding** — embed SVG or raster image logos (PNG, JPEG, WEBP, GIF, BMP, AVIF, TIFF) with automatic coverage validation
 - **11 payload builders** — WiFi, URL, Email, SMS, Phone, Geo, vCard, vEvent, MeCard, Bitcoin, WhatsApp
 - **Input validation** — descriptive error messages for every misconfiguration
 - **Thoroughly tested** — 500+ unit and integration tests
@@ -285,7 +285,7 @@ Qiroex.save_svg("https://elixir-lang.org", "styled.svg", style: style)
 
 ## Logo Embedding
 
-Embed a logo in the center of your QR code. Qiroex supports both **SVG markup** and **raster images** (PNG, JPEG, WEBP, GIF, BMP) — all with zero dependencies. It automatically clears the modules behind the logo area and validates that the logo doesn't exceed the error correction capacity.
+Embed a logo in the center of your QR code. Qiroex supports both **SVG markup** and **raster images** (PNG, JPEG, WEBP, GIF, BMP, AVIF, TIFF) — all with zero dependencies. It automatically clears the modules behind the logo area and validates that the logo doesn't exceed the error correction capacity.
 
 ### SVG Logo
 
