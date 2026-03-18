@@ -241,9 +241,10 @@ defmodule Qiroex.Logo do
   """
   @spec render_svg(t(), map()) :: iolist()
   def render_svg(%__MODULE__{} = logo, geo) do
+    clip_defs = render_clip_defs(logo, geo)
     bg = render_background(logo, geo)
     embed = render_logo_embed(logo, geo)
-    [bg, embed]
+    [clip_defs, bg, embed]
   end
 
   # === Background Shape ===
@@ -312,6 +313,52 @@ defmodule Qiroex.Logo do
     ]
   end
 
+  # === Clip Path (raster images with non-square shapes) ===
+
+  defp render_clip_defs(%__MODULE__{image: image, shape: :rounded} = logo, geo)
+       when is_binary(image) do
+    r = to_s(logo.border_radius)
+
+    [
+      ~s(<defs>\n<clipPath id="qiroex-logo-clip">\n),
+      ~s(<rect x="),
+      to_s(geo.logo_x),
+      ~s(" y="),
+      to_s(geo.logo_y),
+      ~s(" width="),
+      to_s(geo.logo_px),
+      ~s(" height="),
+      to_s(geo.logo_px),
+      ~s(" rx="),
+      r,
+      ~s(" ry="),
+      r,
+      ~s("/>\n),
+      ~s(</clipPath>\n</defs>\n)
+    ]
+  end
+
+  defp render_clip_defs(%__MODULE__{image: image, shape: :circle} = _logo, geo)
+       when is_binary(image) do
+    cx = to_s(geo.logo_x + div(geo.logo_px, 2))
+    cy = to_s(geo.logo_y + div(geo.logo_px, 2))
+    r = to_s(div(geo.logo_px, 2))
+
+    [
+      ~s(<defs>\n<clipPath id="qiroex-logo-clip">\n),
+      ~s(<circle cx="),
+      cx,
+      ~s(" cy="),
+      cy,
+      ~s(" r="),
+      r,
+      ~s("/>\n),
+      ~s(</clipPath>\n</defs>\n)
+    ]
+  end
+
+  defp render_clip_defs(_logo, _geo), do: []
+
   # === Logo Embed (SVG or raster) ===
 
   defp render_logo_embed(%__MODULE__{svg: svg} = _logo, geo) when is_binary(svg) do
@@ -332,14 +379,15 @@ defmodule Qiroex.Logo do
     ]
   end
 
-  defp render_logo_embed(%__MODULE__{image: image, image_type: image_type} = _logo, geo)
+  defp render_logo_embed(%__MODULE__{image: image, image_type: image_type, shape: shape} = _logo, geo)
        when is_binary(image) do
     # Embed raster image using <image> with base64 data URI
     mime = image_type_to_mime(image_type)
     b64 = Base.encode64(image)
+    clip_attr = if shape != :square, do: ~s[ clip-path="url(#qiroex-logo-clip)"], else: ""
 
     [
-      ~s(<image href="data:),
+      ~s[<image href="data:],
       mime,
       ~s(;base64,),
       b64,
@@ -351,7 +399,9 @@ defmodule Qiroex.Logo do
       to_s(geo.logo_px),
       ~s(" height="),
       to_s(geo.logo_px),
-      ~s(" preserveAspectRatio="xMidYMid meet"/>\n)
+      ~s("),
+      clip_attr,
+      ~s( preserveAspectRatio="xMidYMid meet"/>\n)
     ]
   end
 
