@@ -320,7 +320,7 @@ logo = Qiroex.Logo.new(
 Qiroex.save_svg("https://example.com", "branded.svg", level: :h, logo: logo)
 ```
 
-Raster images are embedded as base64 data URIs inside the SVG — no external files or dependencies needed. You can also specify the format explicitly:
+Raster images are embedded as base64 data URIs inside the SVG — no external files or dependencies needed. When `shape` is `:rounded` or `:circle`, the image is clipped to that shape using an SVG `<clipPath>`, so the image itself appears rounded or circular — not just the background behind it. You can also specify the format explicitly:
 
 ```elixir
 Qiroex.Logo.new(image: jpeg_bytes, image_type: :jpeg, size: 0.2)
@@ -359,7 +359,7 @@ Qiroex.save_svg("https://elixir-lang.org", "branded.svg",
 | `:size` | `0.2` | Logo size as fraction of QR code (0.0–0.4) |
 | `:padding` | `1` | Padding around logo in modules |
 | `:background` | `"#ffffff"` | Background color behind the logo |
-| `:shape` | `:square` | Background shape: `:square`, `:rounded`, `:circle` |
+| `:shape` | `:square` | Background shape: `:square`, `:rounded`, `:circle`. For raster images, also clips the image itself to the chosen shape. |
 | `:border_radius` | `4` | Corner radius for `:rounded` shape |
 
 ### Coverage Validation

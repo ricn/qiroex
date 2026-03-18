@@ -186,7 +186,7 @@ IO.puts("  ✓ logo_styled.svg")
   module_size: 4, quiet_zone: 1,
   dark_color: {75, 39, 95}, light_color: {155, 89, 182}
 )
-png_logo = Logo.new(image: png_logo_binary, size: 0.22, shape: :rounded, border_radius: 6, padding: 1)
+png_logo = Logo.new(image: png_logo_binary, size: 0.22, shape: :circle, padding: 2)
 Qiroex.save_svg("https://elixir-lang.org", "#{out}/logo_png.svg",
   module_size: 8, quiet_zone: 2, level: :h, logo: png_logo)
 IO.puts("  ✓ logo_png.svg")

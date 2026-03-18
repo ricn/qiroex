@@ -115,6 +115,80 @@ defmodule Qiroex.Render.SVG.LogoTest do
     end
   end
 
+  # Minimal valid 1x1 PNG
+  @sample_png <<0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D, 0x49,
+                0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x02,
+                0x00, 0x00, 0x00, 0x90, 0x77, 0x53, 0xDE, 0x00, 0x00, 0x00, 0x0C, 0x49, 0x44,
+                0x41, 0x54, 0x08, 0xD7, 0x63, 0xF8, 0xCF, 0xC0, 0x00, 0x00, 0x00, 0x02, 0x00,
+                0x01, 0xE2, 0x21, 0xBC, 0x33, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44,
+                0xAE, 0x42, 0x60, 0x82>>
+
+  describe "raster image logo shapes" do
+    test "square raster logo has no clipPath", %{matrix: matrix} do
+      logo = Logo.new(image: @sample_png, size: 0.2, shape: :square)
+      svg = SVG.render(matrix, logo: logo)
+
+      refute String.contains?(svg, "clipPath")
+      refute String.contains?(svg, "clip-path")
+    end
+
+    test "rounded raster logo emits clipPath with rx/ry", %{matrix: matrix} do
+      logo = Logo.new(image: @sample_png, size: 0.2, shape: :rounded, border_radius: 6)
+      svg = SVG.render(matrix, logo: logo)
+
+      assert String.contains?(svg, ~s[clipPath id="qiroex-logo-clip"])
+      assert String.contains?(svg, ~s[rx="6"])
+      assert String.contains?(svg, ~s[clip-path="url(#qiroex-logo-clip)"])
+    end
+
+    test "circle raster logo emits clipPath with circle", %{matrix: matrix} do
+      logo = Logo.new(image: @sample_png, size: 0.2, shape: :circle)
+      svg = SVG.render(matrix, logo: logo)
+
+      assert String.contains?(svg, ~s[clipPath id="qiroex-logo-clip"])
+      assert Regex.match?(~r/<clipPath[^>]*>[\s\S]*?<circle /, svg)
+      assert String.contains?(svg, ~s[clip-path="url(#qiroex-logo-clip)"])
+    end
+
+    test "clip-path is on the image element, not on background shapes", %{matrix: matrix} do
+      logo = Logo.new(image: @sample_png, size: 0.2, shape: :circle)
+      svg = SVG.render(matrix, logo: logo)
+
+      assert Regex.match?(~r/<image [^>]*clip-path="url\(#qiroex-logo-clip\)"/, svg)
+    end
+
+    test "SVG logo with rounded shape does not get a clipPath", %{matrix: matrix} do
+      logo = Logo.new(svg: @sample_svg, size: 0.2, shape: :rounded)
+      svg = SVG.render(matrix, logo: logo)
+
+      refute String.contains?(svg, "clipPath")
+    end
+
+    test "SVG logo with circle shape does not get a clipPath", %{matrix: matrix} do
+      logo = Logo.new(svg: @sample_svg, size: 0.2, shape: :circle)
+      svg = SVG.render(matrix, logo: logo)
+
+      refute String.contains?(svg, "clipPath")
+    end
+
+    test "rounded raster logo clip uses logo_px dimensions, not clear_px", %{matrix: matrix} do
+      logo =
+        Logo.new(image: @sample_png, size: 0.2, shape: :rounded, border_radius: 4, padding: 2)
+
+      svg = SVG.render(matrix, logo: logo)
+
+      # Extract logo and clear geometry to verify clip uses logo dimensions (smaller, excludes padding)
+      {:ok, qr} = Qiroex.QR.encode("HELLO WORLD", level: :h)
+      geo = Logo.geometry(logo, qr.matrix.size, 10, 4)
+
+      clip_rect = ~r/<clipPath[^>]*>[\s\S]*?<rect[^>]*width="(\d+)"[^>]*\/>/
+      [_, clip_width] = Regex.run(clip_rect, svg)
+
+      assert String.to_integer(clip_width) == geo.logo_px
+      assert geo.logo_px < geo.clear_px
+    end
+  end
+
   describe "public API integration" do
     test "to_svg! with logo" do
       logo = Logo.new(svg: @sample_svg, size: 0.2)
