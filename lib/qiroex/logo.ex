@@ -219,10 +219,32 @@ defmodule Qiroex.Logo do
   def cleared_positions(%__MODULE__{} = logo, matrix_size, module_size, quiet_zone) do
     geo = geometry(logo, matrix_size, module_size, quiet_zone)
 
-    for row <- geo.clear_start_row..geo.clear_end_row,
-        col <- geo.clear_start_col..geo.clear_end_col,
-        into: MapSet.new() do
-      {row, col}
+    all_positions =
+      for row <- geo.clear_start_row..geo.clear_end_row,
+          col <- geo.clear_start_col..geo.clear_end_col do
+        {row, col}
+      end
+
+    case logo.shape do
+      :circle ->
+        # Only clear modules whose center falls within the circle
+        r = geo.clear_px / 2
+        cx = geo.clear_x + r
+        cy = geo.clear_y + r
+
+        Enum.into(
+          Enum.filter(all_positions, fn {row, col} ->
+            mod_cx = (col + quiet_zone + 0.5) * module_size
+            mod_cy = (row + quiet_zone + 0.5) * module_size
+            dx = mod_cx - cx
+            dy = mod_cy - cy
+            dx * dx + dy * dy <= r * r
+          end),
+          MapSet.new()
+        )
+
+      _ ->
+        MapSet.new(all_positions)
     end
   end
 
