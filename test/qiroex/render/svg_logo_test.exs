@@ -172,7 +172,9 @@ defmodule Qiroex.Render.SVG.LogoTest do
     end
 
     test "rounded raster logo clip uses logo_px dimensions, not clear_px", %{matrix: matrix} do
-      logo = Logo.new(image: @sample_png, size: 0.2, shape: :rounded, border_radius: 4, padding: 2)
+      logo =
+        Logo.new(image: @sample_png, size: 0.2, shape: :rounded, border_radius: 4, padding: 2)
+
       svg = SVG.render(matrix, logo: logo)
 
       # Extract logo and clear geometry to verify clip uses logo dimensions (smaller, excludes padding)

@@ -401,7 +401,10 @@ defmodule Qiroex.Logo do
     ]
   end
 
-  defp render_logo_embed(%__MODULE__{image: image, image_type: image_type, shape: shape} = _logo, geo)
+  defp render_logo_embed(
+         %__MODULE__{image: image, image_type: image_type, shape: shape} = _logo,
+         geo
+       )
        when is_binary(image) do
     # Embed raster image using <image> with base64 data URI
     mime = image_type_to_mime(image_type)
