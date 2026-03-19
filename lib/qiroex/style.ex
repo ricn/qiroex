@@ -6,6 +6,14 @@ defmodule Qiroex.Style do
   beyond basic color options. Supports module shapes, finder pattern styling,
   and gradient fills.
 
+  ## Renderer Support
+
+  Styling support varies by renderer:
+
+    - `SVG` — supports module shapes, finder colors, finder shapes, and gradients
+    - `PNG` — supports finder colors only; module shapes, finder shapes, and gradients are ignored
+    - `Terminal` — ignores `Qiroex.Style` entirely
+
   ## Usage
 
       style = Qiroex.Style.new(

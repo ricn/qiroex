@@ -128,6 +128,9 @@ defmodule Qiroex.ValidateTest do
     test "accepts valid CSS colors" do
       assert :ok = Validate.svg_render_opts(dark_color: "#000", light_color: "white")
       assert :ok = Validate.svg_render_opts(dark_color: "rgb(0, 0, 0)")
+      assert :ok = Validate.svg_render_opts(dark_color: "rebeccapurple")
+      assert :ok = Validate.svg_render_opts(light_color: "currentColor")
+      assert :ok = Validate.svg_render_opts(light_color: "transparent")
     end
 
     test "rejects invalid CSS colors" do
@@ -135,6 +138,9 @@ defmodule Qiroex.ValidateTest do
       assert msg =~ "invalid dark_color"
 
       assert {:error, msg} = Validate.svg_render_opts(dark_color: "not-a-color")
+      assert msg =~ "invalid dark_color"
+
+      assert {:error, msg} = Validate.svg_render_opts(dark_color: "notacolor")
       assert msg =~ "invalid dark_color"
 
       assert {:error, msg} = Validate.svg_render_opts(dark_color: 0)

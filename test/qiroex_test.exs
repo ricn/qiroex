@@ -169,6 +169,11 @@ defmodule QiroexTest do
       assert msg =~ "invalid dark_color"
     end
 
+    test "rejects unknown CSS named colors" do
+      assert {:error, msg} = Qiroex.to_svg("test", dark_color: "notacolor")
+      assert msg =~ "invalid dark_color"
+    end
+
     test "accepts style struct" do
       style = Qiroex.Style.new(module_shape: :circle)
       assert {:ok, svg} = Qiroex.to_svg("test", style: style)
@@ -223,6 +228,14 @@ defmodule QiroexTest do
 
       assert {:error, msg} = Qiroex.to_png("test", logo: logo)
       assert msg =~ ":logo"
+      assert msg =~ "SVG output"
+    end
+
+    test "rejects SVG-only background_image option with explicit guidance" do
+      background_image = %Qiroex.BackgroundImage{}
+
+      assert {:error, msg} = Qiroex.to_png("test", background_image: background_image)
+      assert msg =~ ":background_image"
       assert msg =~ "SVG output"
     end
   end

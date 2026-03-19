@@ -140,6 +140,13 @@ Qiroex.save_png("Hello", "qr.png",
 
 Qiroex supports rich visual customization through the `Qiroex.Style` struct. All style options apply to **SVG output**; PNG supports finder pattern colors.
 
+| Feature | SVG | PNG | Terminal |
+|---------|-----|-----|----------|
+| Module shapes | Yes | No | No |
+| Finder colors | Yes | Yes | No |
+| Finder shapes | Yes | No | No |
+| Gradients | Yes | No | No |
+
 ### Module Shapes
 
 Choose how individual data modules are rendered:
