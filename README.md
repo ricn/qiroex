@@ -278,7 +278,7 @@ Use a real image such as a JPEG or PNG photo as a background inside the QR body.
 
 ```elixir
 background = Qiroex.BackgroundImage.from_file!("photo.jpg",
-  opacity: 0.2,
+  opacity: 0.3,
   fit: :cover
 )
 
@@ -295,7 +295,7 @@ Qiroex.save_svg("https://example.com", "photo-background.svg",
 ```elixir
 background = Qiroex.BackgroundImage.new(
   image: File.read!("hero.jpg"),
-  opacity: 0.18,
+  opacity: 0.28,
   fit: :contain
 )
 
@@ -308,7 +308,7 @@ The same API also supports raw SVG markup:
 background = Qiroex.BackgroundImage.new(svg: "<svg>...</svg>", fit: :contain)
 ```
 
-> **Tip:** Start around `opacity: 0.18`–`0.25` and prefer error correction level `:h` when using busy photo backgrounds.
+> **Tip:** Start around `opacity: 0.22`–`0.35`, prefer photos with bold shapes instead of pale low-contrast scenes, and use error correction level `:h` for busy backgrounds.
 
 <img src="assets/background_image.svg" alt="QR code with embedded background image" width="220" />
 

@@ -466,7 +466,9 @@ Qiroex.save_png("https://elixir-lang.org", "#{out}/basic.png", module_size: 10, 
 IO.puts("  ✓ basic.png")
 
 # ── 23b. Background image example ───────────────────────────────
-background_image = BackgroundImage.from_file!("#{out}/basic.png", opacity: 0.18)
+# CC0 orange gerbera photo from Wikimedia Commons:
+# https://commons.wikimedia.org/wiki/File:Orange_Gerbera_flower.jpg
+background_image = BackgroundImage.from_file!("#{out}/background_orange_flower.jpg", opacity: 0.32)
 style_background = Style.new(module_shape: :rounded, module_radius: 0.25)
 
 Qiroex.save_svg("https://elixir-lang.org", "#{out}/background_image.svg",
@@ -474,7 +476,7 @@ Qiroex.save_svg("https://elixir-lang.org", "#{out}/background_image.svg",
   quiet_zone: 2,
   level: :h,
   dark_color: "#0F172A",
-  light_color: "#F8FAFC",
+  light_color: "#FFF7F2",
   style: style_background,
   background_image: background_image
 )
