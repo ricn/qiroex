@@ -12,8 +12,12 @@ defmodule Qiroex.Validate do
   @valid_shapes [:square, :rounded, :circle, :diamond]
   @encode_option_keys [:level, :version, :mode, :mask]
   @hex_color_regex ~r/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/
-  @rgb_color_regex ~r/^rgba?\(\s*.+\)$/i
-  @hsl_color_regex ~r/^hsla?\(\s*.+\)$/i
+  # Matches rgb(...) or rgba(...) with numeric and/or percentage channels and optional alpha.
+  # Examples: rgb(255, 0, 0), rgb(100%, 0%, 0%), rgba(0, 0, 0, 0.5), rgba(0,0,0,50%)
+  @rgb_color_regex ~r/^rgba?\(\s*(?:\+?\d+%?\s*,\s*){2}\+?\d+%?(?:\s*,\s*(?:0|1|0?\.\d+|\d{1,3}%))?\s*\)$/i
+  # Matches hsl(...) or hsla(...) with hue and percentage saturation/lightness and optional alpha.
+  # Examples: hsl(120, 50%, 50%), hsla(120deg,50%,50%,0.5), hsla(120,50%,50%,50%)
+  @hsl_color_regex ~r/^hsla?\(\s*\d+(?:deg|grad|rad|turn)?\s*,\s*\d+%\s*,\s*\d+%(?:\s*,\s*(?:0|1|0?\.\d+|\d{1,3}%))?\s*\)$/i
   @css_named_colors MapSet.new([
                       "aliceblue",
                       "antiquewhite",
@@ -535,6 +539,8 @@ defmodule Qiroex.Validate do
     downcased = String.downcase(trimmed)
 
     trimmed != "" and
+      # Basic defense-in-depth: disallow characters that could break out of SVG/XML attributes.
+      not String.contains?(trimmed, ["\"", "'", "<", ">", "&"]) and
       (Regex.match?(@hex_color_regex, trimmed) or
          Regex.match?(@rgb_color_regex, trimmed) or
          Regex.match?(@hsl_color_regex, trimmed) or
