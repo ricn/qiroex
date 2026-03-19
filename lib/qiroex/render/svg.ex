@@ -84,9 +84,6 @@ defmodule Qiroex.Render.SVG do
     total_modules = matrix.size + 2 * qz
     total_px = total_modules * mod
 
-    width = Integer.to_string(total_px)
-    height = Integer.to_string(total_px)
-
     # Compute cleared positions for logo (if any)
     cleared = if logo, do: Logo.cleared_positions(logo, matrix.size, mod, qz), else: MapSet.new()
 
@@ -107,33 +104,18 @@ defmodule Qiroex.Render.SVG do
         []
       end
 
+    render_context = %{
+      width: Integer.to_string(total_px),
+      height: Integer.to_string(total_px),
+      cleared: cleared,
+      background_image_fragment: background_image_fragment,
+      logo_fragment: logo_fragment
+    }
+
     if styled?(style) do
-      build_styled_iolist(
-        matrix,
-        mod,
-        qz,
-        dark,
-        light,
-        style,
-        width,
-        height,
-        cleared,
-        background_image_fragment,
-        logo_fragment
-      )
+      build_styled_iolist(matrix, mod, qz, dark, light, style, render_context)
     else
-      build_simple_iolist(
-        matrix,
-        mod,
-        qz,
-        dark,
-        light,
-        width,
-        height,
-        cleared,
-        background_image_fragment,
-        logo_fragment
-      )
+      build_simple_iolist(matrix, mod, qz, dark, light, render_context)
     end
   end
 
@@ -142,18 +124,15 @@ defmodule Qiroex.Render.SVG do
 
   # === Simple Rendering (original fast path) ===
 
-  defp build_simple_iolist(
-         matrix,
-         mod,
-         qz,
-         dark,
-         light,
-         width,
-         height,
-         cleared,
-         background_image_fragment,
-         logo_fragment
-       ) do
+  defp build_simple_iolist(matrix, mod, qz, dark, light, render_context) do
+    %{
+      width: width,
+      height: height,
+      cleared: cleared,
+      background_image_fragment: background_image_fragment,
+      logo_fragment: logo_fragment
+    } = render_context
+
     path_data = build_path_data(matrix, mod, qz, cleared)
 
     [
@@ -189,19 +168,15 @@ defmodule Qiroex.Render.SVG do
 
   # === Styled Rendering ===
 
-  defp build_styled_iolist(
-         matrix,
-         mod,
-         qz,
-         dark,
-         light,
-         style,
-         width,
-         height,
-         cleared,
-         background_image_fragment,
-         logo_fragment
-       ) do
+  defp build_styled_iolist(matrix, mod, qz, dark, light, style, render_context) do
+    %{
+      width: width,
+      height: height,
+      cleared: cleared,
+      background_image_fragment: background_image_fragment,
+      logo_fragment: logo_fragment
+    } = render_context
+
     region_map = Regions.build_map(matrix)
     defs = build_defs(style, width, height)
 
