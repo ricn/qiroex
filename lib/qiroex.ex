@@ -52,7 +52,7 @@ defmodule Qiroex do
       {:ok, svg} = Qiroex.payload(:wifi, [ssid: "Net", password: "pass"], :svg)
   """
 
-  alias Qiroex.{QR, Validate}
+  alias Qiroex.{QR, Scanability, Validate}
   alias Qiroex.Render.{PNG, SVG, Terminal}
 
   @svg_render_keys [:module_size, :quiet_zone, :dark_color, :light_color, :style, :logo]
@@ -417,6 +417,72 @@ defmodule Qiroex do
       modules: size,
       data_bytes: byte_size(qr.data)
     }
+  end
+
+  # ─── Scanability ─────────────────────────────────────────────────────
+
+  @doc """
+  Evaluates the scanability of an already-encoded `%Qiroex.QR{}` struct.
+
+  Returns a `%Qiroex.Scanability{}` with an overall score (0–100), a rating,
+  a human-readable summary, and a per-factor breakdown.
+
+  ## Ratings
+
+    - `:excellent` — score 80–100
+    - `:good`      — score 60–79
+    - `:moderate`  — score 40–59
+    - `:poor`      — score 0–39
+
+  ## Examples
+
+      {:ok, qr} = Qiroex.encode("Hello")
+      result = Qiroex.scanability(qr)
+      result.rating   #=> :good
+      result.summary  #=> "Good (72/100) — version 1, EC level M, 38% capacity used"
+
+  """
+  @spec scanability(QR.t()) :: Scanability.t()
+  def scanability(%QR{} = qr), do: Scanability.evaluate(qr)
+
+  @doc """
+  Encodes data and evaluates the scanability of the resulting QR code.
+
+  Accepts the same options as `encode/2`.
+
+  ## Examples
+
+      result = Qiroex.scanability("Hello", level: :h)
+      result.rating  #=> :excellent
+
+  ## Returns
+
+    `{:ok, %Qiroex.Scanability{}}` or `{:error, reason}`
+  """
+  @spec scanability(binary(), keyword()) :: {:ok, Scanability.t()} | {:error, String.t()}
+  def scanability(data, opts) when is_binary(data) do
+    case encode(data, opts) do
+      {:ok, qr} -> {:ok, Scanability.evaluate(qr)}
+      error -> error
+    end
+  end
+
+  @doc """
+  Encodes data and evaluates scanability, raising on error.
+
+  Accepts the same options as `encode/2`.
+
+  ## Examples
+
+      result = Qiroex.scanability!("Hello", level: :h)
+      result.rating  #=> :excellent
+  """
+  @spec scanability!(binary(), keyword()) :: Scanability.t()
+  def scanability!(data, opts \\ []) when is_binary(data) do
+    case scanability(data, opts) do
+      {:ok, result} -> result
+      {:error, reason} -> raise ArgumentError, reason
+    end
   end
 
   # ─── Private ─────────────────────────────────────────────────────────
