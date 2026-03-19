@@ -38,8 +38,9 @@ defmodule Qiroex.Scanability do
       result = Qiroex.scanability("Hello, World!", level: :m)
   """
 
-  alias Qiroex.{QR, Spec}
+  alias Qiroex.Encoder.Mode
   alias Qiroex.Matrix.Mask
+  alias Qiroex.{QR, Spec}
 
   @type rating :: :excellent | :good | :moderate | :poor
 
@@ -156,7 +157,7 @@ defmodule Qiroex.Scanability do
          ec_level: ec_level,
          mode: mode
        }) do
-    actual_mode = if mode == :auto, do: Qiroex.Encoder.Mode.detect(data), else: mode
+    actual_mode = if mode == :auto, do: Mode.detect(data), else: mode
     char_count = data_char_count(data, actual_mode)
     capacity = Spec.capacity(version, ec_level, actual_mode)
     utilization = char_count / capacity
@@ -257,7 +258,7 @@ defmodule Qiroex.Scanability do
     rating_label = rating |> Atom.to_string() |> String.capitalize()
     ec_label = qr.ec_level |> Atom.to_string() |> String.upcase()
 
-    actual_mode = if qr.mode == :auto, do: Qiroex.Encoder.Mode.detect(qr.data), else: qr.mode
+    actual_mode = if qr.mode == :auto, do: Mode.detect(qr.data), else: qr.mode
     char_count = data_char_count(qr.data, actual_mode)
     capacity = Spec.capacity(qr.version, qr.ec_level, actual_mode)
     utilization_pct = round(char_count / capacity * 100)
