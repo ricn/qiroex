@@ -164,10 +164,13 @@ defmodule Qiroex do
   """
   @spec to_matrix!(binary(), keyword()) :: list(list(0 | 1))
   def to_matrix!(data, opts \\ []) do
-    {render_opts, encode_opts} = split_render_opts(opts, @matrix_render_keys)
-    quiet_zone = Keyword.get(render_opts, :quiet_zone, 4)
-    qr = encode!(data, encode_opts)
-    QR.to_matrix(qr, quiet_zone)
+    case to_matrix(data, opts) do
+      {:ok, rows} ->
+        rows
+
+      {:error, reason} ->
+        raise ArgumentError, reason
+    end
   end
 
   # ─── SVG ─────────────────────────────────────────────────────────────
