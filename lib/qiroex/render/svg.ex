@@ -11,8 +11,10 @@ defmodule Qiroex.Render.SVG do
     - `:dark_color` - CSS color for dark modules (default: `"#000000"`)
     - `:light_color` - CSS color for light/background modules (default: `"#ffffff"`)
     - `:style` - a `%Qiroex.Style{}` struct for advanced styling (optional)
+    - `:background_image` - a `%Qiroex.BackgroundImage{}` struct for embedded photo or SVG backgrounds (optional)
   """
 
+  alias Qiroex.BackgroundImage
   alias Qiroex.Logo
   alias Qiroex.Matrix
   alias Qiroex.Matrix.Regions
@@ -27,6 +29,7 @@ defmodule Qiroex.Render.SVG do
     dark_color: "#000000",
     light_color: "#ffffff",
     style: nil,
+    background_image: nil,
     logo: nil
   }
 
@@ -62,6 +65,7 @@ defmodule Qiroex.Render.SVG do
       dark_color: Keyword.get(opts, :dark_color, @default_opts.dark_color),
       light_color: Keyword.get(opts, :light_color, @default_opts.light_color),
       style: Keyword.get(opts, :style, @default_opts.style),
+      background_image: Keyword.get(opts, :background_image, @default_opts.background_image),
       logo: Keyword.get(opts, :logo, @default_opts.logo)
     }
   end
@@ -73,6 +77,7 @@ defmodule Qiroex.Render.SVG do
       dark_color: dark,
       light_color: light,
       style: style,
+      background_image: background_image,
       logo: logo
     } = config
 
@@ -94,6 +99,14 @@ defmodule Qiroex.Render.SVG do
         []
       end
 
+    background_image_fragment =
+      if background_image do
+        geo = BackgroundImage.geometry(matrix.size, mod, qz)
+        BackgroundImage.render_svg(background_image, geo)
+      else
+        []
+      end
+
     if styled?(style) do
       build_styled_iolist(
         matrix,
@@ -105,10 +118,22 @@ defmodule Qiroex.Render.SVG do
         width,
         height,
         cleared,
+        background_image_fragment,
         logo_fragment
       )
     else
-      build_simple_iolist(matrix, mod, qz, dark, light, width, height, cleared, logo_fragment)
+      build_simple_iolist(
+        matrix,
+        mod,
+        qz,
+        dark,
+        light,
+        width,
+        height,
+        cleared,
+        background_image_fragment,
+        logo_fragment
+      )
     end
   end
 
@@ -117,12 +142,24 @@ defmodule Qiroex.Render.SVG do
 
   # === Simple Rendering (original fast path) ===
 
-  defp build_simple_iolist(matrix, mod, qz, dark, light, width, height, cleared, logo_fragment) do
+  defp build_simple_iolist(
+         matrix,
+         mod,
+         qz,
+         dark,
+         light,
+         width,
+         height,
+         cleared,
+         background_image_fragment,
+         logo_fragment
+       ) do
     path_data = build_path_data(matrix, mod, qz, cleared)
 
     [
       svg_header(width, height),
       background_rect(light),
+      background_image_fragment,
       ~s(<path d="),
       path_data,
       ~s(" fill="),
@@ -162,6 +199,7 @@ defmodule Qiroex.Render.SVG do
          width,
          height,
          cleared,
+         background_image_fragment,
          logo_fragment
        ) do
     region_map = Regions.build_map(matrix)
@@ -175,6 +213,7 @@ defmodule Qiroex.Render.SVG do
       svg_header(width, height),
       defs,
       background_rect(light),
+      background_image_fragment,
       module_elements,
       logo_fragment,
       ~s(</svg>\n)

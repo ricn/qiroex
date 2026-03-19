@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="#installation">Installation</a> · <a href="#quick-start">Quick Start</a> · <a href="#styling">Styling</a> · <a href="#logo-embedding">Logos</a> · <a href="#payload-builders">Payloads</a> · <a href="#api-reference">API</a>
+  <a href="#installation">Installation</a> · <a href="#quick-start">Quick Start</a> · <a href="#styling">Styling</a> · <a href="#background-images">Backgrounds</a> · <a href="#logo-embedding">Logos</a> · <a href="#payload-builders">Payloads</a> · <a href="#api-reference">API</a>
 </p>
 
 ---
@@ -29,6 +29,7 @@ Qiroex generates **valid, scannable QR codes** entirely in Elixir with no extern
 - **Full QR spec** — versions 1–40, error correction L/M/Q/H, all 4 encoding modes (numeric, alphanumeric, byte, kanji), 8 mask patterns
 - **Three output formats** — SVG (vector), PNG (raster), terminal (Unicode art)
 - **Visual styling** — module shapes (circle, rounded, diamond, leaf, shield), custom colors, whole-code SVG gradients, finder pattern colors and shapes
+- **Background images** — embed photos or SVG artwork behind the QR body in SVG output with a convenient file-based helper
 - **Logo embedding** — embed SVG or raster image logos (PNG, JPEG, WEBP, GIF, BMP, AVIF, TIFF) with automatic coverage validation
 - **11 payload builders** — WiFi, URL, Email, SMS, Phone, Geo, vCard, vEvent, MeCard, Bitcoin, WhatsApp
 - **Input validation** — descriptive error messages for every misconfiguration
@@ -268,6 +269,48 @@ Qiroex.save_svg("Hello", "gradient.svg", style: style)
     <td align="center"><img src="assets/styled.svg" alt="Full styled" width="180" /><br />Combined</td>
   </tr>
 </table>
+
+## Background Images
+
+Use a real image such as a JPEG or PNG photo as a background inside the QR body. Qiroex embeds the source directly into the SVG output, just like raster logos, so the result stays self-contained. The image is clipped to the QR content area and the quiet zone remains plain for scan reliability.
+
+### Convenient File-Based Workflow
+
+```elixir
+background = Qiroex.BackgroundImage.from_file!("photo.jpg",
+  opacity: 0.2,
+  fit: :cover
+)
+
+Qiroex.save_svg("https://example.com", "photo-background.svg",
+  level: :h,
+  dark_color: "#0F172A",
+  light_color: "#F8FAFC",
+  background_image: background
+)
+```
+
+### In-Memory Workflow
+
+```elixir
+background = Qiroex.BackgroundImage.new(
+  image: File.read!("hero.jpg"),
+  opacity: 0.18,
+  fit: :contain
+)
+
+Qiroex.save_svg("https://example.com", "background.svg", background_image: background)
+```
+
+The same API also supports raw SVG markup:
+
+```elixir
+background = Qiroex.BackgroundImage.new(svg: "<svg>...</svg>", fit: :contain)
+```
+
+> **Tip:** Start around `opacity: 0.18`–`0.25` and prefer error correction level `:h` when using busy photo backgrounds.
+
+<img src="assets/background_image.svg" alt="QR code with embedded background image" width="220" />
 
 ### Kitchen Sink
 

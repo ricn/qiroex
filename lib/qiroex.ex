@@ -45,6 +45,13 @@ defmodule Qiroex do
       logo = Qiroex.Logo.new(svg: "<svg>...</svg>", size: 0.2)
       {:ok, svg} = Qiroex.to_svg("Hello", level: :h, logo: logo)
 
+    ## Background Images
+
+    Embed a photo-style background image inside the QR body (SVG output only):
+
+      background = Qiroex.BackgroundImage.from_file!("photo.jpg", opacity: 0.2)
+      {:ok, svg} = Qiroex.to_svg("Hello", level: :h, background_image: background)
+
   ## Payload Helpers
 
   Generate structured QR payloads (WiFi, vCard, etc.) in one step:
@@ -55,7 +62,15 @@ defmodule Qiroex do
   alias Qiroex.{QR, Scanability, Validate}
   alias Qiroex.Render.{PNG, SVG, Terminal}
 
-  @svg_render_keys [:module_size, :quiet_zone, :dark_color, :light_color, :style, :logo]
+  @svg_render_keys [
+    :module_size,
+    :quiet_zone,
+    :dark_color,
+    :light_color,
+    :style,
+    :logo,
+    :background_image
+  ]
   @png_render_keys [:module_size, :quiet_zone, :dark_color, :light_color, :style]
   @terminal_render_keys [:quiet_zone, :compact]
 
@@ -154,6 +169,7 @@ defmodule Qiroex do
     - `:light_color` — CSS color for background (default: `"#ffffff"`)
     - `:style` — a `%Qiroex.Style{}` struct for shapes, finder colors, gradients
     - `:logo` — a `%Qiroex.Logo{}` struct for center logo embedding
+    - `:background_image` — a `%Qiroex.BackgroundImage{}` struct for embedded photo or SVG backgrounds
 
   ## Examples
 

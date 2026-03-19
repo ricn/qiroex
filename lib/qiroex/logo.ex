@@ -49,7 +49,9 @@ defmodule Qiroex.Logo do
     - `:border_radius` — corner radius for `:rounded` shape (default: 4)
   """
 
-  @type image_type :: :png | :jpeg | :webp | :gif | :bmp | :avif | :tiff
+  alias Qiroex.Asset
+
+  @type image_type :: Asset.image_type()
 
   @type t :: %__MODULE__{
           svg: String.t() | nil,
@@ -71,7 +73,7 @@ defmodule Qiroex.Logo do
             shape: :square,
             border_radius: 4
 
-  @valid_image_types [:png, :jpeg, :webp, :gif, :bmp, :avif, :tiff]
+  @valid_image_types Asset.valid_image_types()
 
   # Safety margin: use 80% of theoretical EC capacity for logo coverage
   @safety_factor 0.80
@@ -106,7 +108,8 @@ defmodule Qiroex.Logo do
     image_type = Keyword.get(opts, :image_type)
 
     # Auto-detect image type from binary magic bytes if not provided
-    image_type = if image && is_nil(image_type), do: detect_image_type(image), else: image_type
+    image_type =
+      if image && is_nil(image_type), do: Asset.detect_image_type(image), else: image_type
 
     logo = %__MODULE__{
       svg: svg,
@@ -407,15 +410,12 @@ defmodule Qiroex.Logo do
        )
        when is_binary(image) do
     # Embed raster image using <image> with base64 data URI
-    mime = image_type_to_mime(image_type)
-    b64 = Base.encode64(image)
+    data_uri = Asset.raster_data_uri(image, image_type)
     clip_attr = if shape != :square, do: ~s[ clip-path="url(#qiroex-logo-clip)"], else: ""
 
     [
-      ~s[<image href="data:],
-      mime,
-      ~s(;base64,),
-      b64,
+      ~s[<image href="],
+      data_uri,
       ~s(" x="),
       to_s(geo.logo_x),
       ~s(" y="),
@@ -432,13 +432,7 @@ defmodule Qiroex.Logo do
 
   @doc false
   @spec image_type_to_mime(image_type()) :: String.t()
-  def image_type_to_mime(:png), do: "image/png"
-  def image_type_to_mime(:jpeg), do: "image/jpeg"
-  def image_type_to_mime(:webp), do: "image/webp"
-  def image_type_to_mime(:gif), do: "image/gif"
-  def image_type_to_mime(:bmp), do: "image/bmp"
-  def image_type_to_mime(:avif), do: "image/avif"
-  def image_type_to_mime(:tiff), do: "image/tiff"
+  def image_type_to_mime(image_type), do: Asset.image_type_to_mime(image_type)
 
   # === Image Type Detection ===
 
@@ -450,17 +444,7 @@ defmodule Qiroex.Logo do
   Supported formats: PNG, JPEG, WEBP, GIF, BMP, AVIF, TIFF.
   """
   @spec detect_image_type(binary()) :: image_type() | nil
-  def detect_image_type(<<0x89, 0x50, 0x4E, 0x47, _::binary>>), do: :png
-  def detect_image_type(<<0xFF, 0xD8, 0xFF, _::binary>>), do: :jpeg
-  def detect_image_type(<<"RIFF", _size::32, "WEBP", _::binary>>), do: :webp
-  def detect_image_type(<<"GIF87a", _::binary>>), do: :gif
-  def detect_image_type(<<"GIF89a", _::binary>>), do: :gif
-  def detect_image_type(<<"BM", _::binary>>), do: :bmp
-  def detect_image_type(<<_size::32-big, "ftyp", "avif", _::binary>>), do: :avif
-  def detect_image_type(<<_size::32-big, "ftyp", "avis", _::binary>>), do: :avif
-  def detect_image_type(<<0x49, 0x49, 0x2A, 0x00, _::binary>>), do: :tiff
-  def detect_image_type(<<0x4D, 0x4D, 0x00, 0x2A, _::binary>>), do: :tiff
-  def detect_image_type(_), do: nil
+  def detect_image_type(image), do: Asset.detect_image_type(image)
 
   # === Validation ===
 
