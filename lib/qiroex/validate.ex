@@ -186,7 +186,7 @@ defmodule Qiroex.Validate do
   """
   @spec encode_opts(keyword()) :: :ok | {:error, String.t()}
   def encode_opts(opts) do
-    with :ok <- option_keys(opts, @encode_option_keys, "encode/2"),
+    with :ok <- option_keys(opts, @encode_option_keys, "Qiroex.encode/2"),
          :ok <- validate_ec_level(opts),
          :ok <- validate_version(opts),
          :ok <- validate_mode(opts) do
