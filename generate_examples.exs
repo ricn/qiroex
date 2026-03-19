@@ -119,7 +119,7 @@ Qiroex.save_svg("https://elixir-lang.org", "#{out}/finder_mixed.svg",
   module_size: 8, quiet_zone: 2, style: style_finder_mixed)
 IO.puts("  ✓ finder_mixed.svg")
 
-# ── 7. Linear gradient ──────────────────────────────────────────
+# ── 7. Whole-code linear gradient ───────────────────────────────
 style_gradient = Style.new(
   module_shape: :circle,
   gradient: %{type: :linear, start_color: "#0F172A", end_color: "#22D3EE", angle: 135}
@@ -128,7 +128,7 @@ Qiroex.save_svg("QIROEX", "#{out}/gradient.svg",
   module_size: 9, quiet_zone: 2, style: style_gradient)
 IO.puts("  ✓ gradient.svg")
 
-# ── 8. Radial gradient ──────────────────────────────────────────
+# ── 8. Whole-code radial gradient ───────────────────────────────
 style_radial = Style.new(
   module_shape: :rounded,
   module_radius: 0.35,

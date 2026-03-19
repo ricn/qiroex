@@ -40,8 +40,9 @@ defmodule Qiroex.Style do
     - `:shield`  — flat top with curved pointed bottom
 
   ## Gradient Fills (SVG only)
-  Apply linear or radial gradients to dark modules. Finder patterns
-  use their own colors (or the gradient if no finder colors are set).
+  Apply linear or radial gradients across the whole QR canvas for dark
+  data modules. Finder patterns stay flat with the dark/light colors
+  unless you style them separately.
   """
 
   @type gradient :: %{
@@ -81,7 +82,7 @@ defmodule Qiroex.Style do
     - `:module_shape` — `:square`, `:rounded`, `:circle`, `:diamond`, `:leaf`, or `:shield` (default: `:square`)
     - `:module_radius` — corner radius fraction 0.0–0.5 for `:rounded` shape (default: `0.5`)
     - `:finder` — `%{outer: color, inner: color, eye: color, outer_shape: shape, inner_shape: shape, eye_shape: shape}` or `nil`
-    - `:gradient` — `%{type: :linear | :radial, start_color: color, end_color: color}` or `nil`
+    - `:gradient` — `%{type: :linear | :radial, start_color: color, end_color: color}` or `nil`; spans the whole SVG QR code
   """
   @spec new(keyword()) :: t()
   def new(opts \\ []) do
