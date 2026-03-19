@@ -1,6 +1,8 @@
 defmodule Qiroex.StyleTest do
   use ExUnit.Case, async: true
 
+  doctest Qiroex.Style
+
   alias Qiroex.Style
 
   describe "new/1" do

@@ -9,17 +9,16 @@ defmodule Qiroex do
 
   ## Quick Start
 
-      # Generate a QR code struct
-      {:ok, qr} = Qiroex.encode("Hello, World!")
-
-      # Render as SVG string
-      {:ok, svg} = Qiroex.to_svg("Hello, World!")
-
-      # Render as PNG binary
-      {:ok, png} = Qiroex.to_png("Hello, World!")
-
-      # Print to terminal
-      Qiroex.print("Hello, World!")
+      iex> {:ok, %Qiroex.QR{}} = Qiroex.encode("Hello, World!")
+      iex> {:ok, svg} = Qiroex.to_svg("Hello, World!")
+      iex> String.contains?(svg, "<svg")
+      true
+      iex> {:ok, png} = Qiroex.to_png("Hello, World!")
+      iex> :binary.part(png, 0, 8)
+      <<137, 80, 78, 71, 13, 10, 26, 10>>
+      iex> {:ok, rows} = Qiroex.to_matrix("Hello, World!")
+      iex> is_list(rows) and is_list(hd(rows))
+      true
 
   ## Encoding Options
 
@@ -100,9 +99,12 @@ defmodule Qiroex do
 
   ## Examples
 
-      {:ok, qr} = Qiroex.encode("Hello")
-      {:ok, qr} = Qiroex.encode("12345", level: :h, mode: :numeric)
-      {:error, _} = Qiroex.encode("")
+      iex> {:ok, %Qiroex.QR{}} = Qiroex.encode("Hello")
+      iex> {:ok, qr} = Qiroex.encode("12345", level: :h, mode: :numeric)
+      iex> qr.ec_level
+      :h
+      iex> Qiroex.encode("")
+      {:error, "Data cannot be empty"}
 
   ## Returns
 
@@ -139,8 +141,9 @@ defmodule Qiroex do
 
   ## Examples
 
-      {:ok, rows} = Qiroex.to_matrix("Hi")
-      length(rows) # => matrix size + 2 * quiet_zone
+      iex> {:ok, rows} = Qiroex.to_matrix("Hi")
+      iex> is_list(rows) and is_list(hd(rows))
+      true
   """
   @spec to_matrix(binary(), keyword()) :: {:ok, list(list(0 | 1))} | {:error, String.t()}
   def to_matrix(data, opts \\ []) do
@@ -186,8 +189,12 @@ defmodule Qiroex do
 
   ## Examples
 
-      {:ok, svg} = Qiroex.to_svg("Hello")
-      {:ok, svg} = Qiroex.to_svg("Hello", dark_color: "#336699", module_size: 5)
+      iex> {:ok, svg} = Qiroex.to_svg("Hello")
+      iex> String.contains?(svg, "<svg")
+      true
+      iex> {:ok, svg} = Qiroex.to_svg("Hello", dark_color: "#336699", module_size: 5)
+      iex> String.contains?(svg, "#336699")
+      true
 
   ## Returns
 
@@ -238,8 +245,12 @@ defmodule Qiroex do
 
   ## Examples
 
-      {:ok, png} = Qiroex.to_png("Hello")
-      {:ok, png} = Qiroex.to_png("Hello", module_size: 20)
+      iex> {:ok, png} = Qiroex.to_png("Hello")
+      iex> :binary.part(png, 0, 8)
+      <<137, 80, 78, 71, 13, 10, 26, 10>>
+      iex> {:ok, png} = Qiroex.to_png("Hello", module_size: 20)
+      iex> is_binary(png)
+      true
 
   ## Returns
 
@@ -400,9 +411,12 @@ defmodule Qiroex do
 
   ## Examples
 
-      {:ok, svg} = Qiroex.payload(:wifi, [ssid: "MyNet", password: "secret"], :svg)
-      {:ok, png} = Qiroex.payload(:url, [url: "https://elixir-lang.org"], :png)
-      {:ok, svg} = Qiroex.payload(:vcard, [first_name: "Jane", last_name: "Doe"], :svg)
+      iex> {:ok, qr} = Qiroex.payload(:wifi, [ssid: "MyNet", password: "secret"], :encode)
+      iex> match?(%Qiroex.QR{}, qr)
+      true
+      iex> {:ok, rows} = Qiroex.payload(:url, [url: "https://elixir-lang.org"], :matrix)
+      iex> is_list(rows)
+      true
 
   ## Returns
 
@@ -441,10 +455,12 @@ defmodule Qiroex do
 
   ## Examples
 
-      {:ok, qr} = Qiroex.encode("Hello")
-      Qiroex.info(qr)
-      # => %{version: 1, ec_level: :m, mode: :byte, mask: 4,
-      #      modules: 21, data_bytes: 5}
+      iex> {:ok, qr} = Qiroex.encode("Hello")
+      iex> info = Qiroex.info(qr)
+      iex> info.ec_level
+      :m
+      iex> info.version >= 1
+      true
   """
   @spec info(QR.t()) :: map()
   def info(%QR{} = qr) do
@@ -493,8 +509,9 @@ defmodule Qiroex do
 
   ## Examples
 
-      result = Qiroex.scanability("Hello", level: :h)
-      result.rating  #=> :excellent
+      iex> {:ok, result} = Qiroex.scanability("Hello", level: :h)
+      iex> match?(%Qiroex.Scanability{}, result)
+      true
 
   ## Returns
 
@@ -515,8 +532,9 @@ defmodule Qiroex do
 
   ## Examples
 
-      result = Qiroex.scanability!("Hello", level: :h)
-      result.rating  #=> :excellent
+      iex> result = Qiroex.scanability!("Hello", level: :h)
+      iex> match?(%Qiroex.Scanability{}, result)
+      true
   """
   @spec scanability!(binary(), keyword()) :: Scanability.t()
   def scanability!(data, opts \\ []) when is_binary(data) do

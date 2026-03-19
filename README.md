@@ -33,7 +33,7 @@ Qiroex generates **valid, scannable QR codes** entirely in Elixir with no extern
 - **Logo embedding** — embed SVG or raster image logos (PNG, JPEG, WEBP, GIF, BMP, AVIF, TIFF) with automatic coverage validation
 - **11 payload builders** — WiFi, URL, Email, SMS, Phone, Geo, vCard, vEvent, MeCard, Bitcoin, WhatsApp
 - **Input validation** — descriptive error messages for every misconfiguration
-- **Thoroughly tested** — 500+ unit and integration tests
+- **Verified output** — broad unit coverage plus decoder-backed conformance tests with a real QR decoder
 
 ## Installation
 
@@ -42,10 +42,12 @@ Add `qiroex` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:qiroex, "~> 0.1.0"}
+    {:qiroex, "~> 0.4"}
   ]
 end
 ```
+
+Qiroex requires **Elixir 1.18+**.
 
 Then run `mix deps.get`.
 
@@ -69,6 +71,23 @@ Qiroex.save_png("https://example.com", "qr.png")
 
 ```elixir
 Qiroex.print("Hello from Qiroex!")
+```
+
+The default terminal renderer uses compact Unicode blocks for dense output:
+
+```text
+ ▄▄▄▄▄▄▄ ▄ ▄▄▄ ▄▄▄▄▄▄▄ 
+ █ ▄▄▄ █ ▄ ▄▀▄ █ ▄▄▄ █ 
+ █ ███ █ █▄▄██ █ ███ █ 
+ █▄▄▄▄▄█ █▀▄ █ █▄▄▄▄▄█ 
+   ▄▄▄▄▄▄   ▀█ ▄▄▄▄▄   
+ ▄▄  █▄▄█▀▀ ▄▀▄ ▀▄█▀▀█ 
+   ▀▀▄▄▄▄ ▀▄▄ ▄ ▀█ ▄   
+ ▄▄▄▄▄▄▄ ▀ ▀▀█▀█▄ ▀▄▀█ 
+ █ ▄▄▄ █ █▀█▀█▀▀▄ ▀▄ ▀ 
+ █ ███ █ █  ▄▀▄ ▀▄ █   
+ █▄▄▄▄▄█ ▄ █▄ ▄ ▀█ █ ▀ 
+                       
 ```
 
 ### Work with raw data
@@ -135,6 +154,14 @@ Qiroex.save_png("Hello", "qr.png",
   light_color: {244, 241, 246}       # background color
 )
 ```
+
+PNG intentionally keeps a narrower rendering surface: it supports finder colors, but not logos, background images, gradients, finder shapes, or custom module shapes.
+
+## Which Renderer Should I Use?
+
+- **SVG** — best for the web, print, branding, logos, backgrounds, and advanced styling
+- **PNG** — best when you need a simple raster file for chat apps, social uploads, or systems that expect bitmaps
+- **Terminal** — best for CLIs, debugging, demos, and scripts where writing files would be overkill
 
 ## Styling
 
@@ -637,10 +664,11 @@ All functions have bang (`!`) variants that raise instead of returning error tup
 |--------|------|---------|-------------|
 | `:module_size` | integer | `10` | Pixel size of each module |
 | `:quiet_zone` | integer | `4` | Quiet zone border in modules |
-| `:dark_color` | string | `"#000000"` | CSS color for dark modules |
-| `:light_color` | string | `"#ffffff"` | CSS color for background |
+| `:dark_color` | string | `"#000000"` | SVG color string in hex, rgb/rgba, hsl/hsla, or supported named-color form |
+| `:light_color` | string | `"#ffffff"` | SVG color string in hex, rgb/rgba, hsl/hsla, or supported named-color form |
 | `:style` | `%Style{}` | `nil` | Visual styling configuration |
 | `:logo` | `%Logo{}` | `nil` | Center logo configuration |
+| `:background_image` | `%BackgroundImage{}` | `nil` | Embedded SVG/photo background for SVG output |
 
 ### PNG Render Options
 
@@ -728,6 +756,20 @@ end
 - Keep data **compact**: use numeric or alphanumeric mode when possible
 - Avoid forcing a **higher version** than needed — lower versions produce larger, more scannable modules
 - If embedding a **logo**, always use `:h` EC level to maintain enough redundancy
+
+## Contributing
+
+Before opening a PR, run the same quality gates used for release hardening:
+
+```sh
+mix format
+mix test
+mix test --include conformance test/qiroex/conformance_test.exs
+mix test --cover
+mix credo --strict
+```
+
+The conformance suite uses `zbarimg`. On macOS, install it with `brew install zbar`.
 
 ## License
 

@@ -1,6 +1,8 @@
 defmodule Qiroex.Payload.URLTest do
   use ExUnit.Case, async: true
 
+  doctest Qiroex.Payload.URL
+
   alias Qiroex.Payload.URL
 
   describe "encode/1" do

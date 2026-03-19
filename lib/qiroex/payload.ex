@@ -13,6 +13,16 @@ defmodule Qiroex.Payload do
   Escapes special characters in a value for use in QR payloads.
 
   Escapes `\\`, `;`, `,`, and `:` with a backslash prefix.
+
+  ## Examples
+
+      iex> escaped = Qiroex.Payload.escape("a;b:c,d")
+      iex> String.contains?(escaped, "\\;")
+      true
+      iex> String.contains?(escaped, "\\:")
+      true
+      iex> String.contains?(escaped, "\\,")
+      true
   """
   @spec escape(String.t()) :: String.t()
   def escape(value) when is_binary(value) do

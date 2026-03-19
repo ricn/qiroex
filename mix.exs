@@ -46,7 +46,7 @@ defmodule Qiroex.MixProject do
   defp docs do
     [
       main: "Qiroex",
-      extras: ["README.md"],
+      extras: ["README.md", "LICENSE"],
       source_url: @source_url,
       source_ref: "v#{@version}"
     ]

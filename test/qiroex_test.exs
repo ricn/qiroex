@@ -1,6 +1,8 @@
 defmodule QiroexTest do
   use ExUnit.Case, async: true
 
+  doctest Qiroex
+
   # ── encode/2 ───────────────────────────────────────────────────────
 
   describe "encode/2" do

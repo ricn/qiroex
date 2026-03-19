@@ -1,6 +1,8 @@
 defmodule Qiroex.PayloadTest do
   use ExUnit.Case, async: true
 
+  doctest Qiroex.Payload
+
   alias Qiroex.Payload
 
   describe "escape/1" do
