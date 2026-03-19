@@ -169,5 +169,24 @@ defmodule Qiroex.Matrix.BuilderTest do
       assert Enum.map(positions, fn pos -> if Matrix.dark?(finalized, pos), do: 1, else: 0 end) ==
                expected_bits
     end
+
+    test "places both version 7 blocks in spec order" do
+      matrix = Builder.build(7)
+      finalized = Builder.finalize(matrix, :m, 0)
+      size = finalized.size
+
+      bottom_left_positions = for j <- 0..5, i <- 0..2, do: {size - 11 + i, j}
+      top_right_positions = for i <- 0..5, j <- 0..2, do: {i, size - 11 + j}
+
+      expected_bits = [0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0]
+
+      assert Enum.map(bottom_left_positions, fn pos ->
+               if Matrix.dark?(finalized, pos), do: 1, else: 0
+             end) == expected_bits
+
+      assert Enum.map(top_right_positions, fn pos ->
+               if Matrix.dark?(finalized, pos), do: 1, else: 0
+             end) == expected_bits
+    end
   end
 end
