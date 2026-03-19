@@ -619,6 +619,63 @@ Key implementation details:
 - **SVG** built with IO lists for zero-copy string assembly
 - **PNG** encoded with pure-Erlang `:zlib` and `:erlang.crc32` — no image libraries needed
 
+## Scanability Scoring
+
+Every generated QR code can be evaluated for how easy it will be to scan. The score is computed from five factors that reflect real-world scanning conditions:
+
+| Factor               | Weight | What it measures                                      |
+|----------------------|--------|-------------------------------------------------------|
+| Error Correction     | 25%    | Higher EC level → more resilience to damage           |
+| Version Complexity   | 25%    | Higher version → finer modules → harder for cameras   |
+| Capacity Utilization | 20%    | How full the version is (sweet spot: 30–70%)          |
+| Mask Penalty         | 15%    | ISO 18004 pattern penalty (lower = better balanced)   |
+| Data Density         | 15%    | Ratio of EC codewords to total codewords              |
+
+The result is a `%Qiroex.Scanability{}` struct with an overall **score (0–100)**, a **rating** (`:excellent`, `:good`, `:moderate`, `:poor`), a **human-readable summary**, and a **per-factor breakdown**.
+
+### Evaluate an already-encoded QR struct
+
+```elixir
+{:ok, qr} = Qiroex.encode("Hello, World!", level: :m)
+result = Qiroex.scanability(qr)
+
+result.score    #=> 72
+result.rating   #=> :good
+result.summary  #=> "Good (72/100) — version 1, EC level M, 38% capacity used"
+```
+
+### Encode and evaluate in one step
+
+```elixir
+{:ok, result} = Qiroex.scanability("Hello, World!", level: :m)
+
+# Or use the bang variant (raises on encode error)
+result = Qiroex.scanability!("12345", level: :h, mode: :numeric)
+result.rating  #=> :excellent
+```
+
+### Inspect individual factors
+
+```elixir
+result = Qiroex.scanability!("Hello")
+
+for factor <- result.factors do
+  IO.puts("#{factor.name}: #{factor.score}/100 (#{factor.rating}) — #{factor.detail}")
+end
+# error_correction: 60/100 (good) — EC level M provides ~15% error recovery
+# version_complexity: 100/100 (excellent) — Version 1 produces a 21×21 module matrix
+# capacity_utilization: 100/100 (excellent) — 38% used (optimal range)
+# mask_penalty: 85/100 (good) — Mask penalty 312 (normalized 0.71 per module; lower is better)
+# data_density: 65/100 (good) — 10 of 26 codewords are EC (38% redundancy)
+```
+
+### Tips for better scores
+
+- Use **`:h` or `:q` error correction** for outdoor, printed, or worn surfaces
+- Keep data **compact**: use numeric or alphanumeric mode when possible
+- Avoid forcing a **higher version** than needed — lower versions produce larger, more scannable modules
+- If embedding a **logo**, always use `:h` EC level to maintain enough redundancy
+
 ## License
 
 MIT License. See [LICENSE](LICENSE) for details.
