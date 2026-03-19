@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="225" height="225" viewBox="0 0 225 225">
 <defs>
-<linearGradient id="qr-gradient" x1="0.2887" y1="0.0468" x2="0.7113" y2="0.9532">
+<linearGradient id="qr-gradient" gradientUnits="userSpaceOnUse" x1="64.9554" y1="10.5404" x2="160.0446" y2="214.4596">
 <stop offset="0%" stop-color="#0F172A"/>
 <stop offset="100%" stop-color="#22D3EE"/>
 </linearGradient>

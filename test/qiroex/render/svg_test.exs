@@ -3,6 +3,7 @@ defmodule Qiroex.Render.SVGTest do
 
   alias Qiroex.Render.SVG
   alias Qiroex.QR
+  alias Qiroex.Style
 
   setup do
     {:ok, qr} = QR.encode("HELLO", level: :m)
@@ -107,6 +108,61 @@ defmodule Qiroex.Render.SVGTest do
       expected_s = Integer.to_string(expected)
 
       assert String.contains?(svg, ~s(viewBox="0 0 #{expected_s} #{expected_s}"))
+    end
+  end
+
+  describe "gradient rendering" do
+    test "linear gradients use full-canvas user-space coordinates", %{matrix: matrix} do
+      style =
+        Style.new(
+          gradient: %{type: :linear, start_color: "#000000", end_color: "#ffffff", angle: 90}
+        )
+
+      svg = SVG.render(matrix, style: style)
+      expected = (matrix.size + 8) * 10
+      expected_s = Float.to_string(expected * 1.0)
+
+      assert String.contains?(
+               svg,
+               ~s(<linearGradient id="qr-gradient" gradientUnits="userSpaceOnUse")
+             )
+
+      assert String.contains?(svg, ~s(x2="#{expected_s}"))
+      assert String.contains?(svg, ~s|fill="url(#qr-gradient)"|)
+    end
+
+    test "radial gradients use the SVG canvas as their coordinate space", %{matrix: matrix} do
+      style = Style.new(gradient: %{type: :radial, start_color: "#000000", end_color: "#ffffff"})
+
+      svg = SVG.render(matrix, style: style)
+      radius = Float.to_string((matrix.size + 8) * 10 / 2)
+
+      assert String.contains?(
+               svg,
+               ~s(<radialGradient id="qr-gradient" gradientUnits="userSpaceOnUse")
+             )
+
+      assert String.contains?(svg, ~s(cx="#{radius}" cy="#{radius}" r="#{radius}"))
+    end
+
+    test "default finder patterns stay flat when gradients are enabled", %{matrix: matrix} do
+      style =
+        Style.new(
+          module_shape: :circle,
+          gradient: %{type: :linear, start_color: "#000000", end_color: "#ffffff", angle: 90}
+        )
+
+      svg = SVG.render(matrix, style: style)
+
+      assert String.contains?(
+               svg,
+               ~s(<rect x="40" y="40" width="10" height="10" fill="#000000"/>)
+             )
+
+      refute String.contains?(
+               svg,
+               ~s|<rect x="40" y="40" width="10" height="10" fill="url(#qr-gradient)"/>|
+             )
     end
   end
 end

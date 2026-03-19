@@ -28,7 +28,7 @@ Qiroex generates **valid, scannable QR codes** entirely in Elixir with no extern
 - **Zero dependencies** — pure Elixir, runs anywhere the BEAM runs
 - **Full QR spec** — versions 1–40, error correction L/M/Q/H, all 4 encoding modes (numeric, alphanumeric, byte, kanji), 8 mask patterns
 - **Three output formats** — SVG (vector), PNG (raster), terminal (Unicode art)
-- **Visual styling** — module shapes (circle, rounded, diamond, leaf, shield), custom colors, gradients, finder pattern colors and shapes
+- **Visual styling** — module shapes (circle, rounded, diamond, leaf, shield), custom colors, whole-code SVG gradients, finder pattern colors and shapes
 - **Logo embedding** — embed SVG or raster image logos (PNG, JPEG, WEBP, GIF, BMP, AVIF, TIFF) with automatic coverage validation
 - **11 payload builders** — WiFi, URL, Email, SMS, Phone, Geo, vCard, vEvent, MeCard, Bitcoin, WhatsApp
 - **Input validation** — descriptive error messages for every misconfiguration
@@ -244,10 +244,10 @@ style = Qiroex.Style.new(
 
 ### Gradient Fills
 
-Apply linear or radial gradients to dark modules:
+Apply linear or radial gradients across the QR code's dark data modules. Finder patterns stay flat unless you style them separately. SVG only:
 
 ```elixir
-# Linear gradient at 135°
+# Linear gradient across the whole QR code at 135°
 style = Qiroex.Style.new(
   module_shape: :circle,
   gradient: %{

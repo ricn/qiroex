@@ -213,17 +213,17 @@ defmodule Qiroex.Render.SVG do
 
     # Render finder patterns
     finder_elements =
-      if Style.custom_finder_shapes?(style) do
-        render_compound_finders(matrix, mod, qz, dark, light, style)
-      else
-        if Style.custom_finder?(style) do
+      cond do
+        Style.custom_finder_shapes?(style) ->
+          render_compound_finders(matrix, mod, qz, dark, light, style)
+
+        Style.custom_finder?(style) or style.gradient ->
           render_finder_modules(finder_modules, mod, qz, dark, light, style)
-        else
-          # Use standard data styling for finder patterns too
+
+        true ->
           for {pos, _region, is_dark} <- finder_modules, is_dark do
-            render_module(pos, mod, qz, data_fill, :square, 0)
+            render_module(pos, mod, qz, dark, :square, 0)
           end
-        end
       end
 
     [data_elements, finder_elements]
@@ -737,13 +737,15 @@ defmodule Qiroex.Render.SVG do
 
   defp build_defs(%Style{gradient: nil}, _w, _h), do: []
 
-  defp build_defs(%Style{gradient: %{type: :linear} = g}, _w, _h) do
+  defp build_defs(%Style{gradient: %{type: :linear} = g}, width, height) do
     angle = Map.get(g, :angle, 0)
-    {x1, y1, x2, y2} = angle_to_coords(angle)
+    canvas_width = String.to_integer(width)
+    canvas_height = String.to_integer(height)
+    {x1, y1, x2, y2} = angle_to_coords(angle, canvas_width, canvas_height)
 
     [
       ~s(<defs>\n),
-      ~s(<linearGradient id="qr-gradient" ),
+      ~s(<linearGradient id="qr-gradient" gradientUnits="userSpaceOnUse" ),
       ~s(x1="),
       Float.to_string(x1),
       ~s(" y1="),
@@ -765,10 +767,22 @@ defmodule Qiroex.Render.SVG do
     ]
   end
 
-  defp build_defs(%Style{gradient: %{type: :radial} = g}, _w, _h) do
+  defp build_defs(%Style{gradient: %{type: :radial} = g}, width, height) do
+    canvas_width = String.to_integer(width)
+    canvas_height = String.to_integer(height)
+    cx = Float.to_string(canvas_width / 2)
+    cy = Float.to_string(canvas_height / 2)
+    r = Float.to_string(min(canvas_width, canvas_height) / 2)
+
     [
       ~s(<defs>\n),
-      ~s(<radialGradient id="qr-gradient" cx="50%" cy="50%" r="50%">\n),
+      ~s(<radialGradient id="qr-gradient" gradientUnits="userSpaceOnUse" cx="),
+      cx,
+      ~s(" cy="),
+      cy,
+      ~s(" r="),
+      r,
+      ~s(">\n),
       ~s(<stop offset="0%" stop-color="),
       g.start_color,
       ~s("/>\n),
@@ -780,22 +794,21 @@ defmodule Qiroex.Render.SVG do
     ]
   end
 
-  # Convert angle (degrees, 0=top→bottom) to x1,y1,x2,y2 gradient coords
-  defp angle_to_coords(0), do: {0.0, 0.0, 0.0, 1.0}
-  defp angle_to_coords(90), do: {0.0, 0.0, 1.0, 0.0}
-  defp angle_to_coords(180), do: {0.0, 1.0, 0.0, 0.0}
-  defp angle_to_coords(270), do: {1.0, 0.0, 0.0, 0.0}
+  # Convert angle (degrees, 0=top→bottom) to full-canvas x1,y1,x2,y2 coords.
+  defp angle_to_coords(0, _width, height), do: {0.0, 0.0, 0.0, height * 1.0}
+  defp angle_to_coords(90, width, _height), do: {0.0, 0.0, width * 1.0, 0.0}
+  defp angle_to_coords(180, _width, height), do: {0.0, height * 1.0, 0.0, 0.0}
+  defp angle_to_coords(270, width, _height), do: {width * 1.0, 0.0, 0.0, 0.0}
 
-  defp angle_to_coords(angle) do
+  defp angle_to_coords(angle, width, height) do
     rad = angle * :math.pi() / 180
     dx = :math.sin(rad)
     dy = :math.cos(rad)
 
-    # Normalize to 0..1 range
-    x1 = Float.round(0.5 - dx / 2, 4)
-    y1 = Float.round(0.5 - dy / 2, 4)
-    x2 = Float.round(0.5 + dx / 2, 4)
-    y2 = Float.round(0.5 + dy / 2, 4)
+    x1 = Float.round((0.5 - dx / 2) * width, 4)
+    y1 = Float.round((0.5 - dy / 2) * height, 4)
+    x2 = Float.round((0.5 + dx / 2) * width, 4)
+    y2 = Float.round((0.5 + dy / 2) * height, 4)
 
     {x1, y1, x2, y2}
   end

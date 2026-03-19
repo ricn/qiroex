@@ -133,10 +133,12 @@ defmodule Qiroex.Render.SVG.StyledTest do
         )
 
       svg = SVG.render(matrix, style: style)
+      expected = Float.to_string((matrix.size + 8) * 10 * 1.0)
 
       assert String.contains?(svg, "<linearGradient")
-      # 90 degrees = left to right (x1=0, y1=0, x2=1, y2=0)
-      assert String.contains?(svg, ~s(x2="1.0"))
+      assert String.contains?(svg, ~s(gradientUnits="userSpaceOnUse"))
+      # 90 degrees = left to right across the full SVG canvas.
+      assert String.contains?(svg, ~s(x2="#{expected}"))
     end
 
     test "gradient + finder colors: finders use their own colors", %{matrix: matrix} do
