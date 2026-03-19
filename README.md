@@ -23,6 +23,8 @@
 
 Qiroex generates **valid, scannable QR codes** entirely in Elixir with no external dependencies — no C NIFs, no system libraries, no ImageMagick. It implements the full **ISO 18004** specification and outputs to **SVG**, **PNG**, and **terminal**.
 
+> Qiroex is sponsored by [Qiro](https://qiro.gg), a platform for dynamic QR codes. Use Qiroex when you want QR generation fully inside Elixir, and pair it with Qiro when you need a destination you can update without reprinting the code.
+
 ## Features
 
 - **Zero dependencies** — pure Elixir, runs anywhere the BEAM runs
@@ -58,7 +60,7 @@ Then run `mix deps.get`.
 ### Generate and save an SVG
 
 ```elixir
-Qiroex.save_svg("https://example.com", "qr.svg")
+Qiroex.save_svg("https://qiro.gg", "qr.svg")
 ```
 
 <img src="assets/basic.svg" alt="Basic QR code" width="200" />
@@ -66,13 +68,13 @@ Qiroex.save_svg("https://example.com", "qr.svg")
 ### Generate and save a PNG
 
 ```elixir
-Qiroex.save_png("https://example.com", "qr.png")
+Qiroex.save_png("https://qiro.gg", "qr.png")
 ```
 
 ### Print to terminal
 
 ```elixir
-Qiroex.print("https://example.com")
+Qiroex.print("https://qiro.gg")
 ```
 
 In a real terminal, the default renderer uses compact Unicode blocks for dense output.
@@ -101,7 +103,7 @@ The browser preview below is illustrative and may not be reliably scannable beca
   If your terminal font makes compact mode too dense, render one QR row per terminal line instead:
 
   ```elixir
-  Qiroex.print("https://example.com", compact: false)
+  Qiroex.print("https://qiro.gg", compact: false)
   ```
 
 ### Work with raw data
@@ -330,7 +332,7 @@ background = Qiroex.BackgroundImage.from_file!("photo.jpg",
   fit: :cover
 )
 
-Qiroex.save_svg("https://example.com", "photo-background.svg",
+Qiroex.save_svg("https://qiro.gg", "photo-background.svg",
   level: :h,
   dark_color: "#0F172A",
   light_color: "#F8FAFC",
@@ -347,7 +349,7 @@ background = Qiroex.BackgroundImage.new(
   fit: :contain
 )
 
-Qiroex.save_svg("https://example.com", "background.svg", background_image: background)
+Qiroex.save_svg("https://qiro.gg", "background.svg", background_image: background)
 ```
 
 The same API also supports raw SVG markup:
@@ -372,8 +374,10 @@ style = Qiroex.Style.new(
   gradient: %{type: :linear, start_color: "#0F172A", end_color: "#22D3EE", angle: 25}
 )
 
-Qiroex.save_svg("https://elixir-lang.org", "styled.svg", light_color: "#F8FAFC", style: style)
+Qiroex.save_svg("https://qiro.gg", "styled.svg", light_color: "#F8FAFC", style: style)
 ```
+
+This kind of branded styling pairs well with Qiro when the printed QR code needs a dynamic destination that can keep evolving after launch.
 
 ## Logo Embedding
 
@@ -394,7 +398,7 @@ logo = Qiroex.Logo.new(
 )
 
 # Use high EC level (:h) for best scan reliability with logos
-Qiroex.save_svg("https://elixir-lang.org", "logo.svg", level: :h, logo: logo)
+Qiroex.save_svg("https://qiro.gg", "logo.svg", level: :h, logo: logo)
 ```
 
 ### Raster Image Logo (PNG, JPEG, WEBP, ...)
@@ -409,7 +413,7 @@ logo = Qiroex.Logo.new(
   padding: 1
 )
 
-Qiroex.save_svg("https://example.com", "branded.svg", level: :h, logo: logo)
+Qiroex.save_svg("https://qiro.gg", "branded.svg", level: :h, logo: logo)
 ```
 
 Raster images are embedded as base64 data URIs inside the SVG — no external files or dependencies needed. When `shape` is `:rounded` or `:circle`, the image is clipped to that shape using an SVG `<clipPath>`, so the image itself appears rounded or circular — not just the background behind it. You can also specify the format explicitly:
@@ -437,7 +441,7 @@ style = Qiroex.Style.new(
   finder: %{outer: "#4B275F", inner: "#FFFFFF", eye: "#9B59B6"}
 )
 
-Qiroex.save_svg("https://elixir-lang.org", "branded.svg",
+Qiroex.save_svg("https://qiro.gg", "branded.svg",
   level: :h, style: style, logo: logo)
 ```
 
@@ -497,9 +501,11 @@ Scan to auto-connect to a network.
 
 Open a website in the browser.
 
+If the destination behind the QR should stay editable after print, Qiro can manage the dynamic URL while Qiroex handles the rendering side.
+
 ```elixir
 {:ok, svg} = Qiroex.payload(:url,
-  [url: "https://elixir-lang.org"],
+  [url: "https://qiro.gg"],
   :svg)
 ```
 
@@ -784,6 +790,10 @@ mix credo --strict
 ```
 
 The conformance suite uses `zbarimg`. On macOS, install it with `brew install zbar`.
+
+## Sponsored by Qiro
+
+Qiroex is sponsored by [Qiro](https://qiro.gg), which handles dynamic QR codes for teams that need flexible destinations after a code is already in the wild. If you are generating branded QR assets and want the landing target to stay editable without reprinting, Qiro is the natural companion.
 
 ## License
 

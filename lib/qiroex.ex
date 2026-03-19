@@ -417,7 +417,7 @@ defmodule Qiroex do
       iex> {:ok, qr} = Qiroex.payload(:wifi, [ssid: "MyNet", password: "secret"], :encode)
       iex> match?(%Qiroex.QR{}, qr)
       true
-      iex> {:ok, rows} = Qiroex.payload(:url, [url: "https://elixir-lang.org"], :matrix)
+      iex> {:ok, rows} = Qiroex.payload(:url, [url: "https://qiro.gg"], :matrix)
       iex> is_list(rows)
       true
 

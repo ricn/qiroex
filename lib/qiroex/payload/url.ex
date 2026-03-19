@@ -6,11 +6,11 @@ defmodule Qiroex.Payload.URL do
 
   ## Examples
 
-      iex> Qiroex.Payload.URL.encode(url: "https://example.com")
-      {:ok, "https://example.com"}
+      iex> Qiroex.Payload.URL.encode(url: "https://qiro.gg")
+      {:ok, "https://qiro.gg"}
 
-      iex> Qiroex.Payload.URL.encode(url: "example.com")
-      {:ok, "https://example.com"}
+      iex> Qiroex.Payload.URL.encode(url: "qiro.gg")
+      {:ok, "https://qiro.gg"}
   """
 
   @behaviour Qiroex.Payload

@@ -5,13 +5,14 @@ alias Qiroex.Style
 alias Qiroex.BackgroundImage
 alias Qiroex.Logo
 
+website_url = "https://qiro.gg"
 out = "assets"
 File.mkdir_p!(out)
 
 IO.puts("Generating example QR codes...")
 
 # ── 1. Basic QR code ──────────────────────────────────────────────
-Qiroex.save_svg("https://github.com/ricn/qiroex", "#{out}/basic.svg",
+Qiroex.save_svg(website_url, "#{out}/basic.svg",
   module_size: 8,
   quiet_zone: 2
 )
@@ -19,7 +20,7 @@ Qiroex.save_svg("https://github.com/ricn/qiroex", "#{out}/basic.svg",
 IO.puts("  ✓ basic.svg")
 
 # ── 2. Custom colors ─────────────────────────────────────────────
-Qiroex.save_svg("https://elixir-lang.org", "#{out}/colors.svg",
+Qiroex.save_svg(website_url, "#{out}/colors.svg",
   module_size: 8,
   quiet_zone: 2,
   dark_color: "#4B275F",
@@ -31,7 +32,7 @@ IO.puts("  ✓ colors.svg")
 # ── 3. Circle modules ───────────────────────────────────────────
 style_circles = Style.new(module_shape: :circle)
 
-Qiroex.save_svg("https://elixir-lang.org", "#{out}/circles.svg",
+Qiroex.save_svg(website_url, "#{out}/circles.svg",
   module_size: 8,
   quiet_zone: 2,
   style: style_circles
@@ -42,7 +43,7 @@ IO.puts("  ✓ circles.svg")
 # ── 4. Rounded modules ──────────────────────────────────────────
 style_rounded = Style.new(module_shape: :rounded, module_radius: 0.4)
 
-Qiroex.save_svg("https://elixir-lang.org", "#{out}/rounded.svg",
+Qiroex.save_svg(website_url, "#{out}/rounded.svg",
   module_size: 8,
   quiet_zone: 2,
   style: style_rounded
@@ -53,7 +54,7 @@ IO.puts("  ✓ rounded.svg")
 # ── 5. Diamond modules ──────────────────────────────────────────
 style_diamond = Style.new(module_shape: :diamond)
 
-Qiroex.save_svg("https://elixir-lang.org", "#{out}/diamond.svg",
+Qiroex.save_svg(website_url, "#{out}/diamond.svg",
   module_size: 8,
   quiet_zone: 2,
   style: style_diamond
@@ -69,7 +70,7 @@ style_finder =
     finder: %{outer: "#E63946", inner: "#F1FAEE", eye: "#1D3557"}
   )
 
-Qiroex.save_svg("https://elixir-lang.org", "#{out}/finder_colors.svg",
+Qiroex.save_svg(website_url, "#{out}/finder_colors.svg",
   module_size: 8,
   quiet_zone: 2,
   style: style_finder
@@ -80,7 +81,7 @@ IO.puts("  ✓ finder_colors.svg")
 # ── 6a. Leaf module shape ────────────────────────────────────────
 style_leaf = Style.new(module_shape: :leaf)
 
-Qiroex.save_svg("https://elixir-lang.org", "#{out}/leaf.svg",
+Qiroex.save_svg(website_url, "#{out}/leaf.svg",
   module_size: 8,
   quiet_zone: 2,
   style: style_leaf
@@ -91,7 +92,7 @@ IO.puts("  ✓ leaf.svg")
 # ── 6b. Shield module shape ─────────────────────────────────────
 style_shield = Style.new(module_shape: :shield)
 
-Qiroex.save_svg("https://elixir-lang.org", "#{out}/shield.svg",
+Qiroex.save_svg(website_url, "#{out}/shield.svg",
   module_size: 8,
   quiet_zone: 2,
   style: style_shield
@@ -107,7 +108,7 @@ style_finder_rounded =
     finder: %{outer_shape: :rounded, inner_shape: :rounded, eye_shape: :rounded}
   )
 
-Qiroex.save_svg("https://elixir-lang.org", "#{out}/finder_rounded.svg",
+Qiroex.save_svg(website_url, "#{out}/finder_rounded.svg",
   module_size: 8,
   quiet_zone: 2,
   style: style_finder_rounded
@@ -122,7 +123,7 @@ style_finder_circle =
     finder: %{outer_shape: :circle, inner_shape: :circle, eye_shape: :circle}
   )
 
-Qiroex.save_svg("https://elixir-lang.org", "#{out}/finder_circle.svg",
+Qiroex.save_svg(website_url, "#{out}/finder_circle.svg",
   module_size: 8,
   quiet_zone: 2,
   style: style_finder_circle
@@ -144,7 +145,7 @@ style_finder_leaf =
     }
   )
 
-Qiroex.save_svg("https://elixir-lang.org", "#{out}/finder_leaf.svg",
+Qiroex.save_svg(website_url, "#{out}/finder_leaf.svg",
   module_size: 8,
   quiet_zone: 2,
   style: style_finder_leaf
@@ -166,7 +167,7 @@ style_finder_shield =
     }
   )
 
-Qiroex.save_svg("https://elixir-lang.org", "#{out}/finder_shield.svg",
+Qiroex.save_svg(website_url, "#{out}/finder_shield.svg",
   module_size: 8,
   quiet_zone: 2,
   style: style_finder_shield
@@ -189,7 +190,7 @@ style_finder_mixed =
     }
   )
 
-Qiroex.save_svg("https://elixir-lang.org", "#{out}/finder_mixed.svg",
+Qiroex.save_svg(website_url, "#{out}/finder_mixed.svg",
   module_size: 8,
   quiet_zone: 2,
   style: style_finder_mixed
@@ -263,7 +264,7 @@ elixir_logo_svg = ~s"""
 
 logo = Logo.new(svg: elixir_logo_svg, size: 0.22, shape: :circle, padding: 1)
 
-Qiroex.save_svg("https://elixir-lang.org", "#{out}/logo.svg",
+Qiroex.save_svg(website_url, "#{out}/logo.svg",
   module_size: 8,
   quiet_zone: 2,
   level: :h,
@@ -280,7 +281,7 @@ style_for_logo =
     finder: %{outer: "#4B275F", inner: "#FFFFFF", eye: "#9B59B6"}
   )
 
-Qiroex.save_svg("https://elixir-lang.org", "#{out}/logo_styled.svg",
+Qiroex.save_svg(website_url, "#{out}/logo_styled.svg",
   module_size: 8,
   quiet_zone: 2,
   level: :h,
@@ -304,7 +305,7 @@ IO.puts("  ✓ logo_styled.svg")
 
 png_logo = Logo.new(image: png_logo_binary, size: 0.22, shape: :circle, padding: 2)
 
-Qiroex.save_svg("https://elixir-lang.org", "#{out}/logo_png.svg",
+Qiroex.save_svg(website_url, "#{out}/logo_png.svg",
   module_size: 8,
   quiet_zone: 2,
   level: :h,
@@ -347,7 +348,7 @@ Qiroex.save_svg(vcard_data, "#{out}/vcard.svg", module_size: 6, quiet_zone: 2, s
 IO.puts("  ✓ vcard.svg")
 
 # ── 14. URL payload ──────────────────────────────────────────────
-{:ok, url_data} = Qiroex.Payload.URL.encode(url: "https://elixir-lang.org")
+{:ok, url_data} = Qiroex.Payload.URL.encode(url: website_url)
 Qiroex.save_svg(url_data, "#{out}/url.svg", module_size: 8, quiet_zone: 2, dark_color: "#2980B9")
 IO.puts("  ✓ url.svg")
 
@@ -462,7 +463,7 @@ Qiroex.save_svg(whatsapp_data, "#{out}/whatsapp.svg",
 IO.puts("  ✓ whatsapp.svg")
 
 # ── 23. PNG example ──────────────────────────────────────────────
-Qiroex.save_png("https://elixir-lang.org", "#{out}/basic.png", module_size: 10, quiet_zone: 3)
+Qiroex.save_png(website_url, "#{out}/basic.png", module_size: 10, quiet_zone: 3)
 IO.puts("  ✓ basic.png")
 
 # ── 23b. Background image example ───────────────────────────────
@@ -471,7 +472,7 @@ IO.puts("  ✓ basic.png")
 background_image = BackgroundImage.from_file!("#{out}/background_orange_flower.jpg", opacity: 0.32)
 style_background = Style.new(module_shape: :rounded, module_radius: 0.25)
 
-Qiroex.save_svg("https://elixir-lang.org", "#{out}/background_image.svg",
+Qiroex.save_svg(website_url, "#{out}/background_image.svg",
   module_size: 8,
   quiet_zone: 2,
   level: :h,
@@ -486,7 +487,7 @@ IO.puts("  ✓ background_image.svg")
 # ── 24. PNG styled with finder colors ────────────────────────────
 style_png = Style.new(finder: %{outer: "#E63946", inner: "#F1FAEE", eye: "#1D3557"})
 
-Qiroex.save_png("https://elixir-lang.org", "#{out}/styled.png",
+Qiroex.save_png(website_url, "#{out}/styled.png",
   module_size: 10,
   quiet_zone: 3,
   style: style_png
