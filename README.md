@@ -42,12 +42,14 @@ Add `qiroex` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:qiroex, "~> 0.4"}
+    {:qiroex, "~> 1.0"}
   ]
 end
 ```
 
 Qiroex requires **Elixir 1.18+**.
+
+Upgrading from a pre-1.0 release? See [CHANGELOG.md](CHANGELOG.md) for the small API cleanup around `:level` and `:quiet_zone`.
 
 Then run `mix deps.get`.
 
