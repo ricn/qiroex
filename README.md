@@ -252,8 +252,8 @@ style = Qiroex.Style.new(
   module_shape: :circle,
   gradient: %{
     type: :linear,
-    start_color: "#667EEA",
-    end_color: "#764BA2",
+    start_color: "#0F172A",
+    end_color: "#22D3EE",
     angle: 135
   }
 )
@@ -275,12 +275,13 @@ Combine everything for maximum visual impact:
 
 ```elixir
 style = Qiroex.Style.new(
-  module_shape: :circle,
-  finder: %{outer: "#2D3436", inner: "#FFFFFF", eye: "#E17055"},
-  gradient: %{type: :linear, start_color: "#2D3436", end_color: "#636E72", angle: 45}
+  module_shape: :rounded,
+  module_radius: 0.35,
+  finder: %{outer: "#0F172A", inner: "#F8FAFC", eye: "#F97316"},
+  gradient: %{type: :linear, start_color: "#0F172A", end_color: "#22D3EE", angle: 25}
 )
 
-Qiroex.save_svg("https://elixir-lang.org", "styled.svg", style: style)
+Qiroex.save_svg("https://elixir-lang.org", "styled.svg", light_color: "#F8FAFC", style: style)
 ```
 
 ## Logo Embedding
@@ -566,6 +567,8 @@ qr  = Qiroex.encode!("Hello")        # returns QR struct directly
 | `Qiroex.print(data, opts)` | Print QR code to terminal |
 | `Qiroex.payload(type, opts, format)` | Generate payload QR code |
 | `Qiroex.info(qr)` | Get metadata about an encoded QR |
+| `Qiroex.scanability(qr)` | Score an encoded QR for scan reliability |
+| `Qiroex.scanability(data, opts)` | Encode data and evaluate scanability in one step |
 
 All functions have bang (`!`) variants that raise instead of returning error tuples.
 

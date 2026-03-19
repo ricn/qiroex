@@ -122,30 +122,31 @@ IO.puts("  ✓ finder_mixed.svg")
 # ── 7. Linear gradient ──────────────────────────────────────────
 style_gradient = Style.new(
   module_shape: :circle,
-  gradient: %{type: :linear, start_color: "#667EEA", end_color: "#764BA2", angle: 135}
+  gradient: %{type: :linear, start_color: "#0F172A", end_color: "#22D3EE", angle: 135}
 )
-Qiroex.save_svg("https://elixir-lang.org", "#{out}/gradient.svg",
-  module_size: 8, quiet_zone: 2, style: style_gradient)
+Qiroex.save_svg("QIROEX", "#{out}/gradient.svg",
+  module_size: 9, quiet_zone: 2, style: style_gradient)
 IO.puts("  ✓ gradient.svg")
 
 # ── 8. Radial gradient ──────────────────────────────────────────
 style_radial = Style.new(
   module_shape: :rounded,
-  module_radius: 0.3,
-  gradient: %{type: :radial, start_color: "#F093FB", end_color: "#F5576C"}
+  module_radius: 0.35,
+  gradient: %{type: :radial, start_color: "#F59E0B", end_color: "#1E3A8A"}
 )
-Qiroex.save_svg("https://elixir-lang.org", "#{out}/radial.svg",
-  module_size: 8, quiet_zone: 2, style: style_radial)
+Qiroex.save_svg("QIROEX", "#{out}/radial.svg",
+  module_size: 9, quiet_zone: 2, light_color: "#F8FAFC", style: style_radial)
 IO.puts("  ✓ radial.svg")
 
 # ── 9. Full styled (gradient + finder colors + shape) ────────────
 style_full = Style.new(
-  module_shape: :circle,
-  finder: %{outer: "#2D3436", inner: "#FFFFFF", eye: "#E17055"},
-  gradient: %{type: :linear, start_color: "#2D3436", end_color: "#636E72", angle: 45}
+  module_shape: :rounded,
+  module_radius: 0.35,
+  finder: %{outer: "#0F172A", inner: "#F8FAFC", eye: "#F97316"},
+  gradient: %{type: :linear, start_color: "#0F172A", end_color: "#22D3EE", angle: 25}
 )
-Qiroex.save_svg("https://elixir-lang.org", "#{out}/styled.svg",
-  module_size: 8, quiet_zone: 2, style: style_full)
+Qiroex.save_svg("QIROEX", "#{out}/styled.svg",
+  module_size: 9, quiet_zone: 2, light_color: "#F8FAFC", style: style_full)
 IO.puts("  ✓ styled.svg")
 
 # ── 10. Logo embedding ──────────────────────────────────────────

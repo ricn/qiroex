@@ -1,344 +1,222 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="232" height="232" viewBox="0 0 232 232">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="225" height="225" viewBox="0 0 225 225">
 <defs>
 <linearGradient id="qr-gradient" x1="0.1464" y1="0.8536" x2="0.8536" y2="0.1464">
-<stop offset="0%" stop-color="#667EEA"/>
-<stop offset="100%" stop-color="#764BA2"/>
+<stop offset="0%" stop-color="#0F172A"/>
+<stop offset="100%" stop-color="#22D3EE"/>
 </linearGradient>
 </defs>
 <rect width="100%" height="100%" fill="#ffffff"/>
-<circle cx="84.0" cy="20.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="108.0" cy="20.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="116.0" cy="20.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="132.0" cy="20.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="108.0" cy="28.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="116.0" cy="28.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="28.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="92.0" cy="36.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="108.0" cy="36.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="116.0" cy="36.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="124.0" cy="36.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="140.0" cy="36.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="36.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="84.0" cy="44.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="124.0" cy="44.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="44.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="84.0" cy="52.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="92.0" cy="52.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="108.0" cy="52.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="116.0" cy="52.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="132.0" cy="52.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="52.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="84.0" cy="60.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="108.0" cy="60.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="116.0" cy="60.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="124.0" cy="60.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="132.0" cy="60.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="60.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="84.0" cy="68.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="100.0" cy="68.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="116.0" cy="68.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="132.0" cy="68.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="68.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="84.0" cy="76.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="108.0" cy="76.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="116.0" cy="76.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="124.0" cy="76.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="76.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="20.0" cy="84.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="28.0" cy="84.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="36.0" cy="84.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="52.0" cy="84.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="68.0" cy="84.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="84.0" cy="84.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="100.0" cy="84.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="108.0" cy="84.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="116.0" cy="84.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="84.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="156.0" cy="84.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="180.0" cy="84.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="196.0" cy="84.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="204.0" cy="84.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="212.0" cy="84.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="20.0" cy="92.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="44.0" cy="92.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="52.0" cy="92.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="60.0" cy="92.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="76.0" cy="92.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="92.0" cy="92.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="108.0" cy="92.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="116.0" cy="92.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="124.0" cy="92.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="132.0" cy="92.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="140.0" cy="92.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="172.0" cy="92.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="180.0" cy="92.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="188.0" cy="92.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="196.0" cy="92.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="204.0" cy="92.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="28.0" cy="100.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="36.0" cy="100.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="68.0" cy="100.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="84.0" cy="100.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="100.0" cy="100.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="116.0" cy="100.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="124.0" cy="100.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="140.0" cy="100.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="100.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="172.0" cy="100.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="180.0" cy="100.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="188.0" cy="100.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="212.0" cy="100.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="28.0" cy="108.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="60.0" cy="108.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="76.0" cy="108.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="100.0" cy="108.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="156.0" cy="108.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="164.0" cy="108.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="172.0" cy="108.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="188.0" cy="108.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="196.0" cy="108.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="204.0" cy="108.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="212.0" cy="108.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="20.0" cy="116.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="28.0" cy="116.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="52.0" cy="116.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="68.0" cy="116.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="84.0" cy="116.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="92.0" cy="116.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="116.0" cy="116.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="116.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="164.0" cy="116.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="172.0" cy="116.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="212.0" cy="116.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="20.0" cy="124.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="44.0" cy="124.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="52.0" cy="124.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="76.0" cy="124.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="84.0" cy="124.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="132.0" cy="124.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="140.0" cy="124.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="180.0" cy="124.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="204.0" cy="124.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="20.0" cy="132.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="28.0" cy="132.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="44.0" cy="132.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="52.0" cy="132.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="60.0" cy="132.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="68.0" cy="132.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="76.0" cy="132.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="92.0" cy="132.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="108.0" cy="132.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="116.0" cy="132.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="132.0" cy="132.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="140.0" cy="132.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="132.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="180.0" cy="132.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="188.0" cy="132.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="196.0" cy="132.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="204.0" cy="132.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="212.0" cy="132.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="20.0" cy="140.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="36.0" cy="140.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="44.0" cy="140.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="52.0" cy="140.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="92.0" cy="140.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="100.0" cy="140.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="108.0" cy="140.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="140.0" cy="140.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="140.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="156.0" cy="140.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="164.0" cy="140.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="172.0" cy="140.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="188.0" cy="140.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="196.0" cy="140.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="212.0" cy="140.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="20.0" cy="148.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="68.0" cy="148.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="84.0" cy="148.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="92.0" cy="148.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="100.0" cy="148.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="124.0" cy="148.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="140.0" cy="148.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="148.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="156.0" cy="148.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="164.0" cy="148.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="172.0" cy="148.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="180.0" cy="148.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="196.0" cy="148.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="204.0" cy="148.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="84.0" cy="156.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="92.0" cy="156.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="108.0" cy="156.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="116.0" cy="156.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="132.0" cy="156.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="140.0" cy="156.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="156.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="180.0" cy="156.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="196.0" cy="156.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="204.0" cy="156.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="84.0" cy="164.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="108.0" cy="164.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="132.0" cy="164.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="164.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="164.0" cy="164.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="180.0" cy="164.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="212.0" cy="164.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="84.0" cy="172.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="92.0" cy="172.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="116.0" cy="172.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="124.0" cy="172.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="132.0" cy="172.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="140.0" cy="172.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="172.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="180.0" cy="172.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="204.0" cy="172.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="84.0" cy="180.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="100.0" cy="180.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="116.0" cy="180.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="132.0" cy="180.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="140.0" cy="180.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="180.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="156.0" cy="180.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="164.0" cy="180.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="172.0" cy="180.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="180.0" cy="180.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="204.0" cy="180.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="212.0" cy="180.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="84.0" cy="188.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="100.0" cy="188.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="132.0" cy="188.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="140.0" cy="188.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="188.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="156.0" cy="188.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="164.0" cy="188.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="204.0" cy="188.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="212.0" cy="188.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="100.0" cy="196.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="116.0" cy="196.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="124.0" cy="196.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="140.0" cy="196.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="196.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="180.0" cy="196.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="188.0" cy="196.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="196.0" cy="196.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="204.0" cy="196.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="212.0" cy="196.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="100.0" cy="204.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="132.0" cy="204.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="156.0" cy="204.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="172.0" cy="204.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="180.0" cy="204.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="196.0" cy="204.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="204.0" cy="204.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="212.0" cy="204.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="84.0" cy="212.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="100.0" cy="212.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="116.0" cy="212.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="124.0" cy="212.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="132.0" cy="212.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="148.0" cy="212.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="156.0" cy="212.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="164.0" cy="212.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="188.0" cy="212.0" r="3.4" fill="url(#qr-gradient)"/>
-<circle cx="212.0" cy="212.0" r="3.4" fill="url(#qr-gradient)"/>
-<rect x="16" y="16" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="24" y="16" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="32" y="16" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="40" y="16" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="48" y="16" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="56" y="16" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="64" y="16" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="160" y="16" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="168" y="16" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="176" y="16" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="184" y="16" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="192" y="16" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="200" y="16" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="208" y="16" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="16" y="24" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="64" y="24" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="160" y="24" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="208" y="24" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="16" y="32" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="32" y="32" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="40" y="32" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="48" y="32" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="64" y="32" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="160" y="32" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="176" y="32" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="184" y="32" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="192" y="32" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="208" y="32" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="16" y="40" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="32" y="40" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="40" y="40" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="48" y="40" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="64" y="40" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="160" y="40" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="176" y="40" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="184" y="40" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="192" y="40" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="208" y="40" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="16" y="48" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="32" y="48" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="40" y="48" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="48" y="48" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="64" y="48" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="160" y="48" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="176" y="48" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="184" y="48" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="192" y="48" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="208" y="48" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="16" y="56" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="64" y="56" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="160" y="56" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="208" y="56" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="16" y="64" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="24" y="64" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="32" y="64" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="40" y="64" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="48" y="64" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="56" y="64" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="64" y="64" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="160" y="64" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="168" y="64" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="176" y="64" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="184" y="64" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="192" y="64" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="200" y="64" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="208" y="64" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="16" y="160" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="24" y="160" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="32" y="160" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="40" y="160" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="48" y="160" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="56" y="160" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="64" y="160" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="16" y="168" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="64" y="168" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="16" y="176" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="32" y="176" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="40" y="176" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="48" y="176" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="64" y="176" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="16" y="184" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="32" y="184" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="40" y="184" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="48" y="184" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="64" y="184" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="16" y="192" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="32" y="192" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="40" y="192" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="48" y="192" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="64" y="192" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="16" y="200" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="64" y="200" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="16" y="208" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="24" y="208" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="32" y="208" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="40" y="208" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="48" y="208" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="56" y="208" width="8" height="8" fill="url(#qr-gradient)"/>
-<rect x="64" y="208" width="8" height="8" fill="url(#qr-gradient)"/>
+<circle cx="94.5" cy="22.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="103.5" cy="31.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="112.5" cy="31.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="94.5" cy="40.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="112.5" cy="40.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="121.5" cy="40.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="103.5" cy="49.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="112.5" cy="49.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="94.5" cy="58.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="130.5" cy="58.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="103.5" cy="67.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="130.5" cy="67.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="94.5" cy="76.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="112.5" cy="76.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="130.5" cy="76.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="103.5" cy="85.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="112.5" cy="85.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="121.5" cy="85.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="130.5" cy="85.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="31.5" cy="94.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="58.5" cy="94.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="76.5" cy="94.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="112.5" cy="94.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="121.5" cy="94.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="166.5" cy="94.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="193.5" cy="94.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="22.5" cy="103.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="31.5" cy="103.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="58.5" cy="103.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="94.5" cy="103.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="148.5" cy="103.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="175.5" cy="103.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="184.5" cy="103.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="193.5" cy="103.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="22.5" cy="112.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="40.5" cy="112.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="49.5" cy="112.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="58.5" cy="112.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="76.5" cy="112.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="94.5" cy="112.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="112.5" cy="112.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="130.5" cy="112.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="166.5" cy="112.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="175.5" cy="112.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="184.5" cy="112.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="193.5" cy="112.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="202.5" cy="112.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="22.5" cy="121.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="94.5" cy="121.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="148.5" cy="121.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="175.5" cy="121.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="184.5" cy="121.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="193.5" cy="121.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="202.5" cy="121.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="31.5" cy="130.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="40.5" cy="130.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="58.5" cy="130.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="76.5" cy="130.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="94.5" cy="130.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="130.5" cy="130.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="148.5" cy="130.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="166.5" cy="130.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="94.5" cy="139.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="121.5" cy="139.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="139.5" cy="139.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="157.5" cy="139.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="184.5" cy="139.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="193.5" cy="139.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="112.5" cy="148.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="121.5" cy="148.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="139.5" cy="148.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="148.5" cy="148.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="157.5" cy="148.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="193.5" cy="148.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="202.5" cy="148.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="121.5" cy="157.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="130.5" cy="157.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="139.5" cy="157.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="157.5" cy="157.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="166.5" cy="157.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="175.5" cy="157.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="184.5" cy="157.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="202.5" cy="157.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="94.5" cy="166.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="121.5" cy="166.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="139.5" cy="166.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="148.5" cy="166.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="157.5" cy="166.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="202.5" cy="166.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="103.5" cy="175.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="112.5" cy="175.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="148.5" cy="175.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="157.5" cy="175.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="193.5" cy="175.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="94.5" cy="184.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="103.5" cy="184.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="130.5" cy="184.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="166.5" cy="184.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="175.5" cy="184.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="184.5" cy="184.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="202.5" cy="184.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="103.5" cy="193.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="148.5" cy="193.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="157.5" cy="193.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="184.5" cy="193.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="193.5" cy="193.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="202.5" cy="193.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="94.5" cy="202.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="130.5" cy="202.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="148.5" cy="202.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="166.5" cy="202.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="184.5" cy="202.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<circle cx="202.5" cy="202.5" r="3.8249999999999997" fill="url(#qr-gradient)"/>
+<rect x="18" y="18" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="27" y="18" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="36" y="18" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="45" y="18" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="54" y="18" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="63" y="18" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="72" y="18" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="144" y="18" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="153" y="18" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="162" y="18" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="171" y="18" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="180" y="18" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="189" y="18" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="198" y="18" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="18" y="27" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="72" y="27" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="144" y="27" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="198" y="27" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="18" y="36" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="36" y="36" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="45" y="36" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="54" y="36" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="72" y="36" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="144" y="36" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="162" y="36" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="171" y="36" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="180" y="36" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="198" y="36" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="18" y="45" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="36" y="45" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="45" y="45" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="54" y="45" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="72" y="45" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="144" y="45" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="162" y="45" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="171" y="45" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="180" y="45" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="198" y="45" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="18" y="54" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="36" y="54" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="45" y="54" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="54" y="54" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="72" y="54" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="144" y="54" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="162" y="54" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="171" y="54" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="180" y="54" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="198" y="54" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="18" y="63" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="72" y="63" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="144" y="63" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="198" y="63" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="18" y="72" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="27" y="72" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="36" y="72" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="45" y="72" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="54" y="72" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="63" y="72" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="72" y="72" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="144" y="72" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="153" y="72" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="162" y="72" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="171" y="72" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="180" y="72" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="189" y="72" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="198" y="72" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="18" y="144" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="27" y="144" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="36" y="144" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="45" y="144" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="54" y="144" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="63" y="144" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="72" y="144" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="18" y="153" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="72" y="153" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="18" y="162" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="36" y="162" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="45" y="162" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="54" y="162" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="72" y="162" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="18" y="171" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="36" y="171" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="45" y="171" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="54" y="171" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="72" y="171" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="18" y="180" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="36" y="180" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="45" y="180" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="54" y="180" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="72" y="180" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="18" y="189" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="72" y="189" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="18" y="198" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="27" y="198" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="36" y="198" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="45" y="198" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="54" y="198" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="63" y="198" width="9" height="9" fill="url(#qr-gradient)"/>
+<rect x="72" y="198" width="9" height="9" fill="url(#qr-gradient)"/>
 </svg>
