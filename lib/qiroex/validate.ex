@@ -538,8 +538,8 @@ defmodule Qiroex.Validate do
     trimmed = String.trim(color)
     downcased = String.downcase(trimmed)
 
+    # Basic defense-in-depth: disallow characters that could break out of SVG/XML attributes.
     trimmed != "" and
-      # Basic defense-in-depth: disallow characters that could break out of SVG/XML attributes.
       not String.contains?(trimmed, ["\"", "'", "<", ">", "&"]) and
       (Regex.match?(@hex_color_regex, trimmed) or
          Regex.match?(@rgb_color_regex, trimmed) or
