@@ -40,14 +40,14 @@ defmodule Qiroex do
 
   ## Logos
 
-  Embed an SVG logo in the center of the code (SVG output only):
+  Embed an SVG or raster logo in the center of the code (SVG output only):
 
       logo = Qiroex.Logo.new(svg: "<svg>...</svg>", size: 0.2)
       {:ok, svg} = Qiroex.to_svg("Hello", level: :h, logo: logo)
 
-    ## Background Images
+  ## Background Images
 
-    Embed a photo-style background image inside the QR body (SVG output only):
+  Embed a photo-style background image inside the QR body (SVG output only):
 
       background = Qiroex.BackgroundImage.from_file!("photo.jpg", opacity: 0.2)
       {:ok, svg} = Qiroex.to_svg("Hello", level: :h, background_image: background)
@@ -178,8 +178,8 @@ defmodule Qiroex do
 
     - `:module_size` — pixel size of each module (default: 10)
     - `:quiet_zone` — quiet zone modules (default: 4)
-    - `:dark_color` — CSS color for dark modules (default: `"#000000"`)
-    - `:light_color` — CSS color for background (default: `"#ffffff"`)
+    - `:dark_color` — SVG color for dark modules in hex, rgb/rgba, hsl/hsla, or supported named-color form (default: `"#000000"`)
+    - `:light_color` — SVG color for background in hex, rgb/rgba, hsl/hsla, or supported named-color form (default: `"#ffffff"`)
     - `:style` — a `%Qiroex.Style{}` struct for shapes, finder colors, gradients
     - `:logo` — a `%Qiroex.Logo{}` struct for center logo embedding
     - `:background_image` — a `%Qiroex.BackgroundImage{}` struct for embedded photo or SVG backgrounds

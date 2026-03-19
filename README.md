@@ -118,7 +118,7 @@ Qiroex.save_svg("Hello", "qr.svg", level: :q, version: 3, mask: 0)
 Qiroex.save_svg("Hello", "qr.svg",
   module_size: 12,             # pixel size of each module (default: 10)
   quiet_zone: 2,               # modules of white border (default: 4)
-  dark_color: "#4B275F",       # any CSS color
+  dark_color: "#4B275F",       # hex, rgb/rgba, hsl/hsla, or supported named color
   light_color: "#F4F1F6"       # background color
 )
 ```
