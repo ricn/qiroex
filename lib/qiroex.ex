@@ -25,7 +25,7 @@ defmodule Qiroex do
 
   All rendering functions accept encoding options as well:
 
-    - `:level` / `:ec_level` — error correction level (`:l`, `:m`, `:q`, `:h`). Default: `:m`
+    - `:level` — error correction level (`:l`, `:m`, `:q`, `:h`). Default: `:m`
     - `:version` — force a specific version (1–40) or `:auto`. Default: `:auto`
     - `:mode` — force encoding mode (`:numeric`, `:alphanumeric`, `:byte`, `:kanji`)
       or `:auto`. Default: `:auto`
@@ -62,6 +62,8 @@ defmodule Qiroex do
   alias Qiroex.{QR, Scanability, Validate}
   alias Qiroex.Render.{PNG, SVG, Terminal}
 
+  @encode_option_keys [:level, :version, :mode, :mask]
+  @matrix_render_keys [:quiet_zone]
   @svg_render_keys [
     :module_size,
     :quiet_zone,
@@ -73,6 +75,16 @@ defmodule Qiroex do
   ]
   @png_render_keys [:module_size, :quiet_zone, :dark_color, :light_color, :style]
   @terminal_render_keys [:quiet_zone, :compact]
+  @matrix_option_keys @encode_option_keys ++ @matrix_render_keys
+  @svg_option_keys @encode_option_keys ++ @svg_render_keys
+  @png_option_keys @encode_option_keys ++ @png_render_keys
+  @terminal_option_keys @encode_option_keys ++ @terminal_render_keys
+  @png_unsupported_option_messages %{
+    logo:
+      "unsupported option :logo for Qiroex.to_png/2. Logo embedding is only available in SVG output.",
+    background_image:
+      "unsupported option :background_image for Qiroex.to_png/2. Background images are only available in SVG output."
+  }
 
   # ─── Encode ──────────────────────────────────────────────────────────
 
@@ -81,7 +93,7 @@ defmodule Qiroex do
 
   ## Options
 
-    - `:level` / `:ec_level` — error correction level (`:l`, `:m`, `:q`, `:h`). Default: `:m`
+    - `:level` — error correction level (`:l`, `:m`, `:q`, `:h`). Default: `:m`
     - `:version` — force a specific version (1–40) or `:auto`. Default: `:auto`
     - `:mode` — force encoding mode or `:auto`. Default: `:auto`
     - `:mask` — force mask pattern (0–7) or `:auto`. Default: `:auto`
@@ -98,9 +110,7 @@ defmodule Qiroex do
   """
   @spec encode(binary(), keyword()) :: {:ok, QR.t()} | {:error, String.t()}
   def encode(data, opts \\ []) do
-    with :ok <- Validate.encode_opts(opts) do
-      QR.encode(data, opts)
-    end
+    QR.encode(data, opts)
   end
 
   @doc """
@@ -125,20 +135,22 @@ defmodule Qiroex do
 
   Same as `encode/2`, plus:
 
-    - `:margin` — quiet zone size in modules. Default: 4
+    - `:quiet_zone` — quiet zone size in modules. Default: 4
 
   ## Examples
 
       {:ok, rows} = Qiroex.to_matrix("Hi")
-      length(rows) # => matrix size + 2 * margin
+      length(rows) # => matrix size + 2 * quiet_zone
   """
   @spec to_matrix(binary(), keyword()) :: {:ok, list(list(0 | 1))} | {:error, String.t()}
   def to_matrix(data, opts \\ []) do
-    margin = Keyword.get(opts, :margin, 4)
+    {render_opts, encode_opts} = split_render_opts(opts, @matrix_render_keys)
+    quiet_zone = Keyword.get(render_opts, :quiet_zone, 4)
 
-    case encode(data, opts) do
-      {:ok, qr} -> {:ok, QR.to_matrix(qr, margin)}
-      error -> error
+    with :ok <- Validate.option_keys(opts, @matrix_option_keys, "Qiroex.to_matrix/2"),
+         :ok <- Validate.matrix_render_opts(render_opts),
+         {:ok, qr} <- encode(data, encode_opts) do
+      {:ok, QR.to_matrix(qr, quiet_zone)}
     end
   end
 
@@ -149,9 +161,10 @@ defmodule Qiroex do
   """
   @spec to_matrix!(binary(), keyword()) :: list(list(0 | 1))
   def to_matrix!(data, opts \\ []) do
-    margin = Keyword.get(opts, :margin, 4)
-    qr = encode!(data, opts)
-    QR.to_matrix(qr, margin)
+    {render_opts, encode_opts} = split_render_opts(opts, @matrix_render_keys)
+    quiet_zone = Keyword.get(render_opts, :quiet_zone, 4)
+    qr = encode!(data, encode_opts)
+    QR.to_matrix(qr, quiet_zone)
   end
 
   # ─── SVG ─────────────────────────────────────────────────────────────
@@ -184,7 +197,8 @@ defmodule Qiroex do
   def to_svg(data, opts \\ []) do
     {render_opts, encode_opts} = split_render_opts(opts, @svg_render_keys)
 
-    with :ok <- Validate.svg_render_opts(render_opts),
+    with :ok <- Validate.option_keys(opts, @svg_option_keys, "Qiroex.to_svg/2"),
+         :ok <- Validate.svg_render_opts(render_opts),
          {:ok, qr} <- encode(data, encode_opts),
          :ok <- validate_logo_coverage(render_opts, qr) do
       {:ok, SVG.render(qr.matrix, render_opts)}
@@ -219,6 +233,9 @@ defmodule Qiroex do
     - `:light_color` — `{r, g, b}` tuple with values 0–255 (default: `{255, 255, 255}`)
     - `:style` — a `%Qiroex.Style{}` struct for finder pattern colors
 
+  PNG output supports finder styling colors, but not SVG-only features such as
+  `:logo` or `:background_image`.
+
   ## Examples
 
       {:ok, png} = Qiroex.to_png("Hello")
@@ -232,7 +249,14 @@ defmodule Qiroex do
   def to_png(data, opts \\ []) do
     {render_opts, encode_opts} = split_render_opts(opts, @png_render_keys)
 
-    with :ok <- Validate.png_render_opts(render_opts),
+    with :ok <-
+           Validate.option_keys(
+             opts,
+             @png_option_keys,
+             "Qiroex.to_png/2",
+             @png_unsupported_option_messages
+           ),
+         :ok <- Validate.png_render_opts(render_opts),
          {:ok, qr} <- encode(data, encode_opts) do
       {:ok, PNG.render(qr.matrix, render_opts)}
     end
@@ -325,7 +349,8 @@ defmodule Qiroex do
   def to_terminal(data, opts \\ []) do
     {render_opts, encode_opts} = split_render_opts(opts, @terminal_render_keys)
 
-    with :ok <- Validate.terminal_render_opts(render_opts),
+    with :ok <- Validate.option_keys(opts, @terminal_option_keys, "Qiroex.to_terminal/2"),
+         :ok <- Validate.terminal_render_opts(render_opts),
          {:ok, qr} <- encode(data, encode_opts) do
       {:ok, Terminal.render(qr.matrix, render_opts)}
     end

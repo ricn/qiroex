@@ -34,9 +34,10 @@ defmodule Qiroex.QRTest do
       assert qr_h.ec_level == :h
     end
 
-    test "respects specified EC level with :ec_level key" do
-      assert {:ok, qr} = QR.encode("TEST", ec_level: :q)
-      assert qr.ec_level == :q
+    test "rejects legacy :ec_level key" do
+      assert {:error, msg} = QR.encode("TEST", ec_level: :q)
+      assert msg =~ ":ec_level"
+      assert msg =~ ":level"
     end
 
     test "respects specified version" do

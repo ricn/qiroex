@@ -20,9 +20,10 @@ defmodule QiroexTest do
       end
     end
 
-    test "accepts :ec_level alias" do
-      assert {:ok, qr} = Qiroex.encode("test", ec_level: :h)
-      assert qr.ec_level == :h
+    test "rejects legacy :ec_level alias" do
+      assert {:error, msg} = Qiroex.encode("test", ec_level: :h)
+      assert msg =~ ":ec_level"
+      assert msg =~ ":level"
     end
 
     test "rejects invalid ec level" do
@@ -100,11 +101,17 @@ defmodule QiroexTest do
     end
 
     test "respects margin option" do
-      {:ok, rows_4} = Qiroex.to_matrix("HI", level: :l, margin: 4)
-      {:ok, rows_0} = Qiroex.to_matrix("HI", level: :l, margin: 0)
+      {:ok, rows_4} = Qiroex.to_matrix("HI", level: :l, quiet_zone: 4)
+      {:ok, rows_0} = Qiroex.to_matrix("HI", level: :l, quiet_zone: 0)
 
-      # margin adds 2*margin to each dimension
+      # quiet_zone adds 2*quiet_zone to each dimension
       assert length(rows_4) == length(rows_0) + 8
+    end
+
+    test "rejects legacy :margin option" do
+      assert {:error, msg} = Qiroex.to_matrix("HI", margin: 4)
+      assert msg =~ ":margin"
+      assert msg =~ ":quiet_zone"
     end
   end
 
@@ -146,9 +153,20 @@ defmodule QiroexTest do
       assert msg =~ "invalid module_size"
     end
 
+    test "rejects unknown options with a suggestion" do
+      assert {:error, msg} = Qiroex.to_svg("test", module_sz: 10)
+      assert msg =~ "unknown option"
+      assert msg =~ ":module_size"
+    end
+
     test "rejects invalid style type" do
       assert {:error, msg} = Qiroex.to_svg("test", style: :circle)
       assert msg =~ "invalid style"
+    end
+
+    test "rejects invalid CSS color syntax" do
+      assert {:error, msg} = Qiroex.to_svg("test", dark_color: "not-a-color")
+      assert msg =~ "invalid dark_color"
     end
 
     test "accepts style struct" do
@@ -198,6 +216,14 @@ defmodule QiroexTest do
     test "accepts valid RGB tuple" do
       assert {:ok, png} = Qiroex.to_png("test", dark_color: {0, 0, 128})
       assert <<137, 80, 78, 71, _rest::binary>> = png
+    end
+
+    test "rejects SVG-only logo option with explicit guidance" do
+      logo = Qiroex.Logo.new(svg: "<svg/>")
+
+      assert {:error, msg} = Qiroex.to_png("test", logo: logo)
+      assert msg =~ ":logo"
+      assert msg =~ "SVG output"
     end
   end
 
