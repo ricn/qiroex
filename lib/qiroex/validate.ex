@@ -10,23 +10,199 @@ defmodule Qiroex.Validate do
   @valid_ec_levels [:l, :m, :q, :h]
   @valid_modes [:numeric, :alphanumeric, :byte, :kanji, :auto]
   @valid_shapes [:square, :rounded, :circle, :diamond]
+  @encode_option_keys [:level, :version, :mode, :mask]
+  @hex_color_regex ~r/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/
+  # Matches rgb(...) or rgba(...) with numeric and/or percentage channels and optional alpha.
+  # Examples: rgb(255, 0, 0), rgb(100%, 0%, 0%), rgba(0, 0, 0, 0.5), rgba(0,0,0,50%)
+  @rgb_color_regex ~r/^rgba?\(\s*(?:\+?\d+%?\s*,\s*){2}\+?\d+%?(?:\s*,\s*(?:0|1|0?\.\d+|\d{1,3}%))?\s*\)$/i
+  # Matches hsl(...) or hsla(...) with hue and percentage saturation/lightness and optional alpha.
+  # Examples: hsl(120, 50%, 50%), hsla(120deg,50%,50%,0.5), hsla(120,50%,50%,50%)
+  @hsl_color_regex ~r/^hsla?\(\s*\d+(?:deg|grad|rad|turn)?\s*,\s*\d+%\s*,\s*\d+%(?:\s*,\s*(?:0|1|0?\.\d+|\d{1,3}%))?\s*\)$/i
+  @css_named_colors MapSet.new([
+                      "aliceblue",
+                      "antiquewhite",
+                      "aqua",
+                      "aquamarine",
+                      "azure",
+                      "beige",
+                      "bisque",
+                      "black",
+                      "blanchedalmond",
+                      "blue",
+                      "blueviolet",
+                      "brown",
+                      "burlywood",
+                      "cadetblue",
+                      "chartreuse",
+                      "chocolate",
+                      "coral",
+                      "cornflowerblue",
+                      "cornsilk",
+                      "crimson",
+                      "currentcolor",
+                      "cyan",
+                      "darkblue",
+                      "darkcyan",
+                      "darkgoldenrod",
+                      "darkgray",
+                      "darkgreen",
+                      "darkgrey",
+                      "darkkhaki",
+                      "darkmagenta",
+                      "darkolivegreen",
+                      "darkorange",
+                      "darkorchid",
+                      "darkred",
+                      "darksalmon",
+                      "darkseagreen",
+                      "darkslateblue",
+                      "darkslategray",
+                      "darkslategrey",
+                      "darkturquoise",
+                      "darkviolet",
+                      "deeppink",
+                      "deepskyblue",
+                      "dimgray",
+                      "dimgrey",
+                      "dodgerblue",
+                      "firebrick",
+                      "floralwhite",
+                      "forestgreen",
+                      "fuchsia",
+                      "gainsboro",
+                      "ghostwhite",
+                      "gold",
+                      "goldenrod",
+                      "gray",
+                      "green",
+                      "greenyellow",
+                      "grey",
+                      "honeydew",
+                      "hotpink",
+                      "indianred",
+                      "indigo",
+                      "ivory",
+                      "khaki",
+                      "lavender",
+                      "lavenderblush",
+                      "lawngreen",
+                      "lemonchiffon",
+                      "lightblue",
+                      "lightcoral",
+                      "lightcyan",
+                      "lightgoldenrodyellow",
+                      "lightgray",
+                      "lightgreen",
+                      "lightgrey",
+                      "lightpink",
+                      "lightsalmon",
+                      "lightseagreen",
+                      "lightskyblue",
+                      "lightslategray",
+                      "lightslategrey",
+                      "lightsteelblue",
+                      "lightyellow",
+                      "lime",
+                      "limegreen",
+                      "linen",
+                      "magenta",
+                      "maroon",
+                      "mediumaquamarine",
+                      "mediumblue",
+                      "mediumorchid",
+                      "mediumpurple",
+                      "mediumseagreen",
+                      "mediumslateblue",
+                      "mediumspringgreen",
+                      "mediumturquoise",
+                      "mediumvioletred",
+                      "midnightblue",
+                      "mintcream",
+                      "mistyrose",
+                      "moccasin",
+                      "navajowhite",
+                      "navy",
+                      "oldlace",
+                      "olive",
+                      "olivedrab",
+                      "orange",
+                      "orangered",
+                      "orchid",
+                      "palegoldenrod",
+                      "palegreen",
+                      "paleturquoise",
+                      "palevioletred",
+                      "papayawhip",
+                      "peachpuff",
+                      "peru",
+                      "pink",
+                      "plum",
+                      "powderblue",
+                      "purple",
+                      "rebeccapurple",
+                      "red",
+                      "rosybrown",
+                      "royalblue",
+                      "saddlebrown",
+                      "salmon",
+                      "sandybrown",
+                      "seagreen",
+                      "seashell",
+                      "sienna",
+                      "silver",
+                      "skyblue",
+                      "slateblue",
+                      "slategray",
+                      "slategrey",
+                      "snow",
+                      "springgreen",
+                      "steelblue",
+                      "tan",
+                      "teal",
+                      "thistle",
+                      "tomato",
+                      "transparent",
+                      "turquoise",
+                      "violet",
+                      "wheat",
+                      "white",
+                      "whitesmoke",
+                      "yellow",
+                      "yellowgreen"
+                    ])
+  @legacy_option_messages %{
+    ec_level: "unsupported option :ec_level. Use :level instead.",
+    margin: "unsupported option :margin. Use :quiet_zone instead."
+  }
 
   @doc """
-  Validates encoding options, returning the normalized keyword list or an error.
+  Validates encoding options.
 
   Checks:
-    - `:level` / `:ec_level` — must be `:l`, `:m`, `:q`, or `:h`
+    - `:level` — must be `:l`, `:m`, `:q`, or `:h`
     - `:version` — must be `:auto` or an integer 1–40
     - `:mode` — must be `:auto`, `:numeric`, `:alphanumeric`, `:byte`, or `:kanji`
     - `:mask` — must be `:auto` or an integer 0–7
   """
   @spec encode_opts(keyword()) :: :ok | {:error, String.t()}
   def encode_opts(opts) do
-    with :ok <- validate_ec_level(opts),
+    with :ok <- option_keys(opts, @encode_option_keys, "Qiroex.encode/2"),
+         :ok <- validate_ec_level(opts),
          :ok <- validate_version(opts),
          :ok <- validate_mode(opts) do
       validate_mask(opts)
     end
+  end
+
+  @doc """
+  Validates matrix render options.
+
+  Checks:
+    - `:quiet_zone` — non-negative integer
+  """
+  @spec matrix_render_opts(keyword()) :: :ok | {:error, String.t()}
+  def matrix_render_opts(opts) do
+    validate_quiet_zone(opts)
   end
 
   @doc """
@@ -35,7 +211,7 @@ defmodule Qiroex.Validate do
   Checks:
     - `:module_size` — positive integer
     - `:quiet_zone` — non-negative integer
-    - `:dark_color` / `:light_color` — non-empty string
+    - `:dark_color` / `:light_color` — hex, rgb/rgba, hsl/hsla, or CSS color name string
     - `:style` — `%Qiroex.Style{}` struct or `nil`
     - `:logo` — `%Qiroex.Logo{}` struct or `nil`
     - `:background_image` — `%Qiroex.BackgroundImage{}` struct or `nil`
@@ -97,10 +273,24 @@ defmodule Qiroex.Validate do
        "Must be one of :svg, :png, :terminal, :matrix, or :encode"}
   end
 
+  @doc false
+  @spec option_keys(keyword(), [atom()], String.t(), map()) :: :ok | {:error, String.t()}
+  def option_keys(opts, allowed_keys, context, custom_messages \\ %{}) do
+    opts
+    |> Keyword.keys()
+    |> Enum.uniq()
+    |> Enum.reduce_while(:ok, fn key, :ok ->
+      case option_key_error(key, allowed_keys, context, custom_messages) do
+        nil -> {:cont, :ok}
+        error -> {:halt, error}
+      end
+    end)
+  end
+
   # === EC Level ===
 
   defp validate_ec_level(opts) do
-    level = Keyword.get(opts, :level, Keyword.get(opts, :ec_level, :m))
+    level = Keyword.get(opts, :level, :m)
 
     if level in @valid_ec_levels do
       :ok
@@ -193,9 +383,20 @@ defmodule Qiroex.Validate do
 
   defp validate_css_color(opts, key) do
     case Keyword.get(opts, key) do
-      nil -> :ok
-      c when is_binary(c) and byte_size(c) > 0 -> :ok
-      c -> {:error, "invalid #{key}: #{inspect(c)}. Must be a CSS color string"}
+      nil ->
+        :ok
+
+      c when is_binary(c) ->
+        if valid_css_color?(c) do
+          :ok
+        else
+          {:error,
+           "invalid #{key}: #{inspect(c)}. Must be a CSS color string in hex, rgb/rgba, hsl/hsla, or a supported named-color form"}
+        end
+
+      c ->
+        {:error,
+         "invalid #{key}: #{inspect(c)}. Must be a CSS color string in hex, rgb/rgba, hsl/hsla, or a supported named-color form"}
     end
   end
 
@@ -275,5 +476,74 @@ defmodule Qiroex.Validate do
     {:error,
      "invalid module_shape: #{inspect(shape)}. " <>
        "Must be one of #{inspect(@valid_shapes)}"}
+  end
+
+  defp option_key_error(key, allowed_keys, context, custom_messages) do
+    cond do
+      key in allowed_keys ->
+        nil
+
+      Map.has_key?(@legacy_option_messages, key) ->
+        {:error, Map.fetch!(@legacy_option_messages, key)}
+
+      Map.has_key?(custom_messages, key) ->
+        {:error, Map.fetch!(custom_messages, key)}
+
+      true ->
+        {:error, unknown_option_message(key, allowed_keys, context)}
+    end
+  end
+
+  defp unknown_option_message(key, allowed_keys, context) do
+    suggestion = suggestion_for(key, allowed_keys)
+
+    valid_options =
+      allowed_keys
+      |> Enum.uniq()
+      |> Enum.sort_by(&Atom.to_string/1)
+      |> Enum.map_join(", ", &inspect/1)
+
+    suggestion_text =
+      case suggestion do
+        nil -> ""
+        suggested_key -> " Did you mean #{inspect(suggested_key)}?"
+      end
+
+    "unknown option #{inspect(key)} for #{context}.#{suggestion_text} Valid options are: #{valid_options}"
+  end
+
+  defp suggestion_for(key, allowed_keys) when is_atom(key) do
+    key_name = Atom.to_string(key)
+
+    case Enum.max_by(allowed_keys, &String.jaro_distance(key_name, Atom.to_string(&1)), fn ->
+           nil
+         end) do
+      nil ->
+        nil
+
+      suggestion ->
+        distance = String.jaro_distance(key_name, Atom.to_string(suggestion))
+
+        if distance >= 0.82 do
+          suggestion
+        else
+          nil
+        end
+    end
+  end
+
+  defp suggestion_for(_key, _allowed_keys), do: nil
+
+  defp valid_css_color?(color) do
+    trimmed = String.trim(color)
+    downcased = String.downcase(trimmed)
+
+    # Basic defense-in-depth: disallow characters that could break out of SVG/XML attributes.
+    trimmed != "" and
+      not String.contains?(trimmed, ["\"", "'", "<", ">", "&"]) and
+      (Regex.match?(@hex_color_regex, trimmed) or
+         Regex.match?(@rgb_color_regex, trimmed) or
+         Regex.match?(@hsl_color_regex, trimmed) or
+         MapSet.member?(@css_named_colors, downcased))
   end
 end

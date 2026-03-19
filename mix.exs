@@ -1,8 +1,10 @@
 defmodule Qiroex.MixProject do
   use Mix.Project
 
-  @version "0.4.0"
+  @version "1.0.0"
   @source_url "https://github.com/ricn/qiroex"
+  @docs_url "https://hexdocs.pm/qiroex"
+  @changelog_url "#{@source_url}/blob/main/CHANGELOG.md"
 
   def project do
     [
@@ -38,15 +40,19 @@ defmodule Qiroex.MixProject do
   defp package do
     [
       licenses: ["MIT"],
-      links: %{"GitHub" => @source_url},
-      files: ~w(lib mix.exs README.md LICENSE)
+      links: %{
+        "GitHub" => @source_url,
+        "Docs" => @docs_url,
+        "Changelog" => @changelog_url
+      },
+      files: ~w(lib assets mix.exs README.md CHANGELOG.md LICENSE)
     ]
   end
 
   defp docs do
     [
       main: "Qiroex",
-      extras: ["README.md"],
+      extras: ["README.md", "CHANGELOG.md", "LICENSE"],
       source_url: @source_url,
       source_ref: "v#{@version}"
     ]

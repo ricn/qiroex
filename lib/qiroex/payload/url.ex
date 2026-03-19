@@ -5,9 +5,12 @@ defmodule Qiroex.Payload.URL do
   Generates a URL string for QR encoding. Prepends `https://` if no scheme is present.
 
   ## Examples
-      {:ok, payload} = Qiroex.Payload.URL.encode(url: "https://example.com")
-      {:ok, payload} = Qiroex.Payload.URL.encode(url: "example.com")
-      #=> {:ok, "https://example.com"}
+
+      iex> Qiroex.Payload.URL.encode(url: "https://example.com")
+      {:ok, "https://example.com"}
+
+      iex> Qiroex.Payload.URL.encode(url: "example.com")
+      {:ok, "https://example.com"}
   """
 
   @behaviour Qiroex.Payload

@@ -57,7 +57,7 @@ defmodule Qiroex.Logo do
 
   alias Qiroex.Asset
 
-  @type image_type :: Asset.image_type()
+  @type image_type :: :png | :jpeg | :webp | :gif | :bmp | :avif | :tiff
 
   @type t :: %__MODULE__{
           svg: String.t() | nil,

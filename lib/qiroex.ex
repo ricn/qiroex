@@ -9,23 +9,22 @@ defmodule Qiroex do
 
   ## Quick Start
 
-      # Generate a QR code struct
-      {:ok, qr} = Qiroex.encode("Hello, World!")
-
-      # Render as SVG string
-      {:ok, svg} = Qiroex.to_svg("Hello, World!")
-
-      # Render as PNG binary
-      {:ok, png} = Qiroex.to_png("Hello, World!")
-
-      # Print to terminal
-      Qiroex.print("Hello, World!")
+      iex> {:ok, %Qiroex.QR{}} = Qiroex.encode("Hello, World!")
+      iex> {:ok, svg} = Qiroex.to_svg("Hello, World!")
+      iex> String.contains?(svg, "<svg")
+      true
+      iex> {:ok, png} = Qiroex.to_png("Hello, World!")
+      iex> :binary.part(png, 0, 8)
+      <<137, 80, 78, 71, 13, 10, 26, 10>>
+      iex> {:ok, rows} = Qiroex.to_matrix("Hello, World!")
+      iex> is_list(rows) and is_list(hd(rows))
+      true
 
   ## Encoding Options
 
   All rendering functions accept encoding options as well:
 
-    - `:level` / `:ec_level` — error correction level (`:l`, `:m`, `:q`, `:h`). Default: `:m`
+    - `:level` — error correction level (`:l`, `:m`, `:q`, `:h`). Default: `:m`
     - `:version` — force a specific version (1–40) or `:auto`. Default: `:auto`
     - `:mode` — force encoding mode (`:numeric`, `:alphanumeric`, `:byte`, `:kanji`)
       or `:auto`. Default: `:auto`
@@ -40,14 +39,14 @@ defmodule Qiroex do
 
   ## Logos
 
-  Embed an SVG logo in the center of the code (SVG output only):
+  Embed an SVG or raster logo in the center of the code (SVG output only):
 
       logo = Qiroex.Logo.new(svg: "<svg>...</svg>", size: 0.2)
       {:ok, svg} = Qiroex.to_svg("Hello", level: :h, logo: logo)
 
-    ## Background Images
+  ## Background Images
 
-    Embed a photo-style background image inside the QR body (SVG output only):
+  Embed a photo-style background image inside the QR body (SVG output only):
 
       background = Qiroex.BackgroundImage.from_file!("photo.jpg", opacity: 0.2)
       {:ok, svg} = Qiroex.to_svg("Hello", level: :h, background_image: background)
@@ -62,6 +61,8 @@ defmodule Qiroex do
   alias Qiroex.{QR, Scanability, Validate}
   alias Qiroex.Render.{PNG, SVG, Terminal}
 
+  @encode_option_keys [:level, :version, :mode, :mask]
+  @matrix_render_keys [:quiet_zone]
   @svg_render_keys [
     :module_size,
     :quiet_zone,
@@ -73,6 +74,16 @@ defmodule Qiroex do
   ]
   @png_render_keys [:module_size, :quiet_zone, :dark_color, :light_color, :style]
   @terminal_render_keys [:quiet_zone, :compact]
+  @matrix_option_keys @encode_option_keys ++ @matrix_render_keys
+  @svg_option_keys @encode_option_keys ++ @svg_render_keys
+  @png_option_keys @encode_option_keys ++ @png_render_keys
+  @terminal_option_keys @encode_option_keys ++ @terminal_render_keys
+  @png_unsupported_option_messages %{
+    logo:
+      "unsupported option :logo for Qiroex.to_png/2. Logo embedding is only available in SVG output.",
+    background_image:
+      "unsupported option :background_image for Qiroex.to_png/2. Background images are only available in SVG output."
+  }
 
   # ─── Encode ──────────────────────────────────────────────────────────
 
@@ -81,16 +92,19 @@ defmodule Qiroex do
 
   ## Options
 
-    - `:level` / `:ec_level` — error correction level (`:l`, `:m`, `:q`, `:h`). Default: `:m`
+    - `:level` — error correction level (`:l`, `:m`, `:q`, `:h`). Default: `:m`
     - `:version` — force a specific version (1–40) or `:auto`. Default: `:auto`
     - `:mode` — force encoding mode or `:auto`. Default: `:auto`
     - `:mask` — force mask pattern (0–7) or `:auto`. Default: `:auto`
 
   ## Examples
 
-      {:ok, qr} = Qiroex.encode("Hello")
-      {:ok, qr} = Qiroex.encode("12345", level: :h, mode: :numeric)
-      {:error, _} = Qiroex.encode("")
+      iex> {:ok, %Qiroex.QR{}} = Qiroex.encode("Hello")
+      iex> {:ok, qr} = Qiroex.encode("12345", level: :h, mode: :numeric)
+      iex> qr.ec_level
+      :h
+      iex> Qiroex.encode("")
+      {:error, "Data cannot be empty"}
 
   ## Returns
 
@@ -98,9 +112,7 @@ defmodule Qiroex do
   """
   @spec encode(binary(), keyword()) :: {:ok, QR.t()} | {:error, String.t()}
   def encode(data, opts \\ []) do
-    with :ok <- Validate.encode_opts(opts) do
-      QR.encode(data, opts)
-    end
+    QR.encode(data, opts)
   end
 
   @doc """
@@ -125,20 +137,23 @@ defmodule Qiroex do
 
   Same as `encode/2`, plus:
 
-    - `:margin` — quiet zone size in modules. Default: 4
+    - `:quiet_zone` — quiet zone size in modules. Default: 4
 
   ## Examples
 
-      {:ok, rows} = Qiroex.to_matrix("Hi")
-      length(rows) # => matrix size + 2 * margin
+      iex> {:ok, rows} = Qiroex.to_matrix("Hi")
+      iex> is_list(rows) and is_list(hd(rows))
+      true
   """
   @spec to_matrix(binary(), keyword()) :: {:ok, list(list(0 | 1))} | {:error, String.t()}
   def to_matrix(data, opts \\ []) do
-    margin = Keyword.get(opts, :margin, 4)
+    {render_opts, encode_opts} = split_render_opts(opts, @matrix_render_keys)
+    quiet_zone = Keyword.get(render_opts, :quiet_zone, 4)
 
-    case encode(data, opts) do
-      {:ok, qr} -> {:ok, QR.to_matrix(qr, margin)}
-      error -> error
+    with :ok <- Validate.option_keys(opts, @matrix_option_keys, "Qiroex.to_matrix/2"),
+         :ok <- Validate.matrix_render_opts(render_opts),
+         {:ok, qr} <- encode(data, encode_opts) do
+      {:ok, QR.to_matrix(qr, quiet_zone)}
     end
   end
 
@@ -149,9 +164,13 @@ defmodule Qiroex do
   """
   @spec to_matrix!(binary(), keyword()) :: list(list(0 | 1))
   def to_matrix!(data, opts \\ []) do
-    margin = Keyword.get(opts, :margin, 4)
-    qr = encode!(data, opts)
-    QR.to_matrix(qr, margin)
+    case to_matrix(data, opts) do
+      {:ok, rows} ->
+        rows
+
+      {:error, reason} ->
+        raise ArgumentError, reason
+    end
   end
 
   # ─── SVG ─────────────────────────────────────────────────────────────
@@ -165,16 +184,20 @@ defmodule Qiroex do
 
     - `:module_size` — pixel size of each module (default: 10)
     - `:quiet_zone` — quiet zone modules (default: 4)
-    - `:dark_color` — CSS color for dark modules (default: `"#000000"`)
-    - `:light_color` — CSS color for background (default: `"#ffffff"`)
+    - `:dark_color` — SVG color for dark modules in hex, rgb/rgba, hsl/hsla, or supported named-color form (default: `"#000000"`)
+    - `:light_color` — SVG color for background in hex, rgb/rgba, hsl/hsla, or supported named-color form (default: `"#ffffff"`)
     - `:style` — a `%Qiroex.Style{}` struct for shapes, finder colors, gradients
     - `:logo` — a `%Qiroex.Logo{}` struct for center logo embedding
     - `:background_image` — a `%Qiroex.BackgroundImage{}` struct for embedded photo or SVG backgrounds
 
   ## Examples
 
-      {:ok, svg} = Qiroex.to_svg("Hello")
-      {:ok, svg} = Qiroex.to_svg("Hello", dark_color: "#336699", module_size: 5)
+      iex> {:ok, svg} = Qiroex.to_svg("Hello")
+      iex> String.contains?(svg, "<svg")
+      true
+      iex> {:ok, svg} = Qiroex.to_svg("Hello", dark_color: "#336699", module_size: 5)
+      iex> String.contains?(svg, "#336699")
+      true
 
   ## Returns
 
@@ -184,7 +207,8 @@ defmodule Qiroex do
   def to_svg(data, opts \\ []) do
     {render_opts, encode_opts} = split_render_opts(opts, @svg_render_keys)
 
-    with :ok <- Validate.svg_render_opts(render_opts),
+    with :ok <- Validate.option_keys(opts, @svg_option_keys, "Qiroex.to_svg/2"),
+         :ok <- Validate.svg_render_opts(render_opts),
          {:ok, qr} <- encode(data, encode_opts),
          :ok <- validate_logo_coverage(render_opts, qr) do
       {:ok, SVG.render(qr.matrix, render_opts)}
@@ -219,10 +243,17 @@ defmodule Qiroex do
     - `:light_color` — `{r, g, b}` tuple with values 0–255 (default: `{255, 255, 255}`)
     - `:style` — a `%Qiroex.Style{}` struct for finder pattern colors
 
+  PNG output supports finder styling colors, but not SVG-only features such as
+  `:logo` or `:background_image`.
+
   ## Examples
 
-      {:ok, png} = Qiroex.to_png("Hello")
-      {:ok, png} = Qiroex.to_png("Hello", module_size: 20)
+      iex> {:ok, png} = Qiroex.to_png("Hello")
+      iex> :binary.part(png, 0, 8)
+      <<137, 80, 78, 71, 13, 10, 26, 10>>
+      iex> {:ok, png} = Qiroex.to_png("Hello", module_size: 20)
+      iex> is_binary(png)
+      true
 
   ## Returns
 
@@ -232,7 +263,14 @@ defmodule Qiroex do
   def to_png(data, opts \\ []) do
     {render_opts, encode_opts} = split_render_opts(opts, @png_render_keys)
 
-    with :ok <- Validate.png_render_opts(render_opts),
+    with :ok <-
+           Validate.option_keys(
+             opts,
+             @png_option_keys,
+             "Qiroex.to_png/2",
+             @png_unsupported_option_messages
+           ),
+         :ok <- Validate.png_render_opts(render_opts),
          {:ok, qr} <- encode(data, encode_opts) do
       {:ok, PNG.render(qr.matrix, render_opts)}
     end
@@ -325,7 +363,8 @@ defmodule Qiroex do
   def to_terminal(data, opts \\ []) do
     {render_opts, encode_opts} = split_render_opts(opts, @terminal_render_keys)
 
-    with :ok <- Validate.terminal_render_opts(render_opts),
+    with :ok <- Validate.option_keys(opts, @terminal_option_keys, "Qiroex.to_terminal/2"),
+         :ok <- Validate.terminal_render_opts(render_opts),
          {:ok, qr} <- encode(data, encode_opts) do
       {:ok, Terminal.render(qr.matrix, render_opts)}
     end
@@ -375,9 +414,12 @@ defmodule Qiroex do
 
   ## Examples
 
-      {:ok, svg} = Qiroex.payload(:wifi, [ssid: "MyNet", password: "secret"], :svg)
-      {:ok, png} = Qiroex.payload(:url, [url: "https://elixir-lang.org"], :png)
-      {:ok, svg} = Qiroex.payload(:vcard, [first_name: "Jane", last_name: "Doe"], :svg)
+      iex> {:ok, qr} = Qiroex.payload(:wifi, [ssid: "MyNet", password: "secret"], :encode)
+      iex> match?(%Qiroex.QR{}, qr)
+      true
+      iex> {:ok, rows} = Qiroex.payload(:url, [url: "https://elixir-lang.org"], :matrix)
+      iex> is_list(rows)
+      true
 
   ## Returns
 
@@ -416,10 +458,12 @@ defmodule Qiroex do
 
   ## Examples
 
-      {:ok, qr} = Qiroex.encode("Hello")
-      Qiroex.info(qr)
-      # => %{version: 1, ec_level: :m, mode: :byte, mask: 4,
-      #      modules: 21, data_bytes: 5}
+      iex> {:ok, qr} = Qiroex.encode("Hello")
+      iex> info = Qiroex.info(qr)
+      iex> info.ec_level
+      :m
+      iex> info.version >= 1
+      true
   """
   @spec info(QR.t()) :: map()
   def info(%QR{} = qr) do
@@ -468,8 +512,9 @@ defmodule Qiroex do
 
   ## Examples
 
-      result = Qiroex.scanability("Hello", level: :h)
-      result.rating  #=> :excellent
+      iex> {:ok, result} = Qiroex.scanability("Hello", level: :h)
+      iex> match?(%Qiroex.Scanability{}, result)
+      true
 
   ## Returns
 
@@ -490,8 +535,9 @@ defmodule Qiroex do
 
   ## Examples
 
-      result = Qiroex.scanability!("Hello", level: :h)
-      result.rating  #=> :excellent
+      iex> result = Qiroex.scanability!("Hello", level: :h)
+      iex> match?(%Qiroex.Scanability{}, result)
+      true
   """
   @spec scanability!(binary(), keyword()) :: Scanability.t()
   def scanability!(data, opts \\ []) when is_binary(data) do

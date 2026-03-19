@@ -9,8 +9,9 @@ defmodule Qiroex.Payload.WiFi do
       WIFI:T:<auth>;S:<ssid>;P:<password>;H:<hidden>;;
 
   ## Examples
-      {:ok, payload} = Qiroex.Payload.WiFi.encode(ssid: "MyNetwork", password: "secret", auth: :wpa)
-      #=> {:ok, "WIFI:T:WPA;S:MyNetwork;P:secret;;"}
+
+      iex> Qiroex.Payload.WiFi.encode(ssid: "MyNetwork", password: "secret", auth: :wpa)
+      {:ok, "WIFI:T:WPA;S:MyNetwork;P:secret;;"}
   """
 
   @behaviour Qiroex.Payload

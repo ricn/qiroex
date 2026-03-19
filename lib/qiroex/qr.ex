@@ -12,6 +12,7 @@ defmodule Qiroex.QR do
   alias Qiroex.Matrix
   alias Qiroex.Matrix.{Builder, DataPlacer, Mask}
   alias Qiroex.Spec
+  alias Qiroex.Validate
   alias Qiroex.Version
 
   @type t :: %__MODULE__{
@@ -31,7 +32,7 @@ defmodule Qiroex.QR do
   Encodes data into a QR code.
 
   ## Options
-    - `:ec_level` - error correction level (:l, :m, :q, :h). Default: :m
+    - `:level` - error correction level (:l, :m, :q, :h). Default: :m
     - `:version` - force a specific version (1-40) or :auto. Default: :auto
     - `:mode` - force encoding mode or :auto. Default: :auto
     - `:mask` - force mask pattern (0-7) or :auto. Default: :auto
@@ -41,12 +42,13 @@ defmodule Qiroex.QR do
   """
   @spec encode(binary(), keyword()) :: {:ok, t()} | {:error, String.t()}
   def encode(data, opts \\ []) do
-    ec_level = Keyword.get(opts, :level, Keyword.get(opts, :ec_level, :m))
+    ec_level = Keyword.get(opts, :level, :m)
     version_opt = Keyword.get(opts, :version, :auto)
     mode_opt = Keyword.get(opts, :mode, :auto)
     mask_opt = Keyword.get(opts, :mask, :auto)
 
-    with :ok <- validate_data(data),
+    with :ok <- Validate.encode_opts(opts),
+         :ok <- validate_data(data),
          {:ok, detected_mode} <- detect_mode(data, mode_opt),
          {:ok, version} <- resolve_version(data, ec_level, detected_mode, version_opt),
          segments <- build_segments(data, detected_mode, version),
@@ -79,10 +81,10 @@ defmodule Qiroex.QR do
     end
   end
 
-  @doc "Returns the matrix as a 2D boolean list with quiet zone margin."
+  @doc "Returns the matrix as a 2D boolean list with a quiet zone."
   @spec to_matrix(t(), non_neg_integer()) :: list(list(0 | 1))
-  def to_matrix(%__MODULE__{matrix: matrix}, margin \\ 4) do
-    Matrix.to_list(matrix, margin)
+  def to_matrix(%__MODULE__{matrix: matrix}, quiet_zone \\ 4) do
+    Matrix.to_list(matrix, quiet_zone)
   end
 
   # === Private Pipeline Steps ===

@@ -39,7 +39,7 @@ defmodule Qiroex.BackgroundImage do
   alias Qiroex.Asset
 
   @type fit :: :cover | :contain
-  @type image_type :: Asset.image_type()
+  @type image_type :: :png | :jpeg | :webp | :gif | :bmp | :avif | :tiff
 
   @type t :: %__MODULE__{
           svg: String.t() | nil,

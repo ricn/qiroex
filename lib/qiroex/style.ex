@@ -6,15 +6,27 @@ defmodule Qiroex.Style do
   beyond basic color options. Supports module shapes, finder pattern styling,
   and gradient fills.
 
+  ## Renderer Support
+
+  Styling support varies by renderer:
+
+    - `SVG` — supports module shapes, finder colors, finder shapes, and gradients
+    - `PNG` — supports finder colors only; module shapes, finder shapes, and gradients are ignored
+    - `Terminal` — ignores `Qiroex.Style` entirely
+
   ## Usage
 
-      style = Qiroex.Style.new(
-        module_shape: :circle,
-        finder: %{outer: "#1a5276", inner: "#ffffff", eye: "#e74c3c"},
-        gradient: %{type: :linear, start_color: "#000000", end_color: "#3498db"}
-      )
-
-      Qiroex.to_svg("Hello", style: style)
+      iex> style = Qiroex.Style.new(
+      ...>   module_shape: :circle,
+      ...>   finder: %{outer: "#1a5276", inner: "#ffffff", eye: "#e74c3c"},
+      ...>   gradient: %{type: :linear, start_color: "#000000", end_color: "#3498db"}
+      ...> )
+      iex> style.module_shape
+      :circle
+      iex> style.finder[:eye]
+      "#e74c3c"
+      iex> style.gradient.type
+      :linear
 
   ## Module Shapes (SVG only)
     - `:square`  — default square modules
@@ -83,6 +95,14 @@ defmodule Qiroex.Style do
     - `:module_radius` — corner radius fraction 0.0–0.5 for `:rounded` shape (default: `0.5`)
     - `:finder` — `%{outer: color, inner: color, eye: color, outer_shape: shape, inner_shape: shape, eye_shape: shape}` or `nil`
     - `:gradient` — `%{type: :linear | :radial, start_color: color, end_color: color}` or `nil`; spans the whole SVG QR code
+
+  ## Examples
+
+      iex> style = Qiroex.Style.new(module_shape: :rounded, module_radius: 0.25)
+      iex> style.module_shape
+      :rounded
+      iex> style.module_radius
+      0.25
   """
   @spec new(keyword()) :: t()
   def new(opts \\ []) do

@@ -60,7 +60,7 @@ defmodule Qiroex.MatrixTest do
   end
 
   describe "to_list/2" do
-    test "returns 2D boolean list with margin" do
+    test "returns 2D boolean list with quiet zone" do
       matrix = Matrix.new(1)
       list = Matrix.to_list(matrix, 4)
 
@@ -75,9 +75,9 @@ defmodule Qiroex.MatrixTest do
       matrix = Matrix.set(matrix, {0, 0}, :dark)
       list = Matrix.to_list(matrix, 4)
 
-      # First row (margin) should be all 0
+      # First row (quiet zone) should be all 0
       assert Enum.all?(hd(list), &(&1 == 0))
-      # Last row (margin) should be all 0
+      # Last row (quiet zone) should be all 0
       assert Enum.all?(List.last(list), &(&1 == 0))
     end
 
@@ -86,7 +86,7 @@ defmodule Qiroex.MatrixTest do
       matrix = Matrix.set(matrix, {0, 0}, :dark)
       list = Matrix.to_list(matrix, 4)
 
-      # Position {0,0} in matrix → {4,4} in list (with margin=4)
+      # Position {0,0} in matrix → {4,4} in list (with quiet_zone=4)
       assert Enum.at(Enum.at(list, 4), 4) == 1
     end
   end

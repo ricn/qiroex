@@ -74,13 +74,13 @@ defmodule Qiroex.Matrix do
   `true` = dark module, `false` = light module.
   """
   @spec to_list(t(), non_neg_integer()) :: list(list(0 | 1))
-  def to_list(%__MODULE__{size: size} = matrix, margin \\ 4) do
-    total = size + 2 * margin
+  def to_list(%__MODULE__{size: size} = matrix, quiet_zone \\ 4) do
+    total = size + 2 * quiet_zone
 
     for row <- 0..(total - 1) do
       for col <- 0..(total - 1) do
-        mr = row - margin
-        mc = col - margin
+        mr = row - quiet_zone
+        mc = col - quiet_zone
 
         if mr >= 0 and mr < size and mc >= 0 and mc < size do
           if dark?(matrix, {mr, mc}), do: 1, else: 0

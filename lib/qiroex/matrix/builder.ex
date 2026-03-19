@@ -260,9 +260,9 @@ defmodule Qiroex.Matrix.Builder do
     size = matrix.size
     bits = BCH.format_info_bits(ec_level, mask_pattern)
 
-    # Copy 1
+    # The top-left copy is placed least-significant-bit first around the finder.
     positions1 = format_info_positions_copy1()
-    matrix = place_info_bits(matrix, positions1, bits)
+    matrix = place_info_bits(matrix, positions1, Enum.reverse(bits))
 
     # Copy 2
     positions2 = format_info_positions_copy2(size)

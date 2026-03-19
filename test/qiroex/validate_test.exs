@@ -13,8 +13,13 @@ defmodule Qiroex.ValidateTest do
     test "accepts valid ec levels" do
       for level <- [:l, :m, :q, :h] do
         assert :ok = Validate.encode_opts(level: level)
-        assert :ok = Validate.encode_opts(ec_level: level)
       end
+    end
+
+    test "rejects legacy :ec_level alias" do
+      assert {:error, msg} = Validate.encode_opts(ec_level: :h)
+      assert msg =~ ":ec_level"
+      assert msg =~ ":level"
     end
 
     test "rejects invalid ec level" do
@@ -66,6 +71,25 @@ defmodule Qiroex.ValidateTest do
       assert {:error, msg} = Validate.encode_opts(mask: 8)
       assert msg =~ "invalid mask"
     end
+
+    test "rejects unknown options with a suggestion" do
+      assert {:error, msg} = Validate.encode_opts(levl: :h)
+      assert msg =~ "unknown option"
+      assert msg =~ ":level"
+    end
+  end
+
+  describe "matrix_render_opts/1" do
+    test "accepts valid quiet_zone values" do
+      assert :ok = Validate.matrix_render_opts([])
+      assert :ok = Validate.matrix_render_opts(quiet_zone: 0)
+      assert :ok = Validate.matrix_render_opts(quiet_zone: 4)
+    end
+
+    test "rejects invalid quiet_zone values" do
+      assert {:error, msg} = Validate.matrix_render_opts(quiet_zone: -1)
+      assert msg =~ "invalid quiet_zone"
+    end
   end
 
   # ── SVG Render Options ─────────────────────────────────────────────
@@ -103,10 +127,20 @@ defmodule Qiroex.ValidateTest do
 
     test "accepts valid CSS colors" do
       assert :ok = Validate.svg_render_opts(dark_color: "#000", light_color: "white")
+      assert :ok = Validate.svg_render_opts(dark_color: "rgb(0, 0, 0)")
+      assert :ok = Validate.svg_render_opts(dark_color: "rebeccapurple")
+      assert :ok = Validate.svg_render_opts(light_color: "currentColor")
+      assert :ok = Validate.svg_render_opts(light_color: "transparent")
     end
 
     test "rejects invalid CSS colors" do
       assert {:error, msg} = Validate.svg_render_opts(dark_color: "")
+      assert msg =~ "invalid dark_color"
+
+      assert {:error, msg} = Validate.svg_render_opts(dark_color: "not-a-color")
+      assert msg =~ "invalid dark_color"
+
+      assert {:error, msg} = Validate.svg_render_opts(dark_color: "notacolor")
       assert msg =~ "invalid dark_color"
 
       assert {:error, msg} = Validate.svg_render_opts(dark_color: 0)

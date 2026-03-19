@@ -1,6 +1,8 @@
 defmodule Qiroex.Payload.WiFiTest do
   use ExUnit.Case, async: true
 
+  doctest Qiroex.Payload.WiFi
+
   alias Qiroex.Payload.WiFi
 
   describe "encode/1" do
