@@ -2,6 +2,7 @@
 # Script to generate example QR code images for the README
 
 alias Qiroex.Style
+alias Qiroex.BackgroundImage
 alias Qiroex.Logo
 
 out = "assets"
@@ -11,142 +12,239 @@ IO.puts("Generating example QR codes...")
 
 # ── 1. Basic QR code ──────────────────────────────────────────────
 Qiroex.save_svg("https://github.com/ricn/qiroex", "#{out}/basic.svg",
-  module_size: 8, quiet_zone: 2)
+  module_size: 8,
+  quiet_zone: 2
+)
+
 IO.puts("  ✓ basic.svg")
 
 # ── 2. Custom colors ─────────────────────────────────────────────
 Qiroex.save_svg("https://elixir-lang.org", "#{out}/colors.svg",
-  module_size: 8, quiet_zone: 2,
-  dark_color: "#4B275F", light_color: "#F4F1F6")
+  module_size: 8,
+  quiet_zone: 2,
+  dark_color: "#4B275F",
+  light_color: "#F4F1F6"
+)
+
 IO.puts("  ✓ colors.svg")
 
 # ── 3. Circle modules ───────────────────────────────────────────
 style_circles = Style.new(module_shape: :circle)
+
 Qiroex.save_svg("https://elixir-lang.org", "#{out}/circles.svg",
-  module_size: 8, quiet_zone: 2, style: style_circles)
+  module_size: 8,
+  quiet_zone: 2,
+  style: style_circles
+)
+
 IO.puts("  ✓ circles.svg")
 
 # ── 4. Rounded modules ──────────────────────────────────────────
 style_rounded = Style.new(module_shape: :rounded, module_radius: 0.4)
+
 Qiroex.save_svg("https://elixir-lang.org", "#{out}/rounded.svg",
-  module_size: 8, quiet_zone: 2, style: style_rounded)
+  module_size: 8,
+  quiet_zone: 2,
+  style: style_rounded
+)
+
 IO.puts("  ✓ rounded.svg")
 
 # ── 5. Diamond modules ──────────────────────────────────────────
 style_diamond = Style.new(module_shape: :diamond)
+
 Qiroex.save_svg("https://elixir-lang.org", "#{out}/diamond.svg",
-  module_size: 8, quiet_zone: 2, style: style_diamond)
+  module_size: 8,
+  quiet_zone: 2,
+  style: style_diamond
+)
+
 IO.puts("  ✓ diamond.svg")
 
 # ── 6. Finder pattern colors ────────────────────────────────────
-style_finder = Style.new(
-  module_shape: :rounded,
-  module_radius: 0.3,
-  finder: %{outer: "#E63946", inner: "#F1FAEE", eye: "#1D3557"}
-)
+style_finder =
+  Style.new(
+    module_shape: :rounded,
+    module_radius: 0.3,
+    finder: %{outer: "#E63946", inner: "#F1FAEE", eye: "#1D3557"}
+  )
+
 Qiroex.save_svg("https://elixir-lang.org", "#{out}/finder_colors.svg",
-  module_size: 8, quiet_zone: 2, style: style_finder)
+  module_size: 8,
+  quiet_zone: 2,
+  style: style_finder
+)
+
 IO.puts("  ✓ finder_colors.svg")
 
 # ── 6a. Leaf module shape ────────────────────────────────────────
 style_leaf = Style.new(module_shape: :leaf)
+
 Qiroex.save_svg("https://elixir-lang.org", "#{out}/leaf.svg",
-  module_size: 8, quiet_zone: 2, style: style_leaf)
+  module_size: 8,
+  quiet_zone: 2,
+  style: style_leaf
+)
+
 IO.puts("  ✓ leaf.svg")
 
 # ── 6b. Shield module shape ─────────────────────────────────────
 style_shield = Style.new(module_shape: :shield)
+
 Qiroex.save_svg("https://elixir-lang.org", "#{out}/shield.svg",
-  module_size: 8, quiet_zone: 2, style: style_shield)
+  module_size: 8,
+  quiet_zone: 2,
+  style: style_shield
+)
+
 IO.puts("  ✓ shield.svg")
 
 # ── 6c. Finder pattern shapes — rounded ─────────────────────────
-style_finder_rounded = Style.new(
-  module_shape: :rounded,
-  module_radius: 0.3,
-  finder: %{outer_shape: :rounded, inner_shape: :rounded, eye_shape: :rounded}
-)
+style_finder_rounded =
+  Style.new(
+    module_shape: :rounded,
+    module_radius: 0.3,
+    finder: %{outer_shape: :rounded, inner_shape: :rounded, eye_shape: :rounded}
+  )
+
 Qiroex.save_svg("https://elixir-lang.org", "#{out}/finder_rounded.svg",
-  module_size: 8, quiet_zone: 2, style: style_finder_rounded)
+  module_size: 8,
+  quiet_zone: 2,
+  style: style_finder_rounded
+)
+
 IO.puts("  ✓ finder_rounded.svg")
 
 # ── 6d. Finder pattern shapes — circle ──────────────────────────
-style_finder_circle = Style.new(
-  module_shape: :circle,
-  finder: %{outer_shape: :circle, inner_shape: :circle, eye_shape: :circle}
-)
+style_finder_circle =
+  Style.new(
+    module_shape: :circle,
+    finder: %{outer_shape: :circle, inner_shape: :circle, eye_shape: :circle}
+  )
+
 Qiroex.save_svg("https://elixir-lang.org", "#{out}/finder_circle.svg",
-  module_size: 8, quiet_zone: 2, style: style_finder_circle)
+  module_size: 8,
+  quiet_zone: 2,
+  style: style_finder_circle
+)
+
 IO.puts("  ✓ finder_circle.svg")
 
 # ── 6e. Finder pattern shapes — leaf ────────────────────────────
-style_finder_leaf = Style.new(
-  module_shape: :leaf,
-  finder: %{
-    outer: "#2D3436", outer_shape: :leaf,
-    inner: "#FFFFFF", inner_shape: :leaf,
-    eye:   "#E17055", eye_shape: :leaf
-  }
-)
+style_finder_leaf =
+  Style.new(
+    module_shape: :leaf,
+    finder: %{
+      outer: "#2D3436",
+      outer_shape: :leaf,
+      inner: "#FFFFFF",
+      inner_shape: :leaf,
+      eye: "#E17055",
+      eye_shape: :leaf
+    }
+  )
+
 Qiroex.save_svg("https://elixir-lang.org", "#{out}/finder_leaf.svg",
-  module_size: 8, quiet_zone: 2, style: style_finder_leaf)
+  module_size: 8,
+  quiet_zone: 2,
+  style: style_finder_leaf
+)
+
 IO.puts("  ✓ finder_leaf.svg")
 
 # ── 6f. Finder pattern shapes — shield ──────────────────────────
-style_finder_shield = Style.new(
-  module_shape: :shield,
-  finder: %{
-    outer: "#1a5276", outer_shape: :shield,
-    inner: "#d5e8f0", inner_shape: :shield,
-    eye:   "#e74c3c", eye_shape: :shield
-  }
-)
+style_finder_shield =
+  Style.new(
+    module_shape: :shield,
+    finder: %{
+      outer: "#1a5276",
+      outer_shape: :shield,
+      inner: "#d5e8f0",
+      inner_shape: :shield,
+      eye: "#e74c3c",
+      eye_shape: :shield
+    }
+  )
+
 Qiroex.save_svg("https://elixir-lang.org", "#{out}/finder_shield.svg",
-  module_size: 8, quiet_zone: 2, style: style_finder_shield)
+  module_size: 8,
+  quiet_zone: 2,
+  style: style_finder_shield
+)
+
 IO.puts("  ✓ finder_shield.svg")
 
 # ── 6g. Finder pattern shapes — mixed ───────────────────────────
-style_finder_mixed = Style.new(
-  module_shape: :rounded,
-  module_radius: 0.3,
-  finder: %{
-    outer: "#E63946",  outer_shape: :rounded,
-    inner: "#F1FAEE",  inner_shape: :square,
-    eye:   "#1D3557",  eye_shape: :circle
-  }
-)
+style_finder_mixed =
+  Style.new(
+    module_shape: :rounded,
+    module_radius: 0.3,
+    finder: %{
+      outer: "#E63946",
+      outer_shape: :rounded,
+      inner: "#F1FAEE",
+      inner_shape: :square,
+      eye: "#1D3557",
+      eye_shape: :circle
+    }
+  )
+
 Qiroex.save_svg("https://elixir-lang.org", "#{out}/finder_mixed.svg",
-  module_size: 8, quiet_zone: 2, style: style_finder_mixed)
+  module_size: 8,
+  quiet_zone: 2,
+  style: style_finder_mixed
+)
+
 IO.puts("  ✓ finder_mixed.svg")
 
 # ── 7. Whole-code linear gradient ───────────────────────────────
-style_gradient = Style.new(
-  module_shape: :circle,
-  gradient: %{type: :linear, start_color: "#0F172A", end_color: "#22D3EE", angle: 135}
-)
+style_gradient =
+  Style.new(
+    module_shape: :circle,
+    gradient: %{type: :linear, start_color: "#0F172A", end_color: "#22D3EE", angle: 135}
+  )
+
 Qiroex.save_svg("QIROEX", "#{out}/gradient.svg",
-  module_size: 9, quiet_zone: 2, style: style_gradient)
+  module_size: 9,
+  quiet_zone: 2,
+  style: style_gradient
+)
+
 IO.puts("  ✓ gradient.svg")
 
 # ── 8. Whole-code radial gradient ───────────────────────────────
-style_radial = Style.new(
-  module_shape: :rounded,
-  module_radius: 0.35,
-  gradient: %{type: :radial, start_color: "#F59E0B", end_color: "#1E3A8A"}
-)
+style_radial =
+  Style.new(
+    module_shape: :rounded,
+    module_radius: 0.35,
+    gradient: %{type: :radial, start_color: "#F59E0B", end_color: "#1E3A8A"}
+  )
+
 Qiroex.save_svg("QIROEX", "#{out}/radial.svg",
-  module_size: 9, quiet_zone: 2, light_color: "#F8FAFC", style: style_radial)
+  module_size: 9,
+  quiet_zone: 2,
+  light_color: "#F8FAFC",
+  style: style_radial
+)
+
 IO.puts("  ✓ radial.svg")
 
 # ── 9. Full styled (gradient + finder colors + shape) ────────────
-style_full = Style.new(
-  module_shape: :rounded,
-  module_radius: 0.35,
-  finder: %{outer: "#0F172A", inner: "#F8FAFC", eye: "#F97316"},
-  gradient: %{type: :linear, start_color: "#0F172A", end_color: "#22D3EE", angle: 25}
-)
+style_full =
+  Style.new(
+    module_shape: :rounded,
+    module_radius: 0.35,
+    finder: %{outer: "#0F172A", inner: "#F8FAFC", eye: "#F97316"},
+    gradient: %{type: :linear, start_color: "#0F172A", end_color: "#22D3EE", angle: 25}
+  )
+
 Qiroex.save_svg("QIROEX", "#{out}/styled.svg",
-  module_size: 9, quiet_zone: 2, light_color: "#F8FAFC", style: style_full)
+  module_size: 9,
+  quiet_zone: 2,
+  light_color: "#F8FAFC",
+  style: style_full
+)
+
 IO.puts("  ✓ styled.svg")
 
 # ── 10. Logo embedding ──────────────────────────────────────────
@@ -164,132 +262,236 @@ elixir_logo_svg = ~s"""
 """
 
 logo = Logo.new(svg: elixir_logo_svg, size: 0.22, shape: :circle, padding: 1)
+
 Qiroex.save_svg("https://elixir-lang.org", "#{out}/logo.svg",
-  module_size: 8, quiet_zone: 2, level: :h, logo: logo)
+  module_size: 8,
+  quiet_zone: 2,
+  level: :h,
+  logo: logo
+)
+
 IO.puts("  ✓ logo.svg")
 
 # ── 11. Logo with styled QR ─────────────────────────────────────
-style_for_logo = Style.new(
-  module_shape: :rounded,
-  module_radius: 0.3,
-  finder: %{outer: "#4B275F", inner: "#FFFFFF", eye: "#9B59B6"}
-)
+style_for_logo =
+  Style.new(
+    module_shape: :rounded,
+    module_radius: 0.3,
+    finder: %{outer: "#4B275F", inner: "#FFFFFF", eye: "#9B59B6"}
+  )
+
 Qiroex.save_svg("https://elixir-lang.org", "#{out}/logo_styled.svg",
-  module_size: 8, quiet_zone: 2, level: :h,
-  style: style_for_logo, logo: logo)
+  module_size: 8,
+  quiet_zone: 2,
+  level: :h,
+  style: style_for_logo,
+  logo: logo
+)
+
 IO.puts("  ✓ logo_styled.svg")
 
 # ── 11b. PNG raster image logo ───────────────────────────────────
 # Create a small PNG logo programmatically (purple circle "Ex" rendered as PNG)
 # We'll use the SVG logo saved as a PNG via the library itself
-{:ok, png_logo_binary} = Qiroex.to_png(
-  "Ex",
-  module_size: 4, quiet_zone: 1,
-  dark_color: {75, 39, 95}, light_color: {155, 89, 182}
-)
+{:ok, png_logo_binary} =
+  Qiroex.to_png(
+    "Ex",
+    module_size: 4,
+    quiet_zone: 1,
+    dark_color: {75, 39, 95},
+    light_color: {155, 89, 182}
+  )
+
 png_logo = Logo.new(image: png_logo_binary, size: 0.22, shape: :circle, padding: 2)
+
 Qiroex.save_svg("https://elixir-lang.org", "#{out}/logo_png.svg",
-  module_size: 8, quiet_zone: 2, level: :h, logo: png_logo)
+  module_size: 8,
+  quiet_zone: 2,
+  level: :h,
+  logo: png_logo
+)
+
 IO.puts("  ✓ logo_png.svg")
 
 # ── 12. WiFi payload ─────────────────────────────────────────────
-{:ok, wifi_data} = Qiroex.Payload.WiFi.encode(ssid: "CoffeeShop", password: "latte2024", security: "WPA")
+{:ok, wifi_data} =
+  Qiroex.Payload.WiFi.encode(ssid: "CoffeeShop", password: "latte2024", security: "WPA")
+
 Qiroex.save_svg(wifi_data, "#{out}/wifi.svg",
-  module_size: 8, quiet_zone: 2, dark_color: "#2C3E50")
+  module_size: 8,
+  quiet_zone: 2,
+  dark_color: "#2C3E50"
+)
+
 IO.puts("  ✓ wifi.svg")
 
 # ── 13. vCard payload ────────────────────────────────────────────
-{:ok, vcard_data} = Qiroex.Payload.VCard.encode(
-  first_name: "Jane", last_name: "Doe",
-  phone: "+1-555-0199", email: "jane@example.com",
-  org: "Acme Corp", title: "Engineer"
-)
-style_vcard = Style.new(module_shape: :rounded, module_radius: 0.3,
-  finder: %{outer: "#0984E3", inner: "#FFFFFF", eye: "#6C5CE7"})
-Qiroex.save_svg(vcard_data, "#{out}/vcard.svg",
-  module_size: 6, quiet_zone: 2, style: style_vcard)
+{:ok, vcard_data} =
+  Qiroex.Payload.VCard.encode(
+    first_name: "Jane",
+    last_name: "Doe",
+    phone: "+1-555-0199",
+    email: "jane@example.com",
+    org: "Acme Corp",
+    title: "Engineer"
+  )
+
+style_vcard =
+  Style.new(
+    module_shape: :rounded,
+    module_radius: 0.3,
+    finder: %{outer: "#0984E3", inner: "#FFFFFF", eye: "#6C5CE7"}
+  )
+
+Qiroex.save_svg(vcard_data, "#{out}/vcard.svg", module_size: 6, quiet_zone: 2, style: style_vcard)
 IO.puts("  ✓ vcard.svg")
 
 # ── 14. URL payload ──────────────────────────────────────────────
 {:ok, url_data} = Qiroex.Payload.URL.encode(url: "https://elixir-lang.org")
-Qiroex.save_svg(url_data, "#{out}/url.svg",
-  module_size: 8, quiet_zone: 2, dark_color: "#2980B9")
+Qiroex.save_svg(url_data, "#{out}/url.svg", module_size: 8, quiet_zone: 2, dark_color: "#2980B9")
 IO.puts("  ✓ url.svg")
 
 # ── 15. Email payload ────────────────────────────────────────────
-{:ok, email_data} = Qiroex.Payload.Email.encode(
-  to: "hello@example.com", subject: "Hi there!", body: "Nice to meet you."
-)
+{:ok, email_data} =
+  Qiroex.Payload.Email.encode(
+    to: "hello@example.com",
+    subject: "Hi there!",
+    body: "Nice to meet you."
+  )
+
 Qiroex.save_svg(email_data, "#{out}/email.svg",
-  module_size: 8, quiet_zone: 2, dark_color: "#E74C3C")
+  module_size: 8,
+  quiet_zone: 2,
+  dark_color: "#E74C3C"
+)
+
 IO.puts("  ✓ email.svg")
 
 # ── 16. SMS payload ──────────────────────────────────────────────
 {:ok, sms_data} = Qiroex.Payload.SMS.encode(number: "+1-555-0123", message: "Hello from Qiroex!")
-Qiroex.save_svg(sms_data, "#{out}/sms.svg",
-  module_size: 8, quiet_zone: 2, dark_color: "#27AE60")
+Qiroex.save_svg(sms_data, "#{out}/sms.svg", module_size: 8, quiet_zone: 2, dark_color: "#27AE60")
 IO.puts("  ✓ sms.svg")
 
 # ── 17. Phone payload ────────────────────────────────────────────
 {:ok, phone_data} = Qiroex.Payload.Phone.encode(number: "+1-555-0199")
+
 Qiroex.save_svg(phone_data, "#{out}/phone.svg",
-  module_size: 8, quiet_zone: 2, dark_color: "#34495E")
+  module_size: 8,
+  quiet_zone: 2,
+  dark_color: "#34495E"
+)
+
 IO.puts("  ✓ phone.svg")
 
 # ── 18. Geo payload ──────────────────────────────────────────────
-{:ok, geo_data} = Qiroex.Payload.Geo.encode(
-  latitude: 48.8566, longitude: 2.3522, query: "Eiffel Tower"
-)
-Qiroex.save_svg(geo_data, "#{out}/geo.svg",
-  module_size: 8, quiet_zone: 2, dark_color: "#16A085")
+{:ok, geo_data} =
+  Qiroex.Payload.Geo.encode(
+    latitude: 48.8566,
+    longitude: 2.3522,
+    query: "Eiffel Tower"
+  )
+
+Qiroex.save_svg(geo_data, "#{out}/geo.svg", module_size: 8, quiet_zone: 2, dark_color: "#16A085")
 IO.puts("  ✓ geo.svg")
 
 # ── 19. vEvent payload ───────────────────────────────────────────
-{:ok, vevent_data} = Qiroex.Payload.VEvent.encode(
-  summary: "Team Standup",
-  start: ~U[2026-03-01 09:00:00Z],
-  end: ~U[2026-03-01 09:30:00Z],
-  location: "Conference Room A"
-)
+{:ok, vevent_data} =
+  Qiroex.Payload.VEvent.encode(
+    summary: "Team Standup",
+    start: ~U[2026-03-01 09:00:00Z],
+    end: ~U[2026-03-01 09:30:00Z],
+    location: "Conference Room A"
+  )
+
 Qiroex.save_svg(vevent_data, "#{out}/vevent.svg",
-  module_size: 6, quiet_zone: 2, dark_color: "#E67E22")
+  module_size: 6,
+  quiet_zone: 2,
+  dark_color: "#E67E22"
+)
+
 IO.puts("  ✓ vevent.svg")
 
 # ── 20. MeCard payload ───────────────────────────────────────────
-{:ok, mecard_data} = Qiroex.Payload.MeCard.encode(
-  name: "Doe,Jane", phone: "+1-555-0199", email: "jane@example.com"
-)
+{:ok, mecard_data} =
+  Qiroex.Payload.MeCard.encode(
+    name: "Doe,Jane",
+    phone: "+1-555-0199",
+    email: "jane@example.com"
+  )
+
 Qiroex.save_svg(mecard_data, "#{out}/mecard.svg",
-  module_size: 8, quiet_zone: 2, dark_color: "#8E44AD")
+  module_size: 8,
+  quiet_zone: 2,
+  dark_color: "#8E44AD"
+)
+
 IO.puts("  ✓ mecard.svg")
 
 # ── 21. Bitcoin payload ──────────────────────────────────────────
-{:ok, bitcoin_data} = Qiroex.Payload.Bitcoin.encode(
-  address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
-  amount: 0.001, label: "Donation"
-)
+{:ok, bitcoin_data} =
+  Qiroex.Payload.Bitcoin.encode(
+    address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+    amount: 0.001,
+    label: "Donation"
+  )
+
 Qiroex.save_svg(bitcoin_data, "#{out}/bitcoin.svg",
-  module_size: 6, quiet_zone: 2, dark_color: "#F7931A")
+  module_size: 6,
+  quiet_zone: 2,
+  dark_color: "#F7931A"
+)
+
 IO.puts("  ✓ bitcoin.svg")
 
 # ── 22. WhatsApp payload ─────────────────────────────────────────
-{:ok, whatsapp_data} = Qiroex.Payload.WhatsApp.encode(
-  number: "+1234567890", message: "Hello from Qiroex!"
-)
+{:ok, whatsapp_data} =
+  Qiroex.Payload.WhatsApp.encode(
+    number: "+1234567890",
+    message: "Hello from Qiroex!"
+  )
+
 style_whatsapp = Style.new(module_shape: :rounded, module_radius: 0.3)
+
 Qiroex.save_svg(whatsapp_data, "#{out}/whatsapp.svg",
-  module_size: 8, quiet_zone: 2, dark_color: "#25D366", style: style_whatsapp)
+  module_size: 8,
+  quiet_zone: 2,
+  dark_color: "#25D366",
+  style: style_whatsapp
+)
+
 IO.puts("  ✓ whatsapp.svg")
 
 # ── 23. PNG example ──────────────────────────────────────────────
-Qiroex.save_png("https://elixir-lang.org", "#{out}/basic.png",
-  module_size: 10, quiet_zone: 3)
+Qiroex.save_png("https://elixir-lang.org", "#{out}/basic.png", module_size: 10, quiet_zone: 3)
 IO.puts("  ✓ basic.png")
+
+# ── 23b. Background image example ───────────────────────────────
+# CC0 orange gerbera photo from Wikimedia Commons:
+# https://commons.wikimedia.org/wiki/File:Orange_Gerbera_flower.jpg
+background_image = BackgroundImage.from_file!("#{out}/background_orange_flower.jpg", opacity: 0.32)
+style_background = Style.new(module_shape: :rounded, module_radius: 0.25)
+
+Qiroex.save_svg("https://elixir-lang.org", "#{out}/background_image.svg",
+  module_size: 8,
+  quiet_zone: 2,
+  level: :h,
+  dark_color: "#0F172A",
+  light_color: "#FFF7F2",
+  style: style_background,
+  background_image: background_image
+)
+
+IO.puts("  ✓ background_image.svg")
 
 # ── 24. PNG styled with finder colors ────────────────────────────
 style_png = Style.new(finder: %{outer: "#E63946", inner: "#F1FAEE", eye: "#1D3557"})
+
 Qiroex.save_png("https://elixir-lang.org", "#{out}/styled.png",
-  module_size: 10, quiet_zone: 3, style: style_png)
+  module_size: 10,
+  quiet_zone: 3,
+  style: style_png
+)
+
 IO.puts("  ✓ styled.png")
 
 IO.puts("\nDone! #{length(File.ls!(out))} files generated in #{out}/")

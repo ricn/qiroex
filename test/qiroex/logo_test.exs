@@ -175,6 +175,72 @@ defmodule Qiroex.LogoTest do
     end
   end
 
+  describe "from_file/2" do
+    test "loads raster logos from disk" do
+      path = Path.join(System.tmp_dir!(), "qiroex-logo-#{System.unique_integer([:positive])}.png")
+
+      try do
+        File.write!(path, @sample_png)
+
+        assert {:ok, %Logo{} = logo} = Logo.from_file(path, size: 0.24, shape: :circle)
+
+        assert logo.image == @sample_png
+        assert logo.image_type == :png
+        assert logo.size == 0.24
+        assert logo.shape == :circle
+      after
+        File.rm(path)
+      end
+    end
+
+    test "loads SVG logos from disk as markup" do
+      path = Path.join(System.tmp_dir!(), "qiroex-logo-#{System.unique_integer([:positive])}.svg")
+
+      try do
+        File.write!(path, @sample_svg)
+
+        assert {:ok, %Logo{} = logo} = Logo.from_file(path, padding: 2)
+
+        assert logo.svg == @sample_svg
+        assert is_nil(logo.image)
+        assert logo.padding == 2
+      after
+        File.rm(path)
+      end
+    end
+
+    test "returns validation errors instead of raising" do
+      path = Path.join(System.tmp_dir!(), "qiroex-logo-#{System.unique_integer([:positive])}.png")
+
+      try do
+        File.write!(path, @sample_png)
+
+        assert {:error, message} = Logo.from_file(path, size: 0.5)
+        assert message =~ "Logo size"
+      after
+        File.rm(path)
+      end
+    end
+  end
+
+  describe "from_file!/2" do
+    test "loads raster logos from disk" do
+      path = Path.join(System.tmp_dir!(), "qiroex-logo-#{System.unique_integer([:positive])}.png")
+
+      try do
+        File.write!(path, @sample_png)
+
+        logo = Logo.from_file!(path, background: "#f0f0f0")
+
+        assert logo.image == @sample_png
+        assert logo.image_type == :png
+        assert logo.background == "#f0f0f0"
+      after
+        File.rm(path)
+      end
+    end
+  end
+
   describe "detect_image_type/1" do
     test "detects PNG" do
       assert Logo.detect_image_type(@sample_png) == :png

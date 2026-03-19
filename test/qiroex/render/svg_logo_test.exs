@@ -1,12 +1,14 @@
 defmodule Qiroex.Render.SVG.LogoTest do
   use ExUnit.Case, async: true
 
+  alias Qiroex.BackgroundImage
   alias Qiroex.Render.SVG
   alias Qiroex.Logo
   alias Qiroex.Style
   alias Qiroex.QR
 
   @sample_svg ~s(<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="blue"/></svg>)
+  @sample_jpeg <<0xFF, 0xD8, 0xFF, 0xD9>>
 
   setup do
     {:ok, qr} = QR.encode("HELLO WORLD", level: :h)
@@ -112,6 +114,17 @@ defmodule Qiroex.Render.SVG.LogoTest do
 
       assert String.contains?(svg, "linearGradient")
       assert String.contains?(svg, @sample_svg)
+    end
+
+    test "background image renders before the logo fragment", %{matrix: matrix} do
+      background_image = BackgroundImage.new(image: @sample_jpeg)
+      logo = Logo.new(svg: @sample_svg, size: 0.2)
+      svg = SVG.render(matrix, background_image: background_image, logo: logo)
+
+      {image_pos, _} = :binary.match(svg, ~s(<image href="data:image/jpeg;base64,))
+      {logo_pos, _} = :binary.match(svg, @sample_svg)
+
+      assert image_pos < logo_pos
     end
   end
 

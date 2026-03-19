@@ -38,6 +38,7 @@ defmodule Qiroex.Validate do
     - `:dark_color` / `:light_color` — non-empty string
     - `:style` — `%Qiroex.Style{}` struct or `nil`
     - `:logo` — `%Qiroex.Logo{}` struct or `nil`
+    - `:background_image` — `%Qiroex.BackgroundImage{}` struct or `nil`
   """
   @spec svg_render_opts(keyword()) :: :ok | {:error, String.t()}
   def svg_render_opts(opts) do
@@ -45,8 +46,9 @@ defmodule Qiroex.Validate do
          :ok <- validate_quiet_zone(opts),
          :ok <- validate_css_color(opts, :dark_color),
          :ok <- validate_css_color(opts, :light_color),
-         :ok <- validate_style(opts) do
-      validate_logo(opts)
+         :ok <- validate_style(opts),
+         :ok <- validate_logo(opts) do
+      validate_background_image(opts)
     end
   end
 
@@ -234,6 +236,22 @@ defmodule Qiroex.Validate do
       nil -> :ok
       %Qiroex.Logo{} -> :ok
       l -> {:error, "invalid logo: #{inspect(l)}. Must be a %Qiroex.Logo{} struct or nil"}
+    end
+  end
+
+  # === Background Image ===
+
+  defp validate_background_image(opts) do
+    case Keyword.get(opts, :background_image) do
+      nil ->
+        :ok
+
+      %Qiroex.BackgroundImage{} ->
+        :ok
+
+      background_image ->
+        {:error,
+         "invalid background_image: #{inspect(background_image)}. Must be a %Qiroex.BackgroundImage{} struct or nil"}
     end
   end
 

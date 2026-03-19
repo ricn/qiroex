@@ -1,9 +1,13 @@
 defmodule Qiroex.Render.SVG.StyledTest do
   use ExUnit.Case, async: true
 
+  alias Qiroex.BackgroundImage
   alias Qiroex.Render.SVG
   alias Qiroex.Style
   alias Qiroex.QR
+
+  # Minimal JPEG signature. Qiroex embeds bytes without decoding them.
+  @sample_jpeg <<0xFF, 0xD8, 0xFF, 0xD9>>
 
   setup do
     {:ok, qr} = QR.encode("HELLO", level: :m)
@@ -206,6 +210,23 @@ defmodule Qiroex.Render.SVG.StyledTest do
 
       assert String.contains?(svg, "rx=")
       assert String.contains?(svg, "url(#qr-gradient)")
+    end
+
+    test "background image works with gradients and styled modules", %{matrix: matrix} do
+      style =
+        Style.new(
+          module_shape: :circle,
+          gradient: %{type: :linear, start_color: "#1a1a1a", end_color: "#22d3ee", angle: 90}
+        )
+
+      background_image = BackgroundImage.new(image: @sample_jpeg, fit: :contain, opacity: 0.18)
+      svg = SVG.render(matrix, style: style, background_image: background_image)
+
+      assert String.contains?(svg, ~s(<image href="data:image/jpeg;base64,))
+      assert String.contains?(svg, ~s(preserveAspectRatio="xMidYMid meet"))
+      assert String.contains?(svg, ~s(opacity="0.18"))
+      assert String.contains?(svg, "url(#qr-gradient)")
+      assert String.contains?(svg, "<circle")
     end
   end
 

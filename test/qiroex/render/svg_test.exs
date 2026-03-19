@@ -1,9 +1,13 @@
 defmodule Qiroex.Render.SVGTest do
   use ExUnit.Case, async: true
 
+  alias Qiroex.BackgroundImage
   alias Qiroex.Render.SVG
   alias Qiroex.QR
   alias Qiroex.Style
+
+  # Minimal JPEG signature. Qiroex embeds bytes without decoding them.
+  @sample_jpeg <<0xFF, 0xD8, 0xFF, 0xD9>>
 
   setup do
     {:ok, qr} = QR.encode("HELLO", level: :m)
@@ -84,6 +88,32 @@ defmodule Qiroex.Render.SVGTest do
       svg_no_qz = SVG.render(matrix, quiet_zone: 0)
 
       assert String.length(svg_no_qz) < String.length(svg_default)
+    end
+
+    test "renders raster background images inside the QR content area", %{matrix: matrix} do
+      background_image = BackgroundImage.new(image: @sample_jpeg)
+      svg = SVG.render(matrix, background_image: background_image)
+
+      assert String.contains?(svg, ~s(<image href="data:image/jpeg;base64,))
+      assert Regex.match?(~r/<image [^>]*x="40" y="40" width="210" height="210"/, svg)
+      assert String.contains?(svg, ~s(opacity="0.2"))
+      assert String.contains?(svg, ~s(preserveAspectRatio="xMidYMid slice"))
+    end
+
+    test "renders background images after the light background and before QR modules", %{
+      matrix: matrix
+    } do
+      background_image = BackgroundImage.new(image: @sample_jpeg)
+      svg = SVG.render(matrix, background_image: background_image)
+
+      {background_pos, _} =
+        :binary.match(svg, ~s(<rect width="100%" height="100%" fill="#ffffff"/>))
+
+      {image_pos, _} = :binary.match(svg, ~s(<image href="data:image/jpeg;base64,))
+      {path_pos, _} = :binary.match(svg, ~s(<path d="))
+
+      assert background_pos < image_pos
+      assert image_pos < path_pos
     end
   end
 
