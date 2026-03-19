@@ -38,6 +38,12 @@ defmodule Qiroex.Logo do
 
       Qiroex.to_svg!("Hello", level: :h, logo: logo)
 
+  ### Load a logo from disk
+
+      logo = Qiroex.Logo.from_file!("logo.png", size: 0.22, shape: :circle)
+
+      Qiroex.to_svg!("Hello", level: :h, logo: logo)
+
   ## Options
     - `:svg` — SVG markup string for the logo (provide this **or** `:image`)
     - `:image` — binary image data for a raster logo (provide this **or** `:svg`)
@@ -124,6 +130,32 @@ defmodule Qiroex.Logo do
 
     validate!(logo)
     logo
+  end
+
+  @doc """
+  Loads a logo from disk.
+
+  SVG files are treated as markup. Other files are treated as raster images and
+  their type is auto-detected from the file bytes.
+  """
+  @spec from_file(Path.t(), keyword()) :: {:ok, t()} | {:error, String.t() | File.posix()}
+  def from_file(path, opts \\ []) do
+    with {:ok, binary} <- File.read(path) do
+      try do
+        {:ok, new(file_source_opts(path, binary) ++ opts)}
+      rescue
+        error in ArgumentError -> {:error, Exception.message(error)}
+      end
+    end
+  end
+
+  @doc """
+  Loads a logo from disk, raising on error.
+  """
+  @spec from_file!(Path.t(), keyword()) :: t()
+  def from_file!(path, opts \\ []) do
+    binary = File.read!(path)
+    new(file_source_opts(path, binary) ++ opts)
   end
 
   @doc """
@@ -500,6 +532,30 @@ defmodule Qiroex.Logo do
     end
 
     :ok
+  end
+
+  defp file_source_opts(path, binary) do
+    if svg_file?(path, binary) do
+      [svg: binary]
+    else
+      [image: binary]
+    end
+  end
+
+  defp svg_file?(path, binary) do
+    String.downcase(Path.extname(path)) == ".svg" or svg_markup?(binary)
+  end
+
+  defp svg_markup?(binary) do
+    if String.valid?(binary) do
+      trimmed = String.trim_leading(binary)
+
+      String.starts_with?(trimmed, "<svg") or
+        (String.starts_with?(trimmed, "<?xml") and
+           String.contains?(String.slice(trimmed, 0, 256), "<svg"))
+    else
+      false
+    end
   end
 
   defp to_s(n) when is_integer(n), do: Integer.to_string(n)
