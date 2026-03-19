@@ -141,5 +141,33 @@ defmodule Qiroex.Matrix.BuilderTest do
       assert Matrix.get(finalized, {8, 0}) in [:dark, :light]
       assert Matrix.get(finalized, {8, 1}) in [:dark, :light]
     end
+
+    test "places the top-left format copy in spec order" do
+      matrix = Builder.build(1)
+      finalized = Builder.finalize(matrix, :l, 4)
+
+      positions = [
+        {0, 8},
+        {1, 8},
+        {2, 8},
+        {3, 8},
+        {4, 8},
+        {5, 8},
+        {7, 8},
+        {8, 8},
+        {8, 7},
+        {8, 5},
+        {8, 4},
+        {8, 3},
+        {8, 2},
+        {8, 1},
+        {8, 0}
+      ]
+
+      expected_bits = [1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1]
+
+      assert Enum.map(positions, fn pos -> if Matrix.dark?(finalized, pos), do: 1, else: 0 end) ==
+               expected_bits
+    end
   end
 end

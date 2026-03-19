@@ -40,6 +40,19 @@ defmodule Qiroex.ErrorCorrection.BCHTest do
       result = BCH.format_info(:m, 0)
       assert result == 0b101010000010010
     end
+
+    test "matches published reference vectors" do
+      references = [
+        {{:l, 4}, 0b110011000101111},
+        {{:m, 0}, 0b101010000010010},
+        {{:q, 6}, 0b010111011011010},
+        {{:h, 7}, 0b000100000111011}
+      ]
+
+      for {{level, mask}, expected} <- references do
+        assert BCH.format_info(level, mask) == expected
+      end
+    end
   end
 
   describe "format_info_bits/2" do
@@ -76,6 +89,19 @@ defmodule Qiroex.ErrorCorrection.BCHTest do
       result = BCH.version_info(7)
       # Version 7 (000111) with known BCH EC bits
       assert Bitwise.bsr(result, 12) == 7
+    end
+
+    test "matches published version information vectors" do
+      references = [
+        {7, 0b000111110010010100},
+        {10, 0b001010010011010011},
+        {20, 0b010100100110100110},
+        {40, 0b101000110001101001}
+      ]
+
+      for {version, expected} <- references do
+        assert BCH.version_info(version) == expected
+      end
     end
   end
 end
