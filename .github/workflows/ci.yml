@@ -56,8 +56,8 @@ jobs:
       - name: Install dependencies
         run: mix deps.get
 
-      - name: Install zbarimg
-        run: sudo apt-get update && sudo apt-get install -y zbar-tools
+      - name: Install conformance tools
+        run: sudo apt-get update && sudo apt-get install -y zbar-tools librsvg2-bin
 
       - name: Compile
         run: mix compile --warnings-as-errors
@@ -77,5 +77,5 @@ jobs:
       - name: Run tests with coverage
         run: mix test --cover
 
-      - name: Run conformance tests
-        run: mix test --include conformance test/qiroex/conformance_test.exs
+      - name: Run conformance suite
+        run: mix test --include conformance

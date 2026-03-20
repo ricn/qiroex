@@ -789,7 +789,8 @@ mix test --cover
 mix credo --strict
 ```
 
-The conformance suite uses `zbarimg`. On macOS, install it with `brew install zbar`.
+The conformance suite uses `zbarimg`, and SVG conformance also rasterizes through `rsvg-convert`.
+On macOS, install both with `brew install zbar librsvg`.
 
 ## Sponsored by Qiro
 
