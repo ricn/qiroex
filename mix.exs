@@ -33,7 +33,8 @@ defmodule Qiroex.MixProject do
     [
       {:ex_doc, "~> 0.35", only: :dev, runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false}
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:stream_data, "~> 1.1", only: :test}
     ]
   end
 

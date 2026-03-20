@@ -784,7 +784,7 @@ Before opening a PR, run the same quality gates used for release hardening:
 ```sh
 mix format
 mix test
-mix test --include conformance test/qiroex/conformance_test.exs
+mix test --include conformance
 mix test --cover
 mix credo --strict
 ```
